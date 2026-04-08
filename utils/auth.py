@@ -40,8 +40,10 @@ def login_form() -> bool:
             submitted = st.form_submit_button("Sign In", use_container_width=True)
 
         if submitted:
-            credentials = st.secrets.get("credentials", {})
-            user_cfg = credentials.get(username)
+            try:
+                user_cfg = st.secrets["credentials"][username]
+            except (KeyError, Exception):
+                user_cfg = None
             if user_cfg and _verify_password(password, user_cfg["password_hash"]):
                 st.session_state.authenticated = True
                 st.session_state.username = username
