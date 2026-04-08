@@ -53,7 +53,7 @@ def import_to_mongodb_sync(db, documents: list[dict]) -> dict:
 
 def main(file_path: str, sheet_name: str, fy: str, branch: str):
     uri = os.environ.get("MONGODB_URI", "mongodb://localhost:27017")
-    db_name = os.environ.get("DB_NAME", "salasar_ahmedabad")
+    db_name = os.environ.get("DB_NAME", "sales-capture")
 
     log.info("Connecting to MongoDB: %s", db_name)
     client = MongoClient(uri, serverSelectionTimeoutMS=10_000)

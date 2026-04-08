@@ -4,7 +4,7 @@ from functools import lru_cache
 
 class Settings(BaseSettings):
     mongodb_uri: str = "mongodb://localhost:27017"
-    db_name: str = "salasar_ahmedabad"
+    db_name: str = "sales-capture"
 
     jwt_secret_key: str = "change-me-in-production"
     jwt_algorithm: str = "HS256"
