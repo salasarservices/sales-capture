@@ -1,6 +1,7 @@
 """
 Plotly chart builders for the Salasar dashboard.
 Colors follow the spec design system.
+Colors follow the dashboard design system.
 """
 
 import plotly.graph_objects as go
@@ -11,6 +12,24 @@ COLOR_CONVERTED = "#22C55E"
 COLOR_NOT_CONVERTED = "#EF4444"
 COLOR_NAVY = "#1E3A5F"
 COLOR_AMBER = "#F59E0B"
+COLOR_CONVERTED = "#2ea44f"
+COLOR_NOT_CONVERTED = "#d9534f"
+COLOR_PRIMARY = "#1f3b57"
+COLOR_ACCENT = "#ef8b4a"
+COLOR_INFO = "#2f7fa8"
+
+
+def _layout_base(fig: go.Figure) -> go.Figure:
+    fig.update_layout(
+        template="plotly_white",
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="#ffffff",
+        font=dict(color="#334155", size=12),
+        margin=dict(t=52, b=70, l=50, r=30),
+    )
+    fig.update_xaxes(showgrid=False, linecolor="#d1d9e6")
+    fig.update_yaxes(gridcolor="#e7edf6", zeroline=False)
+    return fig
 
 
 # ---------------------------------------------------------------------------
@@ -46,8 +65,10 @@ def stacked_bar_conversion(df: pd.DataFrame) -> go.Figure:
         legend=dict(orientation="h", yanchor="bottom", y=-0.3),
         plot_bgcolor="white",
         margin=dict(t=50, b=80),
+        legend=dict(orientation="h", yanchor="bottom", y=-0.35),
     )
     return fig
+    return _layout_base(fig)
 
 
 # ---------------------------------------------------------------------------
@@ -62,6 +83,7 @@ def grouped_bar_proposal_type(df: pd.DataFrame) -> go.Figure:
     data = df[df["CRE / RM"] != "TOTAL"].copy()
     fig = go.Figure()
     colors = {"Fresh": "#3B82F6", "Renewal": "#8B5CF6", "Expanded": "#F59E0B"}
+    colors = {"Fresh": "#3b82f6", "Renewal": "#8b5cf6", "Expanded": COLOR_ACCENT}
     for ptype, col in [("Fresh", "fresh_converted"), ("Renewal", "renewal_converted"), ("Expanded", "expanded_converted")]:
         if col in data.columns:
             fig.add_trace(go.Bar(
@@ -79,8 +101,10 @@ def grouped_bar_proposal_type(df: pd.DataFrame) -> go.Figure:
         legend=dict(orientation="h", yanchor="bottom", y=-0.3),
         plot_bgcolor="white",
         margin=dict(t=50, b=80),
+        legend=dict(orientation="h", yanchor="bottom", y=-0.35),
     )
     return fig
+    return _layout_base(fig)
 
 
 # ---------------------------------------------------------------------------
@@ -98,6 +122,7 @@ def horizontal_bar_premium(df: pd.DataFrame) -> go.Figure:
         marker=dict(
             color=conv_rates,
             colorscale=[[0, COLOR_NOT_CONVERTED], [0.5, COLOR_AMBER], [1, COLOR_CONVERTED]],
+            colorscale=[[0, COLOR_NOT_CONVERTED], [0.55, COLOR_ACCENT], [1, COLOR_CONVERTED]],
             showscale=True,
             colorbar=dict(title="Conv. Rate %"),
         ),
@@ -109,8 +134,10 @@ def horizontal_bar_premium(df: pd.DataFrame) -> go.Figure:
         yaxis_title="",
         plot_bgcolor="white",
         margin=dict(t=50, l=160),
+        margin=dict(t=52, l=170, b=60),
     )
     return fig
+    return _layout_base(fig)
 
 
 # ---------------------------------------------------------------------------
@@ -123,6 +150,7 @@ def pie_enquiry_share(df: pd.DataFrame) -> go.Figure:
         labels=data["CRE / RM"],
         values=data["Total Enquiries"],
         hole=0.35,
+        hole=0.45,
         hovertemplate="%{label}<br>%{value} enquiries (%{percent})<extra></extra>",
     ))
     fig.update_layout(
@@ -131,6 +159,8 @@ def pie_enquiry_share(df: pd.DataFrame) -> go.Figure:
         margin=dict(t=50),
     )
     return fig
+    fig.update_layout(title="Share of Enquiries by CRE/RM", margin=dict(t=52, b=40, l=20, r=20))
+    return _layout_base(fig)
 
 
 # ---------------------------------------------------------------------------
@@ -148,6 +178,8 @@ def dual_axis_monthly(df: pd.DataFrame) -> go.Figure:
         y=data["No. of Enquiries"],
         marker_color=COLOR_NAVY,
         opacity=0.75,
+        marker_color=COLOR_PRIMARY,
+        opacity=0.8,
         yaxis="y1",
         hovertemplate="%{x}<br>Enquiries: %{y}<extra></extra>",
     ))
@@ -157,6 +189,7 @@ def dual_axis_monthly(df: pd.DataFrame) -> go.Figure:
         y=data["Conversion %"],
         mode="lines+markers",
         line=dict(color=COLOR_CONVERTED, width=2),
+        line=dict(color=COLOR_CONVERTED, width=2.5),
         marker=dict(size=8),
         yaxis="y2",
         hovertemplate="%{x}<br>Conversion: %{y:.1f}%<extra></extra>",
@@ -168,6 +201,7 @@ def dual_axis_monthly(df: pd.DataFrame) -> go.Figure:
         y=[avg_conv] * len(data),
         mode="lines",
         line=dict(color=COLOR_AMBER, width=1.5, dash="dash"),
+        line=dict(color=COLOR_ACCENT, width=1.8, dash="dash"),
         yaxis="y2",
         hoverinfo="skip",
     ))
@@ -177,11 +211,14 @@ def dual_axis_monthly(df: pd.DataFrame) -> go.Figure:
         yaxis=dict(title="No. of Enquiries", side="left"),
         yaxis2=dict(title="Conversion %", side="right", overlaying="y",
                     tickformat=".1f", ticksuffix="%"),
+        yaxis2=dict(title="Conversion %", side="right", overlaying="y", tickformat=".1f", ticksuffix="%"),
         legend=dict(orientation="h", yanchor="bottom", y=-0.35),
         plot_bgcolor="white",
         margin=dict(t=50, b=100),
+        margin=dict(t=52, b=100, l=60, r=60),
     )
     return fig
+    return _layout_base(fig)
 
 
 # ---------------------------------------------------------------------------
@@ -198,6 +235,8 @@ def funnel_chart(total: int, quoted: int, closed: int) -> go.Figure:
         textinfo="value+percent initial",
         marker=dict(color=[COLOR_NAVY, COLOR_AMBER, COLOR_CONVERTED]),
         connector=dict(line=dict(color="lightgrey", width=1)),
+        marker=dict(color=[COLOR_PRIMARY, COLOR_INFO, COLOR_CONVERTED]),
+        connector=dict(line=dict(color="#c5cedb", width=1)),
         hovertemplate="%{label}<br>Count: %{value}<br>%{percentInitial} of total<extra></extra>",
     ))
     fig.update_layout(
@@ -206,3 +245,5 @@ def funnel_chart(total: int, quoted: int, closed: int) -> go.Figure:
         plot_bgcolor="white",
     )
     return fig
+    fig.update_layout(title="Sales Funnel", margin=dict(t=52, b=40, l=30, r=20))
+    return _layout_base(fig)
