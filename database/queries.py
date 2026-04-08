@@ -244,7 +244,7 @@ def fetch_enquiries(
     ordered_cols = [c for c in col_map.values() if c in df.columns]
     df = df[ordered_cols]
 
-    # Truncate datetime to date for display
+    # Format all date columns as DD-MM-YYYY strings
     date_cols = [
         "Date (When The Proposal Referred To The Company)",
         "Expiry Date Of Existing Policy (If Renewal)",
@@ -255,7 +255,7 @@ def fetch_enquiries(
     ]
     for col in date_cols:
         if col in df.columns:
-            df[col] = pd.to_datetime(df[col], errors="coerce").dt.date
+            df[col] = pd.to_datetime(df[col], errors="coerce").dt.strftime("%d-%m-%Y")
 
     return df, total
 
