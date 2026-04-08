@@ -105,7 +105,7 @@ st.divider()
 # ---- Enquiry Detail Table ----
 st.subheader("Enquiry Detail")
 
-PAGE_SIZE = 25
+PAGE_SIZE = 100
 if "funnel_page" not in st.session_state:
     st.session_state.funnel_page = 1
 
