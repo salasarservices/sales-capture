@@ -134,7 +134,7 @@ if df.empty:
 else:
     # Format currency columns for display
     display_df = df.copy()
-    for col in ["Premium (₹)", "Brokerage (₹)"]:
+    for col in ["Premium Potential", "Tentative Brokerage (12%)"]:
         if col in display_df.columns:
             display_df[col] = display_df[col].apply(format_inr)
 

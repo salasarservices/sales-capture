@@ -216,33 +216,44 @@ def fetch_enquiries(
     df = pd.DataFrame(rows)
     df.drop(columns=["_id", "timestamp", "created_at", "updated_at", "fy", "branch"], errors="ignore", inplace=True)
 
-    # Friendly column names
+    # Column names — exact headings from master Excel sheet, in Excel column order
     col_map = {
-        "enquiry_no": "No.",
-        "date_referred": "Date",
-        "contact_person": "Contact",
-        "company_name": "Company",
-        "requirement": "Requirement",
-        "premium_potential": "Premium (₹)",
-        "tentative_brokerage_12pct": "Brokerage (₹)",
-        "type_of_proposal": "Proposal",
-        "expiry_date_existing_policy": "Policy Expiry",
-        "cre_rm_accountable": "CRE / RM",
-        "quote_planned_date": "Quote Planned",
-        "quote_actual_date": "Quote Actual",
-        "quote_submitted": "Submitted?",
-        "closure_planned_date": "Closure Planned",
-        "closure_actual_date": "Closure Actual",
-        "business_closed": "Closed?",
-        "reason_not_closed": "Reason",
-        "phone": "Phone",
-        "email": "Email",
+        "date_referred":               "Date (When The Proposal Referred To The Company)",
+        "enquiry_no":                  "Enquiry No.",
+        "contact_person":              "Name of the Contact Person",
+        "company_name":                "Company Name",
+        "phone":                       "Phone No.",
+        "email":                       "E-Mail",
+        "requirement":                 "Requirement",
+        "premium_potential":           "Premium Potential",
+        "type_of_proposal":            "Type Of Proposal",
+        "expiry_date_existing_policy": "Expiry Date Of Existing Policy (If Renewal)",
+        "cre_rm_accountable":          "CRE(Expanded) / RM(New) Accountable",
+        "tentative_brokerage_12pct":   "Tentative Brokerage (12%)",
+        "quote_planned_date":          "Quote Submission Date — Planned Date",
+        "quote_actual_date":           "Quote Submission Date — Actual Date",
+        "quote_submitted":             "Quote Submitted",
+        "closure_planned_date":        "Actual Closure Date — Planned Date",
+        "closure_actual_date":         "Actual Closure Date — Actual Date",
+        "business_closed":             "Business Closed",
+        "reason_not_closed":           "Reason For Sales Not Closed",
     }
     df.rename(columns=col_map, inplace=True)
 
+    # Enforce Excel column order
+    ordered_cols = [c for c in col_map.values() if c in df.columns]
+    df = df[ordered_cols]
+
     # Truncate datetime to date for display
-    for col in ["Date", "Policy Expiry", "Quote Planned", "Quote Actual",
-                "Closure Planned", "Closure Actual"]:
+    date_cols = [
+        "Date (When The Proposal Referred To The Company)",
+        "Expiry Date Of Existing Policy (If Renewal)",
+        "Quote Submission Date — Planned Date",
+        "Quote Submission Date — Actual Date",
+        "Actual Closure Date — Planned Date",
+        "Actual Closure Date — Actual Date",
+    ]
+    for col in date_cols:
         if col in df.columns:
             df[col] = pd.to_datetime(df[col], errors="coerce").dt.date
 
