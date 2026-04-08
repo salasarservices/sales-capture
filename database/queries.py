@@ -204,7 +204,7 @@ def fetch_enquiries(
     cursor = (
         db.enquiries
         .find(match)
-        .sort([("date_referred", 1), ("enquiry_no", 1)])
+        .sort([("enquiry_no", 1)])
         .skip(skip)
         .limit(page_size)
     )
