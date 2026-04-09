@@ -1,6 +1,6 @@
 """
 Salasar Services — Sales Dashboard
-Entry point. Shows login form; authenticated users see the page navigation.
+Entry point: auth gate + home page overview.
 """
 
 import streamlit as st
@@ -12,43 +12,167 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
+from utils.styles import inject_global_css
 from utils.auth import login_form, logout, is_admin
 
-# ---- Auth gate ----
+inject_global_css()
+
+# ── Auth gate ────────────────────────────────────────────────────────────────
 if not st.session_state.get("authenticated"):
     login_form()
     st.stop()
 
-# ---- Sidebar header ----
+# ── Sidebar ───────────────────────────────────────────────────────────────────
 with st.sidebar:
     st.markdown(
         """
-        <div style='padding: 0.5rem 0 1rem 0;'>
-            <h2 style='color:#1E3A5F; margin:0;'>Salasar Services</h2>
-            <p style='color:#64748B; font-size:0.85rem; margin:0;'>
-                Ahmedabad Branch &nbsp;|&nbsp; FY 2025-26
-            </p>
+        <div style="padding: 0.75rem 0 0.5rem 0;">
+            <div style="
+                display: flex; align-items: center; gap: 0.6rem;
+                margin-bottom: 0.4rem;
+            ">
+                <div style="
+                    width: 36px; height: 36px;
+                    background: rgba(200, 134, 10, 0.25);
+                    border-radius: 8px;
+                    display: flex; align-items: center;
+                    justify-content: center; font-size: 1.2rem;
+                    flex-shrink: 0;
+                ">📊</div>
+                <div>
+                    <div style="
+                        color: #FFFFFF; font-size: 1rem;
+                        font-weight: 700; line-height: 1.2;
+                    ">Salasar Services</div>
+                    <div style="
+                        color: rgba(255,255,255,0.55);
+                        font-size: 0.72rem; font-weight: 500;
+                    ">SALES DASHBOARD</div>
+                </div>
+            </div>
+            <div style="
+                color: rgba(255,255,255,0.50); font-size: 0.75rem;
+                padding: 0.3rem 0 0 0;
+            ">
+                Ahmedabad Branch &nbsp;·&nbsp; FY 2025-26
+            </div>
         </div>
         """,
         unsafe_allow_html=True,
     )
     st.divider()
+
     role_label = "Admin" if is_admin() else "Viewer"
-    st.caption(f"Signed in as **{st.session_state.username}** ({role_label})")
+    st.markdown(
+        f"""
+        <div style="
+            display: flex; align-items: center; gap: 0.5rem;
+            padding: 0.5rem 0 0.6rem 0;
+        ">
+            <div style="
+                width: 30px; height: 30px;
+                background: rgba(255,255,255,0.12);
+                border-radius: 50%;
+                display: flex; align-items: center; justify-content: center;
+                font-size: 0.95rem; flex-shrink: 0;
+            ">👤</div>
+            <div>
+                <div style="color:#FFFFFF; font-size:0.85rem; font-weight:600;">
+                    {st.session_state.username}
+                </div>
+                <div style="
+                    color: rgba(255,255,255,0.50); font-size: 0.7rem;
+                ">{role_label}</div>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
     if st.button("Sign Out", use_container_width=True):
         logout()
 
-# ---- Home page content ----
-st.title("Sales Dashboard — Ahmedabad FY 2025-26")
+# ── Home page ─────────────────────────────────────────────────────────────────
+import datetime
+
+today = datetime.date.today().strftime("%d %b %Y")
+role_label = "Admin" if is_admin() else "Viewer"
+
+st.markdown(
+    f"""
+    <div class="welcome-banner">
+        <div>
+            <h2>Welcome back, {st.session_state.username}!</h2>
+            <p>Ahmedabad Branch &nbsp;·&nbsp; FY 2025-26 &nbsp;·&nbsp; {today}</p>
+        </div>
+        <div class="welcome-badge">🔐 {role_label} Access</div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
+# ── KPI summary on home page ──────────────────────────────────────────────────
+from database.connection import get_db
+from database.queries import fetch_kpis
+from components.kpi_cards import render_kpi_row
+
+db = get_db()
+with st.spinner("Loading summary…"):
+    kpis = fetch_kpis(db)
+
+render_kpi_row(kpis)
+
+st.markdown("<div style='height: 0.75rem;'></div>", unsafe_allow_html=True)
+
+# ── Navigation cards ──────────────────────────────────────────────────────────
+st.markdown(
+    '<p class="section-heading">Dashboard Sections</p>',
+    unsafe_allow_html=True,
+)
 st.markdown(
     """
-    Use the **sidebar pages** to navigate between dashboard views:
-
-    | Page | Description |
-    |---|---|
-    | 📊 Summary: Conversion Ratio | Per CRE/RM breakdown by Fresh / Renewal / Expanded |
-    | 📈 Summary: Sales Capture | Per CRE/RM totals, premium, and conversion |
-    | 📅 Business Conversion Ratio | Monthly enquiry count and conversion rate |
-    | 🔍 Sales Funnel | Funnel visualisation + filterable enquiry detail |
-    """
+    <div class="nav-grid">
+        <div class="nav-card">
+            <div class="nav-card-header">
+                <span class="nav-card-icon">📊</span>
+                <span class="nav-card-title">Summary: Conversion Ratio</span>
+            </div>
+            <p class="nav-card-desc">
+                Per CRE/RM breakdown by Fresh, Renewal, and Expanded business —
+                with stacked bar and grouped proposal-type charts.
+            </p>
+        </div>
+        <div class="nav-card">
+            <div class="nav-card-header">
+                <span class="nav-card-icon">📈</span>
+                <span class="nav-card-title">Summary: Sales Capture</span>
+            </div>
+            <p class="nav-card-desc">
+                Enquiry volume and premium conversion per CRE/RM —
+                horizontal bar, donut share chart, and detailed table.
+            </p>
+        </div>
+        <div class="nav-card">
+            <div class="nav-card-header">
+                <span class="nav-card-icon">📅</span>
+                <span class="nav-card-title">Business Conversion Ratio</span>
+            </div>
+            <p class="nav-card-desc">
+                Month-by-month enquiry volume and conversion rate trend —
+                dual-axis chart with annual average reference line.
+            </p>
+        </div>
+        <div class="nav-card">
+            <div class="nav-card-header">
+                <span class="nav-card-icon">🔍</span>
+                <span class="nav-card-title">Sales Funnel &amp; Enquiry Capture</span>
+            </div>
+            <p class="nav-card-desc">
+                Full pipeline funnel with filterable, paginated enquiry detail —
+                filter by month, CRE/RM, proposal type, product, or company.
+            </p>
+        </div>
+    </div>
+    """,
+    unsafe_allow_html=True,
 )

@@ -7,6 +7,7 @@ import streamlit as st
 
 st.set_page_config(page_title="Business Conversion Ratio", layout="wide")
 
+from utils.styles import inject_global_css
 from utils.auth import require_auth, is_admin
 from database.connection import get_db
 from database.queries import fetch_business_conversion
@@ -14,10 +15,17 @@ from components.charts import dual_axis_monthly
 from components.data_tables import export_csv_button, highlight_conversion_row
 from utils.formatters import format_pct
 
+inject_global_css()
 require_auth()
 
-st.title("📅 Business Conversion Ratio")
-st.caption("Monthly enquiry volume and conversion rate — FY 2025-26")
+# ── Page header ───────────────────────────────────────────────────────────────
+st.markdown(
+    """
+    <h1>📅 Business Conversion Ratio</h1>
+    <p class="page-subtitle">Month-by-month enquiry volume and conversion rate — FY 2025-26</p>
+    """,
+    unsafe_allow_html=True,
+)
 
 db = get_db()
 
@@ -28,14 +36,17 @@ if df.empty:
     st.warning("No data found.")
     st.stop()
 
-# ---- Chart ----
+# ── Chart ─────────────────────────────────────────────────────────────────────
 chart_data = df[df["Month"] != "TOTAL"]
 st.plotly_chart(dual_axis_monthly(chart_data), use_container_width=True)
 
 st.divider()
 
-# ---- Table ----
-st.subheader("Monthly Conversion Table")
+# ── Table ─────────────────────────────────────────────────────────────────────
+st.markdown(
+    '<p class="section-heading">Monthly Conversion Table</p>',
+    unsafe_allow_html=True,
+)
 st.caption(
     ":red[Red] = conversion < 50% &nbsp;|&nbsp; "
     ":orange[Amber] = conversion < 70% &nbsp;|&nbsp; "
@@ -43,11 +54,8 @@ st.caption(
 )
 
 display_df = df.copy()
-display_df["Conversion %"] = display_df["Conversion %"].apply(
-    lambda x: format_pct(x) if x != "TOTAL" else format_pct(x)
-)
+display_df["Conversion %"] = display_df["Conversion %"].apply(format_pct)
 
-# Use styled dataframe with conditional row colours
 styled = highlight_conversion_row(df, conv_col="Conversion %")
 st.dataframe(styled, use_container_width=True, height=500, hide_index=True)
 

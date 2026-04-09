@@ -7,6 +7,7 @@ import streamlit as st
 
 st.set_page_config(page_title="Summary: Sales Capture", layout="wide")
 
+from utils.styles import inject_global_css
 from utils.auth import require_auth, is_admin
 from database.connection import get_db
 from database.queries import fetch_summary_sales
@@ -14,10 +15,17 @@ from components.charts import horizontal_bar_premium, pie_enquiry_share
 from components.data_tables import render_table, export_csv_button, highlight_totals_row
 from utils.formatters import format_inr, format_pct
 
+inject_global_css()
 require_auth()
 
-st.title("📈 Summary: Sales Capture")
-st.caption("Enquiry volume and premium conversion per CRE/RM")
+# ── Page header ───────────────────────────────────────────────────────────────
+st.markdown(
+    """
+    <h1>📈 Summary: Sales Capture</h1>
+    <p class="page-subtitle">Enquiry volume and premium conversion per CRE/RM</p>
+    """,
+    unsafe_allow_html=True,
+)
 
 db = get_db()
 
@@ -28,7 +36,7 @@ if df.empty:
     st.warning("No data found.")
     st.stop()
 
-# ---- Charts ----
+# ── Charts ────────────────────────────────────────────────────────────────────
 col1, col2 = st.columns([3, 2])
 with col1:
     st.plotly_chart(horizontal_bar_premium(df), use_container_width=True)
@@ -37,12 +45,15 @@ with col2:
 
 st.divider()
 
-# ---- Table ----
-st.subheader("Sales Capture Summary")
+# ── Table ─────────────────────────────────────────────────────────────────────
+st.markdown(
+    '<p class="section-heading">Sales Capture Summary</p>',
+    unsafe_allow_html=True,
+)
 
 display_df = df.copy()
 display_df["Premium Converted (₹)"] = display_df["Premium Converted (₹)"].apply(format_inr)
-display_df["% Not Converted"] = display_df["% Not Converted"].apply(format_pct)
+display_df["% Not Converted"]       = display_df["% Not Converted"].apply(format_pct)
 
 styled = highlight_totals_row(display_df)
 st.dataframe(styled, use_container_width=True, height=400, hide_index=True)
