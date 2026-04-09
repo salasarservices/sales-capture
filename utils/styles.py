@@ -76,22 +76,36 @@ _LOGIN_CSS = """
 }
 [data-testid="stColumn"] { padding: 0 !important; }
 
-/* LEFT column — navy gradient brand panel */
-[data-testid="stHorizontalBlock"]
-  > [data-testid="stColumn"]:nth-child(1)
-  > div:first-child {
+/* ── LEFT column: navy gradient brand panel ──
+   Multi-selector covers all Streamlit DOM depths (div:first-child, div > div, etc.)
+   so the background applies regardless of Streamlit Cloud version. */
+[data-testid="stHorizontalBlock"] > [data-testid="stColumn"]:first-child,
+[data-testid="stHorizontalBlock"] > [data-testid="stColumn"]:first-child > div,
+[data-testid="stHorizontalBlock"] > [data-testid="stColumn"]:first-child > div > div {
     background: linear-gradient(150deg, #0C1E3D 0%, #1B3A6B 52%, #1F4F8A 100%) !important;
     min-height: 100vh !important;
+}
+[data-testid="stHorizontalBlock"] > [data-testid="stColumn"]:first-child > div:first-child {
     padding: 3rem 2.75rem !important;
 }
 
-/* RIGHT column — light-gray form panel */
-[data-testid="stHorizontalBlock"]
-  > [data-testid="stColumn"]:nth-child(2)
-  > div:first-child {
+/* ── RIGHT column: light gray form panel ── */
+[data-testid="stHorizontalBlock"] > [data-testid="stColumn"]:last-child,
+[data-testid="stHorizontalBlock"] > [data-testid="stColumn"]:last-child > div,
+[data-testid="stHorizontalBlock"] > [data-testid="stColumn"]:last-child > div > div {
     background: #EEF2F7 !important;
     min-height: 100vh !important;
-    padding: 2.25rem 0 !important;
+}
+
+/* Nested inner columns (form centering) must NOT inherit the bg */
+[data-testid="stHorizontalBlock"] > [data-testid="stColumn"]:last-child
+  [data-testid="stHorizontalBlock"] [data-testid="stColumn"],
+[data-testid="stHorizontalBlock"] > [data-testid="stColumn"]:last-child
+  [data-testid="stHorizontalBlock"] [data-testid="stColumn"] > div,
+[data-testid="stHorizontalBlock"] > [data-testid="stColumn"]:last-child
+  [data-testid="stHorizontalBlock"] [data-testid="stColumn"] > div > div {
+    background: transparent !important;
+    min-height: unset !important;
 }
 
 /* ── Login form card ── */
