@@ -13,60 +13,15 @@ st.set_page_config(
 )
 
 from utils.styles import inject_global_css
-from utils.auth import login_form, logout, is_admin, LOGO_URL
-
-inject_global_css()
+from utils.auth import login_form, is_admin, render_sidebar_branding
 
 # ── Auth gate ────────────────────────────────────────────────────────────────
 if not st.session_state.get("authenticated"):
     login_form()
     st.stop()
 
-# ── Sidebar ───────────────────────────────────────────────────────────────────
-with st.sidebar:
-    # Logo (white-filtered for dark sidebar)
-    st.markdown(
-        f"""
-        <div style="padding: 0.9rem 0 0.5rem 0;">
-            <img src="{LOGO_URL}"
-                 style="height: 42px; object-fit: contain;
-                        filter: brightness(0) invert(1); opacity: 0.88;
-                        display: block;">
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-    st.divider()
-
-    role_label = "Admin" if is_admin() else "Viewer"
-    st.markdown(
-        f"""
-        <div style="
-            display:flex; align-items:center; gap:0.55rem;
-            padding:0.45rem 0 0.6rem 0;
-        ">
-            <div style="
-                width:30px; height:30px;
-                background:rgba(255,255,255,0.11);
-                border-radius:50%;
-                display:flex; align-items:center;
-                justify-content:center; font-size:0.9rem; flex-shrink:0;
-            ">👤</div>
-            <div>
-                <div style="color:#FFFFFF; font-size:0.84rem; font-weight:600;">
-                    {st.session_state.username}
-                </div>
-                <div style="color:rgba(255,255,255,0.46); font-size:0.69rem;">
-                    {role_label}
-                </div>
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-    if st.button("Sign Out", use_container_width=True):
-        logout()
+inject_global_css()
+render_sidebar_branding()
 
 # ── Home page ─────────────────────────────────────────────────────────────────
 import datetime

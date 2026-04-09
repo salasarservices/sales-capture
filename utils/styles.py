@@ -89,23 +89,24 @@ _LOGIN_CSS = """
 [data-testid="stHorizontalBlock"]
   > [data-testid="stColumn"]:nth-child(2)
   > div:first-child {
-    background: #F5F7FA !important;
+    background: #EEF2F7 !important;
     min-height: 100vh !important;
+    padding: 2.25rem 0 !important;
 }
 
 /* ── Login form card ── */
 [data-testid="stForm"] {
     background: #FFFFFF !important;
-    border: 1px solid #DDE3EC !important;
+    border: 1px solid #E2E8F0 !important;
     border-radius: 0 !important;
-    padding: 2.25rem 2rem !important;
-    box-shadow: 0 6px 32px rgba(0,0,0,0.10) !important;
+    padding: 2rem 1.8rem 1.5rem !important;
+    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08) !important;
     width: 100% !important;
 }
 
 /* ── Submit button ── */
 .stFormSubmitButton > button {
-    background: #1B3A6B !important;
+    background: linear-gradient(90deg, #356CF3 0%, #5B87F8 100%) !important;
     color: #FFFFFF !important;
     border: none !important;
     border-radius: 0 !important;
@@ -115,8 +116,9 @@ _LOGIN_CSS = """
     padding: 0.75rem !important;
     transition: background 0.18s !important;
     width: 100% !important;
+    text-transform: uppercase !important;
 }
-.stFormSubmitButton > button:hover { background: #0F2547 !important; }
+.stFormSubmitButton > button:hover { filter: brightness(0.97) !important; }
 
 /* ── Inputs ── */
 .stTextInput input {
