@@ -68,68 +68,60 @@ _LOGIN_CSS = """
     margin: 0 !important;
 }
 
-/* ── zero gap between the two split columns ── */
-[data-testid="stHorizontalBlock"] {
-    gap: 0 !important;
-    padding: 0 !important;
-    align-items: stretch !important;
-}
-[data-testid="stColumn"] { padding: 0 !important; }
-
-/* LEFT column — navy gradient brand panel */
-[data-testid="stHorizontalBlock"]
-  > [data-testid="stColumn"]:nth-child(1)
-  > div:first-child {
-    background: linear-gradient(150deg, #0C1E3D 0%, #1B3A6B 52%, #1F4F8A 100%) !important;
-    min-height: 100vh !important;
-    padding: 3rem 2.75rem !important;
-}
-
-/* RIGHT column — light-gray form panel */
-[data-testid="stHorizontalBlock"]
-  > [data-testid="stColumn"]:nth-child(2)
-  > div:first-child {
-    background: #F5F7FA !important;
+/* Login page background */
+[data-testid="stAppViewContainer"] > section.main {
+    background: radial-gradient(circle at 12% 22%, #59d0cf 0%, rgba(89,208,207,0.36) 25%, transparent 56%),
+                radial-gradient(circle at 82% 84%, #d4ab8f 0%, rgba(212,171,143,0.30) 20%, transparent 55%),
+                linear-gradient(135deg, #2F9BC8 0%, #4D86B7 44%, #847D89 72%, #AE9989 100%) !important;
     min-height: 100vh !important;
 }
 
-/* ── Login form card ── */
+.login-wrap { padding-top: 10vh; }
+
 [data-testid="stForm"] {
-    background: #FFFFFF !important;
-    border: 1px solid #DDE3EC !important;
-    border-radius: 0 !important;
-    padding: 2.25rem 2rem !important;
-    box-shadow: 0 6px 32px rgba(0,0,0,0.10) !important;
-    width: 100% !important;
+    background: rgba(141, 175, 191, 0.50) !important;
+    border: 1px solid rgba(255,255,255,0.20) !important;
+    border-radius: 14px !important;
+    padding: 1.15rem 1.1rem 0.85rem !important;
+    box-shadow: 0 30px 70px rgba(0,0,0,0.25) !important;
+    backdrop-filter: blur(7px) !important;
 }
 
 /* ── Submit button ── */
 .stFormSubmitButton > button {
-    background: #1B3A6B !important;
+    background: #2F3D55 !important;
     color: #FFFFFF !important;
     border: none !important;
-    border-radius: 0 !important;
+    border-radius: 10px !important;
     font-weight: 700 !important;
-    font-size: 0.9rem !important;
+    font-size: 0.95rem !important;
     letter-spacing: 1.2px !important;
-    padding: 0.75rem !important;
+    padding: 0.7rem !important;
     transition: background 0.18s !important;
     width: 100% !important;
+    text-transform: uppercase !important;
 }
-.stFormSubmitButton > button:hover { background: #0F2547 !important; }
+.stFormSubmitButton > button:hover { background:#273346 !important; }
 
 /* ── Inputs ── */
 .stTextInput input {
-    border-radius: 0 !important;
-    border-color: #C8D3E2 !important;
-    background: #FAFBFC !important;
+    border-radius: 10px !important;
+    border: 1px solid rgba(255,255,255,0.40) !important;
+    background: #EAF0FF !important;
     font-size: 0.9rem !important;
+    color: #1E293B !important;
 }
 .stTextInput input:focus {
-    border-color: #1B3A6B !important;
-    box-shadow: 0 0 0 2px rgba(27,58,107,0.10) !important;
+    border-color: #D8E3FF !important;
+    box-shadow: 0 0 0 2px rgba(216,227,255,0.35) !important;
 }
-label { font-size: 0.82rem !important; font-weight: 600 !important; color: #475569 !important; }
+label { font-size: 0.82rem !important; font-weight: 600 !important; color: rgba(255,255,255,0.90) !important; }
+
+.login-brand { text-align:center; margin-bottom: 1rem; }
+.login-logo { height: 70px; object-fit: contain; filter: brightness(0) invert(1); margin-bottom: 0.8rem; }
+.login-brand h2 { color:#FFFFFF !important; font-size:1.6rem !important; margin:0 0 0.2rem 0 !important; }
+.login-brand p { color:rgba(255,255,255,0.80) !important; font-size:0.85rem; margin:0; }
+.login-footer { text-align:center; color:rgba(255,255,255,0.75); font-size:0.72rem; margin-top:0.65rem; }
 </style>
 """
 
