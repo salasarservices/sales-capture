@@ -13,13 +13,6 @@ import bcrypt
 
 LOGO_URL = "https://ik.imagekit.io/salasarservices/Salasar-Logo-new.png"
 
-_FEATURES = [
-    ("📊", "Sales Analytics",    "Live conversion and pipeline visibility"),
-    ("👥", "CRE / RM Tracking",  "Performance split by accountable owner"),
-    ("📅", "Monthly Trends",     "Fiscal-month conversion trend analysis"),
-    ("🔍", "Enquiry Drilldown",  "Searchable and filterable enquiry records"),
-]
-
 
 def _verify_password(plain: str, hashed: str) -> bool:
     try:
@@ -35,7 +28,7 @@ def _verify_password(plain: str, hashed: str) -> bool:
 def login_form() -> bool:
     """
     Render the split-layout login page.
-    LEFT  : dark navy brand panel — logo, heading, feature list
+    LEFT  : dark navy brand card — logo + heading (single st.markdown block)
     RIGHT : light gray form panel — logo, Login heading, form
     Returns True if already authenticated.
     """
@@ -47,48 +40,30 @@ def login_form() -> bool:
 
     left_col, right_col = st.columns([5, 7])
 
-    # ── LEFT : brand panel ────────────────────────────────────────────────
+    # ── LEFT : single-block brand card ───────────────────────────────────
+    # Everything in ONE st.markdown() call → only one Streamlit wrapper div
     with left_col:
-        # Logo — white-filtered for dark bg (single-line, no indent)
-        st.markdown(f'<img src="{LOGO_URL}" style="height:42px;object-fit:contain;filter:brightness(0) invert(1);opacity:0.88;display:block;margin-bottom:2.75rem;">', unsafe_allow_html=True)
-
-        # Main heading (single line — avoids 4-space code-block trigger)
-        st.markdown('<h1 style="color:#FFFFFF;font-size:2.35rem;font-weight:800;line-height:1.18;margin:0 0 0.65rem;letter-spacing:-0.5px;">Sales Enquiry<br>Dashboard</h1>', unsafe_allow_html=True)
-
-        # Sub-heading
-        st.markdown('<p style="color:rgba(255,255,255,0.55);font-size:0.90rem;margin:0 0 2.75rem;line-height:1.5;">Salasar Services &nbsp;&middot;&nbsp; Ahmedabad Branch &nbsp;&middot;&nbsp; FY 2025-26</p>', unsafe_allow_html=True)
-
-        # Feature tiles — one st.markdown per tile, all single-line
-        for icon, title, desc in _FEATURES:
-            st.markdown(
-                f'<div style="display:flex;align-items:flex-start;gap:0.85rem;margin-bottom:1.15rem;">'
-                f'<div style="width:38px;height:38px;flex-shrink:0;background:rgba(255,255,255,0.11);display:flex;align-items:center;justify-content:center;font-size:1.05rem;">{icon}</div>'
-                f'<div><div style="color:#FFFFFF;font-weight:600;font-size:0.88rem;margin-bottom:0.12rem;">{title}</div>'
-                f'<div style="color:rgba(255,255,255,0.48);font-size:0.75rem;line-height:1.45;">{desc}</div></div></div>',
-                unsafe_allow_html=True,
-            )
-
-        # Footer
-        st.markdown('<p style="color:rgba(255,255,255,0.22);font-size:0.69rem;margin-top:3rem;">© 2025 Salasar Services · Ahmedabad</p>', unsafe_allow_html=True)
+        st.markdown(
+            f'<div class="login-brand-card">'
+            f'<img src="{LOGO_URL}" class="login-brand-logo">'
+            f'<h1 class="login-brand-heading">Sales Enquiry<br>Dashboard</h1>'
+            f'<p class="login-brand-sub">Ahmedabad &nbsp;&middot;&nbsp; FY 2025-26</p>'
+            f'</div>',
+            unsafe_allow_html=True,
+        )
 
     # ── RIGHT : form panel ────────────────────────────────────────────────
     with right_col:
-        # Vertical spacer
-        st.markdown('<div style="height:13vh;"></div>', unsafe_allow_html=True)
+        st.markdown('<div style="height:18vh;"></div>', unsafe_allow_html=True)
 
         _, form_col, _ = st.columns([1, 8, 1])
         with form_col:
-            # Logo — original colours (single line)
-            st.markdown(f'<img src="{LOGO_URL}" style="height:38px;object-fit:contain;display:block;margin-bottom:1.4rem;">', unsafe_allow_html=True)
-
-            # "Login" heading (single line)
+            st.markdown(f'<img src="{LOGO_URL}" style="height:36px;object-fit:contain;display:block;margin-bottom:1.25rem;">', unsafe_allow_html=True)
             st.markdown('<h2 style="font-size:1.85rem;font-weight:700;color:#1E293B;margin:0 0 0.2rem;letter-spacing:-0.3px;">Login</h2>', unsafe_allow_html=True)
-
-            # Subtext (single line)
             st.markdown('<p style="color:#64748B;font-size:0.83rem;margin:0 0 1.5rem;">Enter your dashboard credentials</p>', unsafe_allow_html=True)
 
             with st.form("login_form"):
-                st.text_input("Username", placeholder="Enter username",    key="_login_user")
+                st.text_input("Username", placeholder="Enter username", key="_login_user")
                 st.text_input("Password", placeholder="••••••••", type="password", key="_login_pass")
                 submitted = st.form_submit_button("SIGN IN", use_container_width=True)
 

@@ -146,6 +146,38 @@ _LOGIN_CSS = """
     box-shadow: 0 0 0 2px rgba(27,58,107,0.10) !important;
 }
 label { font-size: 0.82rem !important; font-weight: 600 !important; color: #475569 !important; }
+
+/* ── LEFT brand card — vertically centered, no excess height ── */
+.login-brand-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 3rem 2.75rem;
+    box-sizing: border-box;
+}
+.login-brand-logo {
+    height: 42px;
+    object-fit: contain;
+    filter: brightness(0) invert(1);
+    opacity: 0.88;
+    display: block;
+    margin-bottom: 2.25rem;
+}
+.login-brand-heading {
+    color: #FFFFFF !important;
+    font-size: 2.4rem !important;
+    font-weight: 800 !important;
+    line-height: 1.18 !important;
+    margin: 0 0 0.75rem !important;
+    letter-spacing: -0.5px !important;
+}
+.login-brand-sub {
+    color: rgba(255,255,255,0.52);
+    font-size: 0.88rem;
+    margin: 0;
+    line-height: 1.5;
+}
 </style>
 """
 
