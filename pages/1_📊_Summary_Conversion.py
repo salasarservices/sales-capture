@@ -13,7 +13,7 @@ from database.connection import get_db
 from database.queries import fetch_kpis, fetch_summary_conversion
 from components.kpi_cards import render_kpi_row
 from components.charts import stacked_bar_conversion, grouped_bar_proposal_type
-from components.data_tables import render_table, export_csv_button, highlight_totals_row
+from components.data_tables import render_html_table, export_csv_button
 from utils.formatters import format_inr, format_pct
 
 inject_global_css()
@@ -34,8 +34,7 @@ db = get_db()
 with st.spinner("Loading KPIs…"):
     kpis = fetch_kpis(db)
 render_kpi_row(kpis)
-
-st.markdown("<div style='height: 0.5rem;'></div>", unsafe_allow_html=True)
+st.markdown("<div style='height:0.5rem'></div>", unsafe_allow_html=True)
 st.divider()
 
 # ── Load data ─────────────────────────────────────────────────────────────────
@@ -47,16 +46,13 @@ if df.empty:
     st.stop()
 
 # ── Charts ────────────────────────────────────────────────────────────────────
-# Build a sales-style df for the stacked bar
-sales_view = df[["CRE / RM", "fresh_converted", "renewal_converted", "expanded_converted",
-                  "total_not_converted", "total_enquiries"]].copy()
-sales_view["Converted"] = (
-    sales_view["fresh_converted"].fillna(0)
-    + sales_view["renewal_converted"].fillna(0)
-    + sales_view["expanded_converted"].fillna(0)
-)
-sales_view["Not Converted"]   = sales_view["total_not_converted"].fillna(0)
-sales_view["Total Enquiries"] = sales_view["total_enquiries"].fillna(0)
+sales_view = df[["CRE / RM", "fresh_converted", "renewal_converted",
+                  "expanded_converted", "total_not_converted", "total_enquiries"]].copy()
+sales_view["Converted"]      = (sales_view["fresh_converted"].fillna(0)
+                                 + sales_view["renewal_converted"].fillna(0)
+                                 + sales_view["expanded_converted"].fillna(0))
+sales_view["Not Converted"]  = sales_view["total_not_converted"].fillna(0)
+sales_view["Total Enquiries"]= sales_view["total_enquiries"].fillna(0)
 
 col1, col2 = st.columns(2)
 with col1:
@@ -67,10 +63,7 @@ with col2:
 st.divider()
 
 # ── Table ─────────────────────────────────────────────────────────────────────
-st.markdown(
-    '<p class="section-heading">Conversion Ratio Detail</p>',
-    unsafe_allow_html=True,
-)
+st.markdown('<p class="section-heading">Conversion Ratio Detail</p>', unsafe_allow_html=True)
 
 display_cols = {
     "CRE / RM":                  "CRE / RM",
@@ -100,12 +93,11 @@ display_df = df[[c for c in display_cols if c in df.columns]].rename(columns=dis
 
 for col in display_df.columns:
     if "(₹)" in col:
-        display_df[col] = display_df[col].apply(lambda x: format_inr(x))
+        display_df[col] = display_df[col].apply(format_inr)
     elif col.endswith("%"):
-        display_df[col] = display_df[col].apply(lambda x: format_pct(x))
+        display_df[col] = display_df[col].apply(format_pct)
 
-styled = highlight_totals_row(display_df)
-st.dataframe(styled, use_container_width=True, height=400, hide_index=True)
+render_html_table(display_df, height=420, id_col="CRE / RM")
 
 if is_admin():
     export_csv_button(df, filename="summary_conversion.csv")

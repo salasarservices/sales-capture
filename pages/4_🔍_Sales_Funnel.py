@@ -13,7 +13,7 @@ from database.connection import get_db
 from database.queries import fetch_funnel_metrics, fetch_enquiries, fetch_filter_options
 from components.charts import funnel_chart
 from components.kpi_cards import render_funnel_kpi_row
-from components.data_tables import render_table, export_csv_button
+from components.data_tables import render_enquiry_table, export_csv_button
 from utils.fiscal_month import all_fiscal_labels, month_label_to_int
 from utils.formatters import format_inr
 
@@ -39,28 +39,18 @@ with st.spinner("Loading filter options…"):
 with st.expander("🔽  Filters", expanded=True):
     fcol1, fcol2, fcol3, fcol4, fcol5 = st.columns(5)
     with fcol1:
-        selected_months = st.multiselect(
-            "Month", options=all_fiscal_labels(), placeholder="All months"
-        )
+        selected_months = st.multiselect("Month", options=all_fiscal_labels(), placeholder="All months")
     with fcol2:
-        selected_cre = st.multiselect(
-            "CRE / RM", options=opts["cre_rms"], placeholder="All"
-        )
+        selected_cre    = st.multiselect("CRE / RM", options=opts["cre_rms"], placeholder="All")
     with fcol3:
-        selected_types = st.multiselect(
-            "Proposal Type", options=opts["proposal_types"], placeholder="All"
-        )
+        selected_types  = st.multiselect("Proposal Type", options=opts["proposal_types"], placeholder="All")
     with fcol4:
-        selected_req = st.multiselect(
-            "Product / Requirement", options=opts["requirements"], placeholder="All"
-        )
+        selected_req    = st.multiselect("Product / Requirement", options=opts["requirements"], placeholder="All")
     with fcol5:
-        company_search = st.text_input("Search Company", placeholder="Type to search…")
+        company_search  = st.text_input("Search Company", placeholder="Type to search…")
 
-# Convert month labels → month integers for MongoDB query
 month_ints = [month_label_to_int(m) for m in selected_months] if selected_months else None
 
-# Build extra_match for funnel metrics
 extra_match: dict = {}
 if month_ints:
     extra_match["$expr"] = {"$in": [{"$month": "$date_referred"}, month_ints]}
@@ -84,55 +74,48 @@ closed = funnel.get("business_closed", 0)
 
 # ── KPI cards ─────────────────────────────────────────────────────────────────
 render_funnel_kpi_row(total, quoted, closed)
+st.markdown("<div style='height:0.5rem'></div>", unsafe_allow_html=True)
 
-st.markdown("<div style='height: 0.5rem;'></div>", unsafe_allow_html=True)
-
-# ── Funnel chart + drop-off ────────────────────────────────────────────────────
+# ── Funnel chart + drop-off analysis ──────────────────────────────────────────
 fcol_l, fcol_r = st.columns([2, 3])
 with fcol_l:
     st.plotly_chart(funnel_chart(total, quoted, closed), use_container_width=True)
 
 with fcol_r:
-    st.markdown(
-        '<p class="section-heading">Pipeline Drop-off Analysis</p>',
-        unsafe_allow_html=True,
-    )
+    st.markdown('<p class="section-heading">Pipeline Drop-off Analysis</p>', unsafe_allow_html=True)
     if total and quoted:
         drop1     = total - quoted
         drop2     = quoted - closed if quoted else 0
-        pct_drop1 = round(drop1 / total * 100, 1)
+        pct_drop1 = round(drop1 / total  * 100, 1)
         pct_drop2 = round(drop2 / quoted * 100, 1) if quoted else 0
-
         st.markdown(
             f"""
-            <div style="display: flex; flex-direction: column; gap: 0.75rem; margin-top: 0.5rem;">
-                <div style="
-                    background: #FEF2F2; border-left: 4px solid #B91C1C;
-                    border-radius: 8px; padding: 1rem 1.25rem;
-                ">
-                    <div style="font-size: 0.72rem; font-weight: 700; color: #B91C1C;
-                                text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.3rem;">
+            <div style="display:flex; flex-direction:column; gap:0.75rem; margin-top:0.5rem;">
+                <div style="background:#FEF2F2; border-left:4px solid #B91C1C;
+                            padding:1rem 1.25rem;">
+                    <div style="font-size:0.68rem; font-weight:700; color:#B91C1C;
+                                text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.3rem;">
                         Enquiry → Quote Drop-off
                     </div>
-                    <div style="font-size: 1.4rem; font-weight: 700; color: #1E293B;">
-                        {drop1} <span style="font-size: 0.95rem; color: #B91C1C;">({pct_drop1}%)</span>
+                    <div style="font-size:1.4rem; font-weight:700; color:#1E293B;">
+                        {drop1}
+                        <span style="font-size:0.9rem; color:#B91C1C;">({pct_drop1}%)</span>
                     </div>
-                    <div style="font-size: 0.82rem; color: #64748B; margin-top: 0.2rem;">
+                    <div style="font-size:0.80rem; color:#64748B; margin-top:0.2rem;">
                         enquiries did not receive a quote
                     </div>
                 </div>
-                <div style="
-                    background: #FFFBEB; border-left: 4px solid #D97706;
-                    border-radius: 8px; padding: 1rem 1.25rem;
-                ">
-                    <div style="font-size: 0.72rem; font-weight: 700; color: #D97706;
-                                text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.3rem;">
+                <div style="background:#FFFBEB; border-left:4px solid #D97706;
+                            padding:1rem 1.25rem;">
+                    <div style="font-size:0.68rem; font-weight:700; color:#D97706;
+                                text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.3rem;">
                         Quote → Closed Drop-off
                     </div>
-                    <div style="font-size: 1.4rem; font-weight: 700; color: #1E293B;">
-                        {drop2} <span style="font-size: 0.95rem; color: #D97706;">({pct_drop2}%)</span>
+                    <div style="font-size:1.4rem; font-weight:700; color:#1E293B;">
+                        {drop2}
+                        <span style="font-size:0.9rem; color:#D97706;">({pct_drop2}%)</span>
                     </div>
-                    <div style="font-size: 0.82rem; color: #64748B; margin-top: 0.2rem;">
+                    <div style="font-size:0.80rem; color:#64748B; margin-top:0.2rem;">
                         quoted enquiries did not close
                     </div>
                 </div>
@@ -146,10 +129,7 @@ with fcol_r:
 st.divider()
 
 # ── Enquiry detail table ──────────────────────────────────────────────────────
-st.markdown(
-    '<p class="section-heading">Enquiry Detail</p>',
-    unsafe_allow_html=True,
-)
+st.markdown('<p class="section-heading">Enquiry Detail</p>', unsafe_allow_html=True)
 
 PAGE_SIZE = 100
 if "funnel_page" not in st.session_state:
@@ -164,9 +144,9 @@ with st.spinner("Loading enquiries…"):
     df, total_rows = fetch_enquiries(
         db,
         months=month_ints,
-        cre_rms=selected_cre if selected_cre else None,
+        cre_rms=selected_cre    if selected_cre    else None,
         proposal_types=selected_types if selected_types else None,
-        requirements=selected_req if selected_req else None,
+        requirements=selected_req   if selected_req   else None,
         company_search=company_search,
         page=st.session_state.funnel_page,
         page_size=PAGE_SIZE,
@@ -177,14 +157,15 @@ total_pages = max(1, -(-total_rows // PAGE_SIZE))
 if df.empty:
     st.info("No records found for selected filters.")
 else:
+    # Format currency columns before rendering
     display_df = df.copy()
     for col in ["Premium Potential", "Tentative Brokerage (12%)"]:
         if col in display_df.columns:
             display_df[col] = display_df[col].apply(format_inr)
 
-    render_table(display_df, height=500, key="funnel_table")
+    render_enquiry_table(display_df, height=600)
 
-    # Pagination
+    # ── Pagination ────────────────────────────────────────────────────────
     pcol1, pcol2, pcol3 = st.columns([1, 4, 1])
     with pcol1:
         if st.button("← Prev", disabled=st.session_state.funnel_page <= 1):

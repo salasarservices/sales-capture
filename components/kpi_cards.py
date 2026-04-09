@@ -1,5 +1,7 @@
 """
-KPI card row — custom HTML cards with colored top-border accents and icons.
+KPI cards — Material Django style:
+Left solid-colour icon block  |  Right: LABEL (uppercase) + VALUE (bold large)
+No rounded corners.
 """
 
 import streamlit as st
@@ -9,7 +11,7 @@ from utils.formatters import format_inr, format_pct, format_count
 def _card(label: str, value: str, icon: str, variant: str) -> str:
     return f"""
     <div class="kpi-card {variant}">
-        <div class="kpi-icon">{icon}</div>
+        <div class="kpi-icon-block">{icon}</div>
         <div class="kpi-content">
             <div class="kpi-label">{label}</div>
             <div class="kpi-value">{value}</div>
@@ -41,17 +43,14 @@ def render_kpi_row(kpis: dict):
 
 
 def render_funnel_kpi_row(total: int, quoted: int, closed: int):
-    """Render 3 funnel-stage KPI cards for the Sales Funnel page."""
+    """Render 3 funnel-stage KPI cards."""
     quote_pct  = round(quoted / total * 100, 1) if total else 0.0
     closed_pct = round(closed / total * 100, 1) if total else 0.0
 
     cards = [
-        ("Total Enquiries",  str(total),
-         "🗂️", "navy"),
-        ("Quote Submitted",  f"{quoted}  ({quote_pct}%)",
-         "📄", "gold"),
-        ("Business Closed",  f"{closed}  ({closed_pct}%)",
-         "🏆", "green"),
+        ("Total Enquiries",  str(total),                     "🗂️", "navy"),
+        ("Quote Submitted",  f"{quoted}  ({quote_pct}%)",    "📄", "gold"),
+        ("Business Closed",  f"{closed}  ({closed_pct}%)",   "🏆", "green"),
     ]
 
     cols = st.columns(3)

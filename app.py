@@ -13,7 +13,7 @@ st.set_page_config(
 )
 
 from utils.styles import inject_global_css
-from utils.auth import login_form, logout, is_admin
+from utils.auth import login_form, logout, is_admin, LOGO_URL
 
 inject_global_css()
 
@@ -24,38 +24,14 @@ if not st.session_state.get("authenticated"):
 
 # ── Sidebar ───────────────────────────────────────────────────────────────────
 with st.sidebar:
+    # Logo (white-filtered for dark sidebar)
     st.markdown(
-        """
-        <div style="padding: 0.75rem 0 0.5rem 0;">
-            <div style="
-                display: flex; align-items: center; gap: 0.6rem;
-                margin-bottom: 0.4rem;
-            ">
-                <div style="
-                    width: 36px; height: 36px;
-                    background: rgba(200, 134, 10, 0.25);
-                    border-radius: 8px;
-                    display: flex; align-items: center;
-                    justify-content: center; font-size: 1.2rem;
-                    flex-shrink: 0;
-                ">📊</div>
-                <div>
-                    <div style="
-                        color: #FFFFFF; font-size: 1rem;
-                        font-weight: 700; line-height: 1.2;
-                    ">Salasar Services</div>
-                    <div style="
-                        color: rgba(255,255,255,0.55);
-                        font-size: 0.72rem; font-weight: 500;
-                    ">SALES DASHBOARD</div>
-                </div>
-            </div>
-            <div style="
-                color: rgba(255,255,255,0.50); font-size: 0.75rem;
-                padding: 0.3rem 0 0 0;
-            ">
-                Ahmedabad Branch &nbsp;·&nbsp; FY 2025-26
-            </div>
+        f"""
+        <div style="padding: 0.9rem 0 0.5rem 0;">
+            <img src="{LOGO_URL}"
+                 style="height: 42px; object-fit: contain;
+                        filter: brightness(0) invert(1); opacity: 0.88;
+                        display: block;">
         </div>
         """,
         unsafe_allow_html=True,
@@ -66,23 +42,23 @@ with st.sidebar:
     st.markdown(
         f"""
         <div style="
-            display: flex; align-items: center; gap: 0.5rem;
-            padding: 0.5rem 0 0.6rem 0;
+            display:flex; align-items:center; gap:0.55rem;
+            padding:0.45rem 0 0.6rem 0;
         ">
             <div style="
-                width: 30px; height: 30px;
-                background: rgba(255,255,255,0.12);
-                border-radius: 50%;
-                display: flex; align-items: center; justify-content: center;
-                font-size: 0.95rem; flex-shrink: 0;
+                width:30px; height:30px;
+                background:rgba(255,255,255,0.11);
+                border-radius:50%;
+                display:flex; align-items:center;
+                justify-content:center; font-size:0.9rem; flex-shrink:0;
             ">👤</div>
             <div>
-                <div style="color:#FFFFFF; font-size:0.85rem; font-weight:600;">
+                <div style="color:#FFFFFF; font-size:0.84rem; font-weight:600;">
                     {st.session_state.username}
                 </div>
-                <div style="
-                    color: rgba(255,255,255,0.50); font-size: 0.7rem;
-                ">{role_label}</div>
+                <div style="color:rgba(255,255,255,0.46); font-size:0.69rem;">
+                    {role_label}
+                </div>
             </div>
         </div>
         """,
@@ -95,7 +71,7 @@ with st.sidebar:
 # ── Home page ─────────────────────────────────────────────────────────────────
 import datetime
 
-today = datetime.date.today().strftime("%d %b %Y")
+today      = datetime.date.today().strftime("%d %b %Y")
 role_label = "Admin" if is_admin() else "Viewer"
 
 st.markdown(
@@ -111,7 +87,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# ── KPI summary on home page ──────────────────────────────────────────────────
+# ── Live KPI summary ──────────────────────────────────────────────────────────
 from database.connection import get_db
 from database.queries import fetch_kpis
 from components.kpi_cards import render_kpi_row
@@ -121,14 +97,10 @@ with st.spinner("Loading summary…"):
     kpis = fetch_kpis(db)
 
 render_kpi_row(kpis)
-
-st.markdown("<div style='height: 0.75rem;'></div>", unsafe_allow_html=True)
+st.markdown("<div style='height:0.75rem'></div>", unsafe_allow_html=True)
 
 # ── Navigation cards ──────────────────────────────────────────────────────────
-st.markdown(
-    '<p class="section-heading">Dashboard Sections</p>',
-    unsafe_allow_html=True,
-)
+st.markdown('<p class="section-heading">Dashboard Sections</p>', unsafe_allow_html=True)
 st.markdown(
     """
     <div class="nav-grid">
@@ -138,8 +110,8 @@ st.markdown(
                 <span class="nav-card-title">Summary: Conversion Ratio</span>
             </div>
             <p class="nav-card-desc">
-                Per CRE/RM breakdown by Fresh, Renewal, and Expanded business —
-                with stacked bar and grouped proposal-type charts.
+                Per CRE/RM breakdown by Fresh, Renewal &amp; Expanded business —
+                stacked bar and grouped proposal-type charts.
             </p>
         </div>
         <div class="nav-card">
@@ -149,7 +121,7 @@ st.markdown(
             </div>
             <p class="nav-card-desc">
                 Enquiry volume and premium conversion per CRE/RM —
-                horizontal bar, donut share chart, and detailed table.
+                horizontal bar, donut share chart, and summary table.
             </p>
         </div>
         <div class="nav-card">
@@ -168,7 +140,7 @@ st.markdown(
                 <span class="nav-card-title">Sales Funnel &amp; Enquiry Capture</span>
             </div>
             <p class="nav-card-desc">
-                Full pipeline funnel with filterable, paginated enquiry detail —
+                Full pipeline funnel with filterable, searchable enquiry detail —
                 filter by month, CRE/RM, proposal type, product, or company.
             </p>
         </div>

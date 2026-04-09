@@ -12,7 +12,7 @@ from utils.auth import require_auth, is_admin
 from database.connection import get_db
 from database.queries import fetch_business_conversion
 from components.charts import dual_axis_monthly
-from components.data_tables import export_csv_button, highlight_conversion_row
+from components.data_tables import render_html_table, export_csv_button
 from utils.formatters import format_pct
 
 inject_global_css()
@@ -43,21 +43,24 @@ st.plotly_chart(dual_axis_monthly(chart_data), use_container_width=True)
 st.divider()
 
 # ── Table ─────────────────────────────────────────────────────────────────────
-st.markdown(
-    '<p class="section-heading">Monthly Conversion Table</p>',
-    unsafe_allow_html=True,
-)
+st.markdown('<p class="section-heading">Monthly Conversion Table</p>', unsafe_allow_html=True)
 st.caption(
     ":red[Red] = conversion < 50% &nbsp;|&nbsp; "
     ":orange[Amber] = conversion < 70% &nbsp;|&nbsp; "
     "**TOTAL** row = full FY aggregate"
 )
 
+# Keep raw values for row colouring; format display copy
+raw_conv = df["Conversion %"].copy()
 display_df = df.copy()
 display_df["Conversion %"] = display_df["Conversion %"].apply(format_pct)
 
-styled = highlight_conversion_row(df, conv_col="Conversion %")
-st.dataframe(styled, use_container_width=True, height=500, hide_index=True)
+render_html_table(
+    display_df,
+    height=520,
+    id_col="Month",
+    raw_conv=raw_conv,
+)
 
 if is_admin():
     export_csv_button(df, filename="business_conversion.csv")

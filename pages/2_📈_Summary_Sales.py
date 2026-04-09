@@ -12,7 +12,7 @@ from utils.auth import require_auth, is_admin
 from database.connection import get_db
 from database.queries import fetch_summary_sales
 from components.charts import horizontal_bar_premium, pie_enquiry_share
-from components.data_tables import render_table, export_csv_button, highlight_totals_row
+from components.data_tables import render_html_table, export_csv_button
 from utils.formatters import format_inr, format_pct
 
 inject_global_css()
@@ -46,17 +46,13 @@ with col2:
 st.divider()
 
 # ── Table ─────────────────────────────────────────────────────────────────────
-st.markdown(
-    '<p class="section-heading">Sales Capture Summary</p>',
-    unsafe_allow_html=True,
-)
+st.markdown('<p class="section-heading">Sales Capture Summary</p>', unsafe_allow_html=True)
 
 display_df = df.copy()
 display_df["Premium Converted (₹)"] = display_df["Premium Converted (₹)"].apply(format_inr)
 display_df["% Not Converted"]       = display_df["% Not Converted"].apply(format_pct)
 
-styled = highlight_totals_row(display_df)
-st.dataframe(styled, use_container_width=True, height=400, hide_index=True)
+render_html_table(display_df, height=420, id_col="CRE / RM")
 
 if is_admin():
     export_csv_button(df, filename="summary_sales.csv")
