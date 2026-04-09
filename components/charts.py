@@ -22,7 +22,6 @@ _LAYOUT_BASE = dict(
     font=dict(family="Inter, -apple-system, sans-serif", size=13, color="#1E293B"),
     plot_bgcolor="#FFFFFF",
     paper_bgcolor="#FFFFFF",
-    margin=dict(t=52, b=20, l=20, r=20),
     hoverlabel=dict(
         bgcolor="#1B3A6B",
         font_color="#FFFFFF",
@@ -31,9 +30,13 @@ _LAYOUT_BASE = dict(
     ),
 )
 
+_DEFAULT_MARGIN = dict(t=52, b=20, l=20, r=20)
+
 
 def _apply_base(fig: go.Figure, **extra) -> go.Figure:
-    fig.update_layout(**_LAYOUT_BASE, **extra)
+    # Merge base + defaults + per-chart overrides; extra wins on any duplicate key.
+    layout = {**_LAYOUT_BASE, "margin": _DEFAULT_MARGIN, **extra}
+    fig.update_layout(**layout)
     fig.update_xaxes(
         showgrid=False, zeroline=False,
         tickfont=dict(size=12, color="#64748B"),
