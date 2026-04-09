@@ -8,7 +8,7 @@ import streamlit as st
 st.set_page_config(page_title="Summary: Conversion Ratio", layout="wide")
 
 from utils.styles import inject_global_css
-from utils.auth import require_auth, is_admin
+from utils.auth import require_auth, is_admin, render_sidebar_branding
 from database.connection import get_db
 from database.queries import fetch_kpis, fetch_summary_conversion
 from components.kpi_cards import render_kpi_row
@@ -16,8 +16,9 @@ from components.charts import stacked_bar_conversion, grouped_bar_proposal_type
 from components.data_tables import render_html_table, export_csv_button
 from utils.formatters import format_inr, format_pct
 
-inject_global_css()
 require_auth()
+inject_global_css()
+render_sidebar_branding()
 
 # ── Page header ───────────────────────────────────────────────────────────────
 st.markdown(
