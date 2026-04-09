@@ -5,7 +5,6 @@ Credentials are stored in st.secrets["credentials"].
 
 import streamlit as st
 import bcrypt
-from textwrap import dedent
 
 LOGO_URL = "https://ik.imagekit.io/salasarservices/Salasar-Logo-new.png"
 
@@ -60,40 +59,36 @@ def login_form() -> bool:
         )
 
         st.markdown(
-            dedent(
-                f"""
-                <div style="
-                    display:flex; flex-direction:column; gap:0; color:white;
-                    min-height:calc(100vh - 6rem);
-                ">
-                    <div style="margin-bottom:3.5rem;">
-                        <img src="{LOGO_URL}"
-                             style="height:48px; object-fit:contain;
-                                    filter:brightness(0) invert(1); opacity:0.92;">
-                    </div>
+            f"""<div style="
+display:flex; flex-direction:column; gap:0; color:white;
+min-height:calc(100vh - 6rem);
+">
+    <div style="margin-bottom:3.5rem;">
+        <img src="{LOGO_URL}"
+             style="height:48px; object-fit:contain;
+                    filter:brightness(0) invert(1); opacity:0.92;">
+    </div>
 
-                    <div style="margin-bottom:3rem;">
-                        <h1 style="
-                            color:#FFFFFF; font-size:2.5rem; font-weight:800;
-                            line-height:1.15; margin:0 0 0.75rem; letter-spacing:-0.5px;
-                        ">Sales Enquiry<br>Dashboard</h1>
-                        <p style="color:rgba(255,255,255,0.60); font-size:0.97rem; margin:0;">
-                            Salasar Services &nbsp;·&nbsp; Ahmedabad Branch &nbsp;·&nbsp; FY 2025-26
-                        </p>
-                    </div>
+    <div style="margin-bottom:3rem;">
+        <h1 style="
+            color:#FFFFFF; font-size:2.5rem; font-weight:800;
+            line-height:1.15; margin:0 0 0.75rem; letter-spacing:-0.5px;
+        ">Sales Enquiry<br>Dashboard</h1>
+        <p style="color:rgba(255,255,255,0.60); font-size:0.97rem; margin:0;">
+            Salasar Services &nbsp;·&nbsp; Ahmedabad Branch &nbsp;·&nbsp; FY 2025-26
+        </p>
+    </div>
 
-                    <div style="display:flex; flex-direction:column; gap:1.5rem; flex:1;">
-                        {feature_items}
-                    </div>
+    <div style="display:flex; flex-direction:column; gap:1.5rem; flex:1;">
+        {feature_items}
+    </div>
 
-                    <div style="
-                        margin-top:3rem;
-                        color:rgba(255,255,255,0.28);
-                        font-size:0.72rem;
-                    ">© 2025 Salasar Services · Ahmedabad</div>
-                </div>
-                """
-            ),
+    <div style="
+        margin-top:3rem;
+        color:rgba(255,255,255,0.28);
+        font-size:0.72rem;
+    ">© 2025 Salasar Services · Ahmedabad</div>
+</div>""",
             unsafe_allow_html=True,
         )
 
@@ -107,21 +102,16 @@ def login_form() -> bool:
         with form_col:
             # Logo above heading
             st.markdown(
-                dedent(
-                    f"""
-                    <div style="margin-bottom:1.75rem;">
-                        <img src="{LOGO_URL}"
-                             style="height:44px; object-fit:contain;">
-                    </div>
-                    <h2 style="
-                        font-size:2rem; font-weight:700; color:#1E293B;
-                        margin:0 0 0.3rem; letter-spacing:-0.5px;
-                    ">Login</h2>
-                    <p style="color:#64748B; margin:0 0 1.75rem; font-size:0.88rem;">
-                        Enter your dashboard credentials
-                    </p>
-                    """
-                ),
+                f"""<div style="margin-bottom:1.75rem;">
+    <img src="{LOGO_URL}" style="height:44px; object-fit:contain;">
+</div>
+<h2 style="
+    font-size:2rem; font-weight:700; color:#1E293B;
+    margin:0 0 0.3rem; letter-spacing:-0.5px;
+">Login</h2>
+<p style="color:#64748B; margin:0 0 1.75rem; font-size:0.88rem;">
+    Enter your dashboard credentials
+</p>""",
                 unsafe_allow_html=True,
             )
 
