@@ -8,7 +8,7 @@ import streamlit as st
 st.set_page_config(page_title="Sales Funnel", layout="wide")
 
 from utils.styles import inject_global_css
-from utils.auth import require_auth, is_admin
+from utils.auth import require_auth, is_admin, render_sidebar_branding
 from database.connection import get_db
 from database.queries import fetch_funnel_metrics, fetch_enquiries, fetch_filter_options
 from components.charts import funnel_chart
@@ -17,8 +17,9 @@ from components.data_tables import render_enquiry_table, export_csv_button
 from utils.fiscal_month import all_fiscal_labels, month_label_to_int
 from utils.formatters import format_inr
 
-inject_global_css()
 require_auth()
+inject_global_css()
+render_sidebar_branding()
 
 # ── Page header ───────────────────────────────────────────────────────────────
 st.markdown(
