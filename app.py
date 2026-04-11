@@ -29,11 +29,14 @@ import datetime
 today      = datetime.date.today().strftime("%d %b %Y")
 role_label = "Admin" if is_admin() else "Viewer"
 
+user = st.session_state.get("user", {})
+username = user.get("username", "Unknown")
+
 st.markdown(
     f"""
     <div class="welcome-banner">
         <div>
-            <h2>Welcome back, {st.session_state.username}!</h2>
+            <h2>Welcome back, {username}!</h2>
             <p>Ahmedabad Branch &nbsp;·&nbsp; FY 2025-26 &nbsp;·&nbsp; {today}</p>
         </div>
         <div class="welcome-badge">🔐 {role_label} Access</div>
@@ -43,13 +46,11 @@ st.markdown(
 )
 
 # ── Live KPI summary ──────────────────────────────────────────────────────────
-from database.connection import get_db
 from database.queries import fetch_kpis
 from components.kpi_cards import render_kpi_row
 
-db = get_db()
 with st.spinner("Loading summary…"):
-    kpis = fetch_kpis(db)
+    kpis = fetch_kpis()
 
 render_kpi_row(kpis)
 st.markdown("<div style='height:0.75rem'></div>", unsafe_allow_html=True)

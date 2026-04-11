@@ -1,16 +1,17 @@
 """
-Cached PyMongo client for Streamlit.
-Reads connection details from st.secrets (mapped to .streamlit/secrets.toml).
+Database connection - now uses Django API via api_client.
+Kept for backward compatibility - queries now route through api_client.py.
 """
 
-import streamlit as st
-from pymongo import MongoClient
-from pymongo.database import Database
+# This module is now a compatibility wrapper.
+# All actual database operations go through api_client.py which calls Django API.
+# This file is kept for backward compatibility with existing imports.
 
+from api_client import fetch_kpis, fetch_summary_sales, fetch_summary_conversion
 
-@st.cache_resource(show_spinner=False)
-def get_db() -> Database:
-    uri = st.secrets["mongo"]["uri"]
-    db_name = st.secrets["mongo"]["db_name"]
-    client = MongoClient(uri, serverSelectionTimeoutMS=10_000)
-    return client[db_name]
+def get_db():
+    """
+    Returns a dict-like object for backward compatibility.
+    Actual queries are handled by api_client.
+    """
+    return None  # Not used anymore - queries go through api_client
