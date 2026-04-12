@@ -57,9 +57,9 @@ sales_view["Total Enquiries"]= sales_view["total_enquiries"].fillna(0)
 
 col1, col2 = st.columns(2)
 with col1:
-    st.plotly_chart(stacked_bar_conversion(sales_view), use_container_width=True)
+    st.plotly_chart(stacked_bar_conversion(sales_view), width="stretch")
 with col2:
-    st.plotly_chart(grouped_bar_proposal_type(df), use_container_width=True)
+    st.plotly_chart(grouped_bar_proposal_type(df), width="stretch")
 
 st.divider()
 

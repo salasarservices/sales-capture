@@ -185,7 +185,7 @@ def render_enquiry_table(df: pd.DataFrame, height: int = 600) -> None:
 
 def render_table(df: pd.DataFrame, height: int = 450, key: str = "table"):
     """Fallback: native Streamlit dataframe."""
-    st.dataframe(df, use_container_width=True, height=height, hide_index=True, key=key)
+    st.dataframe(df, width="stretch", height=height, hide_index=True, key=key)
 
 
 def export_csv_button(
