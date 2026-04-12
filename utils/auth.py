@@ -191,12 +191,15 @@ def login_form() -> bool:
     """, unsafe_allow_html=True)
     
     with st.form("login_form", clear_on_submit=True):
-        username = st.text_input("Username", placeholder="Enter your username")
-        password = st.text_input("Password", placeholder="••••••••", type="password")
-        submitted = st.button("Sign in")
+        username = st.text_input("Username", placeholder="Enter your username", key="login_username")
+        password = st.text_input("Password", placeholder="••••••••", type="password", key="login_password")
+        submitted = st.form_submit_button("Sign in", use_container_width=True)
     
     error_message = None
     if submitted:
+        # Get form values from session state
+        username = st.session_state.get("login_username", "")
+        password = st.session_state.get("login_password", "")
         if not username or not password:
             error_message = "Please enter both username and password"
         else:

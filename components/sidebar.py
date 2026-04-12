@@ -230,8 +230,11 @@ def render_sidebar():
         </div>
     """, unsafe_allow_html=True)
     
-    # Sign out button
-    if st.button("Sign out", use_container_width=True):
+    # Sign out button - use a form to isolate it
+    with st.form("signout_form"):
+        submitted = st.form_submit_button("Sign out", use_container_width=True)
+    
+    if submitted:
         from utils.auth import logout
         logout()
     
