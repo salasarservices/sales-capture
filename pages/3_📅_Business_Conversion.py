@@ -39,7 +39,7 @@ if df.empty:
 
 # ── Chart ─────────────────────────────────────────────────────────────────────
 chart_data = df[df["Month"] != "TOTAL"]
-st.plotly_chart(dual_axis_monthly(chart_data), width="stretch")
+st.plotly_chart(dual_axis_monthly(chart_data), use_container_width=True)
 
 st.divider()
 

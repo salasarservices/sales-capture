@@ -80,7 +80,7 @@ st.markdown("<div style='height:0.5rem'></div>", unsafe_allow_html=True)
 # ── Funnel chart + drop-off analysis ──────────────────────────────────────────
 fcol_l, fcol_r = st.columns([2, 3])
 with fcol_l:
-    st.plotly_chart(funnel_chart(total, quoted, closed), width="stretch")
+    st.plotly_chart(funnel_chart(total, quoted, closed), use_container_width=True)
 
 with fcol_r:
     st.markdown('<p class="section-heading">Pipeline Drop-off Analysis</p>', unsafe_allow_html=True)

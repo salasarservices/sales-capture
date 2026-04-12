@@ -42,7 +42,7 @@ def render_page():
     
     # Chart
     chart_data = df[df["Month"] != "TOTAL"]
-    st.plotly_chart(dual_axis_monthly(chart_data), width="stretch")
+    st.plotly_chart(dual_axis_monthly(chart_data), use_container_width=True)
     
     st.markdown("<div style='height: 1.5rem'></div>", unsafe_allow_html=True)
     st.divider()
