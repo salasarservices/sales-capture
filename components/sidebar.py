@@ -1,247 +1,161 @@
-"""
-Sidebar component - Glassmorphism design with 4 navigation tabs.
-"""
+"""Sidebar component styled to match the provided dashboard mockup."""
 
 import streamlit as st
-from datetime import date
 
 
-# Pastel colors for nav cards (Sentence Case labels)
-PASTEL_COLORS = {
-    "Business Conversion Ratio": "#E8F4FD",      # Light blue
-    "Sales Capture Summary": "#E8F8F0",          # Light green
-    "Conversion Ratio Summary": "#FEF3E2",        # Light amber
-    "Master Data (From April 25 to March 26)": "#F3E8FD",  # Light purple
-}
-
-# Sidebar background color
-SIDEBAR_COLOR = "rgb(22, 85, 171)"
+NAV_ITEMS = [
+    "Business Conversion Ratio",
+    "Sales Capture Summary",
+    "Conversion Ratio Summary",
+    "Master Data (From April 25 to March 26)",
+]
 
 
 def render_sidebar():
-    """Render the sidebar with glassmorphism effect and 4 nav tabs."""
-    
-    # Glassmorphism CSS
+    """Render sidebar UI aligned to the reference design."""
+
     st.markdown(f"""
         <style>
         [data-testid="stSidebar"] {{
-            background: linear-gradient(160deg, #1555AB 0%, #1a5aaa 50%, #1a4d80 100%) !important;
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            background: #26479D !important;
             border-right: none !important;
-            box-shadow: 4px 0 25px rgba(0, 0, 0, 0.2) !important;
         }}
-        
+
         [data-testid="stSidebar"] > div:first-child {{
             background: transparent !important;
+            padding-top: 0.5rem;
+            padding-bottom: 1rem;
         }}
-        
-        [data-testid="stSidebar"] .stRadio > label {{
-            display: none !important;
-        }}
-        
-        /* Hide Streamlit radio circle */
-        [data-testid="stSidebar"] .stRadio [aria-disabled="false"] {{
-            opacity: 0;
-            position: absolute;
-        }}
-        
-        /* Logo styling */
+
         .sidebar-logo {{
             text-align: center;
-            padding: 1.2rem 0.5rem 0.5rem;
-            margin-bottom: 0.5rem;
+            padding: 0.4rem 0.4rem 0.6rem;
         }}
+
         .sidebar-logo img {{
-            height: 42px;
+            width: 170px;
+            max-width: 100%;
             filter: brightness(0) invert(1);
-            opacity: 0.95;
+            opacity: 0.96;
         }}
-        
-        /* Sidebar title */
-        .sidebar-title {{
-            text-align: center;
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 13px;
-            font-weight: 500;
-            margin-bottom: 1rem;
-            padding: 0 0.5rem;
-        }}
-        
-        /* Navigation cards container */
-        .nav-cards {{
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-            padding: 0.75rem;
-            margin-top: 0.5rem;
-        }}
-        
-        /* Individual nav card */
-        .nav-card-item {{
-            padding: 18px 20px;
-            border-radius: 14px;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            font-size: 14px;
-            font-weight: 500;
-            color: #1A1F36;
+
+        .user-panel {{
             display: flex;
             align-items: center;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            background: #6C4AA7;
+            border-radius: 12px;
+            padding: 0.9rem 0.6rem;
+            margin: 0.25rem 0.35rem 0.6rem;
+            gap: 0.75rem;
         }}
-        
-        .nav-card-item:hover {{
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+
+        .user-avatar {{
+            width: 48px;
+            height: 48px;
+            border-radius: 999px;
+            background: #95D38A;
+            flex-shrink: 0;
         }}
-        
-        .nav-card-item.active {{
-            font-weight: 600;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-            transform: translateY(-3px);
-        }}
-        
-        /* Icon styling */
-        .nav-icon {{
-            font-size: 20px;
-            margin-right: 14px;
-            width: 28px;
-            text-align: center;
-        }}
-        
-        /* User info section */
-        .sidebar-user {{
-            position: absolute;
-            bottom: 90px;
-            left: 0;
-            right: 0;
-            padding: 1rem;
-            text-align: center;
-        }}
-        .user-name {{
+
+        .user-lines {{
             color: white;
-            font-size: 14px;
+            font-size: 0.84rem;
+            line-height: 1.65;
             font-weight: 600;
-            margin-bottom: 6px;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
         }}
-        .user-role {{
-            color: rgba(255, 255, 255, 0.75);
-            font-size: 12px;
-        }}
-        
-        /* Sign out button */
-        .signout-section {{
-            position: absolute;
-            bottom: 25px;
-            left: 0;
-            right: 0;
-            padding: 0 1rem;
-        }}
-        .signout-btn {{
-            width: 100%;
-            padding: 12px;
-            background: rgba(255, 255, 255, 0.12);
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            border-radius: 10px;
-            color: white;
-            font-size: 13px;
+
+        .user-lines span {{
+            color: rgba(255, 255, 255, 0.92);
             font-weight: 500;
+        }}
+
+        [data-testid="stSidebar"] .stButton {{
+            margin: 0.45rem 0.35rem;
+        }}
+
+        [data-testid="stSidebar"] .stButton > button {{
+            width: 100%;
+            border-radius: 14px;
+            background: #9AD8E8 !important;
+            color: #101826 !important;
+            border: none !important;
+            font-size: 1.08rem;
+            font-weight: 700;
+            min-height: 42px;
             cursor: pointer;
-            transition: all 0.25s ease;
         }}
-        .signout-btn:hover {{
-            background: rgba(255, 255, 255, 0.22);
-            border-color: rgba(255, 255, 255, 0.3);
+
+        [data-testid="stSidebar"] .stButton > button:hover {{
+            background: #A5DFED !important;
         }}
-        
-        /* IRDA text */
-        .irda-text {{
-            color: rgba(255, 255, 255, 0.45);
-            font-size: 10px;
-            text-align: center;
-            margin-top: 10px;
+
+        .masterdata-note {{
+            margin-top: -0.25rem;
+            margin-left: 6.05rem;
+            font-size: 0.64rem;
+            color: white;
+            background: #44BC7A;
+            border-radius: 999px;
+            padding: 0.26rem 0.55rem;
+            display: inline-block;
+        }}
+
+        .logout-wrap {{
+            margin-top: 9rem;
+            margin-left: 0.35rem;
+            margin-right: 0.35rem;
+            margin-bottom: 0.5rem;
+        }}
+
+        .logout-wrap [data-testid="stButton"] {{
+            margin: 0;
+        }}
+
+        .logout-wrap [data-testid="stButton"] button {{
+            background: #6B4BA6 !important;
+            color: #FFFFFF !important;
+            font-size: 1.05rem;
+            font-weight: 700;
         }}
         </style>
     """, unsafe_allow_html=True)
-    
-    # Logo
+
+    username = st.session_state.get("username", "Show Username")
+    session_text = st.session_state.get("session_duration", "Show Session Duration")
+
     st.markdown("""
         <div class="sidebar-logo">
             <img src="https://ik.imagekit.io/salasarservices/Salasar-Logo-new.png" alt="Salasar">
         </div>
     """, unsafe_allow_html=True)
-    
-    st.markdown('<div class="sidebar-title">Navigation</div>', unsafe_allow_html=True)
-    
-    # Navigation tabs - 4 cards with different pastel colors (Sentence Case)
-    nav_items = [
-        ("Business Conversion Ratio", "📅"),
-        ("Sales Capture Summary", "📈"),
-        ("Conversion Ratio Summary", "📊"),
-        ("Master Data (From April 25 to March 26)", "📋"),
-    ]
-    
-    # Get current page or default to first (Business Conversion Ratio)
-    if "current_page" not in st.session_state:
-        st.session_state.current_page = "Business Conversion Ratio"
-    
-    current_page = st.session_state.get("current_page", "Business Conversion Ratio")
-    
-    # Create radio buttons for state management (hidden)
-    selected = st.radio(
-        "nav",
-        [label for label, _ in nav_items],
-        index=[label for label, _ in nav_items].index(current_page) if current_page in [l for l, _ in nav_items] else 0,
-        label_visibility="collapsed",
-        key="nav_radio"
-    )
-    
-    if selected:
-        st.session_state.current_page = selected
-    
-    # Render styled cards
-    st.markdown('<div class="nav-cards">', unsafe_allow_html=True)
-    
-    for label, icon in nav_items:
-        bg_color = PASTEL_COLORS.get(label, "#FFFFFF")
-        is_active = "active" if label == st.session_state.get("current_page") else ""
-        
-        st.markdown(f"""
-            <div class="nav-card-item {is_active}" 
-                 style="background-color: {bg_color};">
-                <span class="nav-icon">{icon}</span>
-                {label}
-            </div>
-        """, unsafe_allow_html=True)
-    
-    st.markdown('</div>', unsafe_allow_html=True)
-    
-    # User info at bottom
-    username = st.session_state.get("username", "Admin")
-    role = st.session_state.get("role", "viewer")
-    role_label = "Admin" if role == "admin" else "Viewer"
-    
+
     st.markdown(f"""
-        <div class="sidebar-user">
-            <div class="user-name">👤 {username}</div>
-            <div class="user-role">🔐 {role_label}</div>
+        <div class="user-panel">
+            <div class="user-avatar"></div>
+            <div class="user-lines">
+                USER: <span>{username}</span><br>
+                SESSION: <span>{session_text}</span>
+            </div>
         </div>
     """, unsafe_allow_html=True)
-    
-    # Sign out button - use a form to isolate it
-    with st.form("signout_form"):
-        submitted = st.form_submit_button("Sign out", use_container_width=True)
-    
+
+    if "current_page" not in st.session_state:
+        st.session_state.current_page = "Business Conversion Ratio"
+
+    for item in NAV_ITEMS:
+        if st.button(item, use_container_width=True, key=f"nav_{item}"):
+            st.session_state.current_page = item
+            st.rerun()
+        if item == "Master Data (From April 25 to March 26)":
+            st.markdown('<div class="masterdata-note">April 25 to March 26</div>', unsafe_allow_html=True)
+
+    st.markdown('<div class="logout-wrap">', unsafe_allow_html=True)
+    submitted = st.button("Logout", use_container_width=True, key="logout_btn")
+    st.markdown('</div>', unsafe_allow_html=True)
+
     if submitted:
         from utils.auth import logout
         logout()
-    
-    # IRDA license text
-    st.markdown("""
-        <div class="irda-text">IRDA License No: 2024-25/SALASAR/001</div>
-    """, unsafe_allow_html=True)
 
 
 def navigate_to_page(page_name: str):
