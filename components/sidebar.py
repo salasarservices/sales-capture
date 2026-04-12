@@ -16,6 +16,10 @@ def render_sidebar():
 
     st.markdown(f"""
         <style>
+        [data-testid="stSidebarNav"] {{
+            display: none !important;
+        }}
+
         [data-testid="stSidebar"] {{
             background: #26479D !important;
             border-right: none !important;
@@ -123,35 +127,36 @@ def render_sidebar():
     username = st.session_state.get("username", "Show Username")
     session_text = st.session_state.get("session_duration", "Show Session Duration")
 
-    st.markdown("""
-        <div class="sidebar-logo">
-            <img src="https://ik.imagekit.io/salasarservices/Salasar-Logo-new.png" alt="Salasar">
-        </div>
-    """, unsafe_allow_html=True)
-
-    st.markdown(f"""
-        <div class="user-panel">
-            <div class="user-avatar"></div>
-            <div class="user-lines">
-                USER: <span>{username}</span><br>
-                SESSION: <span>{session_text}</span>
+    with st.sidebar:
+        st.markdown("""
+            <div class="sidebar-logo">
+                <img src="https://ik.imagekit.io/salasarservices/Salasar-Logo-new.png" alt="Salasar">
             </div>
-        </div>
-    """, unsafe_allow_html=True)
+        """, unsafe_allow_html=True)
 
-    if "current_page" not in st.session_state:
-        st.session_state.current_page = "Business Conversion Ratio"
+        st.markdown(f"""
+            <div class="user-panel">
+                <div class="user-avatar"></div>
+                <div class="user-lines">
+                    USER: <span>{username}</span><br>
+                    SESSION: <span>{session_text}</span>
+                </div>
+            </div>
+        """, unsafe_allow_html=True)
 
-    for item in NAV_ITEMS:
-        if st.button(item, use_container_width=True, key=f"nav_{item}"):
-            st.session_state.current_page = item
-            st.rerun()
-        if item == "Master Data (From April 25 to March 26)":
-            st.markdown('<div class="masterdata-note">April 25 to March 26</div>', unsafe_allow_html=True)
+        if "current_page" not in st.session_state:
+            st.session_state.current_page = "Business Conversion Ratio"
 
-    st.markdown('<div class="logout-wrap">', unsafe_allow_html=True)
-    submitted = st.button("Logout", use_container_width=True, key="logout_btn")
-    st.markdown('</div>', unsafe_allow_html=True)
+        for item in NAV_ITEMS:
+            if st.button(item, use_container_width=True, key=f"nav_{item}"):
+                st.session_state.current_page = item
+                st.rerun()
+            if item == "Master Data (From April 25 to March 26)":
+                st.markdown('<div class="masterdata-note">April 25 to March 26</div>', unsafe_allow_html=True)
+
+        st.markdown('<div class="logout-wrap">', unsafe_allow_html=True)
+        submitted = st.button("Logout", use_container_width=True, key="logout_btn")
+        st.markdown('</div>', unsafe_allow_html=True)
 
     if submitted:
         from utils.auth import logout
