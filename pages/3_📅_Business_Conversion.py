@@ -9,6 +9,7 @@ st.set_page_config(page_title="Business Conversion Ratio", layout="wide")
 
 from utils.styles import inject_global_css
 from utils.auth import require_auth, is_admin, render_sidebar_branding
+from database.connection import get_db
 from database.queries import fetch_business_conversion
 from components.charts import dual_axis_monthly
 from components.data_tables import render_html_table, export_csv_button
@@ -27,10 +28,10 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-db = None
+db = get_db()
 
 with st.spinner("Loading monthly data…"):
-    df = fetch_business_conversion()
+    df = fetch_business_conversion(db)
 
 if df.empty:
     st.warning("No data found.")

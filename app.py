@@ -28,9 +28,7 @@ import datetime
 
 today      = datetime.date.today().strftime("%d %b %Y")
 role_label = "Admin" if is_admin() else "Viewer"
-
-user = st.session_state.get("user", {})
-username = user.get("username", "Unknown")
+username   = st.session_state.get("username", "Unknown")
 
 st.markdown(
     f"""
@@ -46,11 +44,13 @@ st.markdown(
 )
 
 # ── Live KPI summary ──────────────────────────────────────────────────────────
+from database.connection import get_db
 from database.queries import fetch_kpis
 from components.kpi_cards import render_kpi_row
 
+db = get_db()
 with st.spinner("Loading summary…"):
-    kpis = fetch_kpis()
+    kpis = fetch_kpis(db)
 
 render_kpi_row(kpis)
 st.markdown("<div style='height:0.75rem'></div>", unsafe_allow_html=True)

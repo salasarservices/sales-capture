@@ -29,7 +29,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-db = None
+db = get_db()
 
 # ── KPI Row ───────────────────────────────────────────────────────────────────
 with st.spinner("Loading KPIs…"):

@@ -9,6 +9,7 @@ st.set_page_config(page_title="Sales Funnel", layout="wide")
 
 from utils.styles import inject_global_css
 from utils.auth import require_auth, is_admin, render_sidebar_branding
+from database.connection import get_db
 from database.queries import fetch_funnel_metrics, fetch_enquiries, fetch_filter_options
 from components.charts import funnel_chart
 from components.kpi_cards import render_funnel_kpi_row
@@ -29,11 +30,11 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-db = None
+db = get_db()
 
 # ── Filter options ────────────────────────────────────────────────────────────
 with st.spinner("Loading filter options…"):
-    opts = fetch_filter_options()
+    opts = fetch_filter_options(db)
 
 # ── Filter bar ────────────────────────────────────────────────────────────────
 with st.expander("🔽  Filters", expanded=True):
@@ -66,7 +67,7 @@ if company_search:
 
 # ── Funnel metrics ────────────────────────────────────────────────────────────
 with st.spinner("Loading funnel…"):
-    funnel = fetch_funnel_metrics(extra_match=extra_match if extra_match else None)
+    funnel = fetch_funnel_metrics(db, extra_match=extra_match if extra_match else None)
 
 total  = funnel.get("total_enquiries", 0)
 quoted = funnel.get("quote_submitted", 0)
@@ -142,6 +143,7 @@ if st.session_state.get("_last_filter") != filter_key:
 
 with st.spinner("Loading enquiries…"):
     df, total_rows = fetch_enquiries(
+        db,
         months=month_ints,
         cre_rms=selected_cre    if selected_cre    else None,
         proposal_types=selected_types if selected_types else None,

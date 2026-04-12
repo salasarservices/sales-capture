@@ -1,11 +1,20 @@
 """
-Authentication utilities for Streamlit - now uses Django API.
+Authentication utilities for Streamlit.
+Credentials stored in st.secrets["credentials"].
 """
 
 import streamlit as st
-from api_client import login as api_login, logout as api_logout, refresh_access_token
+import bcrypt
 
 LOGO_URL = "https://ik.imagekit.io/salasarservices/Salasar-Logo-new.png"
+
+
+def _verify_password(plain: str, hashed: str) -> bool:
+    """Verify password against bcrypt hash."""
+    try:
+        return bcrypt.checkpw(plain.encode(), hashed.encode())
+    except Exception:
+        return False
 
 
 def is_authenticated() -> bool:
@@ -15,8 +24,7 @@ def is_authenticated() -> bool:
 
 def is_admin() -> bool:
     """Check if current user is admin."""
-    user = st.session_state.get("user", {})
-    return user.get("role") == "admin"
+    return st.session_state.get("role") == "admin"
 
 
 def require_auth():
@@ -27,7 +35,7 @@ def require_auth():
 
 
 def login_form() -> bool:
-    """Render login form using Django API."""
+    """Render login form."""
     if st.session_state.get("authenticated"):
         return True
 
@@ -62,11 +70,18 @@ def login_form() -> bool:
 
         if submitted:
             try:
-                api_login(username, password)
+                user_cfg = st.secrets["credentials"][username]
+            except (KeyError, Exception):
+                user_cfg = None
+
+            if user_cfg and _verify_password(password, user_cfg["password_hash"]):
+                st.session_state["authenticated"] = True
+                st.session_state["username"] = username
+                st.session_state["role"] = user_cfg.get("role", "viewer")
                 st.rerun()
-            except Exception as e:
+            else:
                 with form_col:
-                    st.error(f"Invalid username or password.")
+                    st.error("Invalid username or password.")
 
     return False
 
@@ -78,8 +93,7 @@ def render_sidebar_branding() -> None:
         st.divider()
 
         role_label = "Admin" if is_admin() else "Viewer"
-        user = st.session_state.get("user", {})
-        username = user.get("username", "Unknown")
+        username = st.session_state.get("username", "Unknown")
 
         st.markdown(
             f'<div style="display:flex;align-items:center;gap:0.55rem;padding:0.45rem 0 0.6rem;">'
@@ -95,7 +109,6 @@ def render_sidebar_branding() -> None:
 
 def logout():
     """Logout and clear session."""
-    api_logout()
-    for key in ["authenticated", "username", "role", "user", "access_token", "refresh_token"]:
+    for key in ["authenticated", "username", "role"]:
         st.session_state.pop(key, None)
     st.rerun()

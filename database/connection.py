@@ -1,17 +1,23 @@
 """
-Database connection - now uses Django API via api_client.
-Kept for backward compatibility - queries now route through api_client.py.
+Database connection - direct MongoDB using pymongo.
 """
 
-# This module is now a compatibility wrapper.
-# All actual database operations go through api_client.py which calls Django API.
-# This file is kept for backward compatibility with existing imports.
+import streamlit as st
+from pymongo import MongoClient
+from pymongo.database import Database
 
-from api_client import fetch_kpis, fetch_summary_sales, fetch_summary_conversion
 
-def get_db():
-    """
-    Returns a dict-like object for backward compatibility.
-    Actual queries are handled by api_client.
-    """
-    return None  # Not used anymore - queries go through api_client
+def get_db() -> Database:
+    """Get MongoDB database instance from streamlit secrets."""
+    if "mongo" not in st.secrets:
+        raise ValueError("MongoDB configuration not found in secrets")
+    
+    uri = st.secrets["mongo"]["uri"]
+    db_name = st.secrets["mongo"]["db_name"]
+    
+    @st.cache_resource(show_spinner=False)
+    def _connect():
+        client = MongoClient(uri, serverSelectionTimeoutMS=10_000)
+        return client[db_name]
+    
+    return _connect()
