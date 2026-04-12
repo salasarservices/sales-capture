@@ -35,76 +35,197 @@ def require_auth():
 
 
 def login_form() -> bool:
-    """Render login form."""
+    """Render glassmorphism login form."""
     if st.session_state.get("authenticated"):
         return True
 
-    from utils.styles import inject_login_css
-    inject_login_css()
+    # Glassmorphism login CSS
+    st.markdown("""
+        <style>
+        /* Hide sidebar on login */
+        [data-testid="stSidebar"],
+        [data-testid="stSidebarCollapsedControl"] {
+            display: none !important;
+        }
+        
+        .main { margin-left: 0 !important; }
+        .main .block-container {
+            padding: 0 !important;
+            max-width: 100% !important;
+            margin: 0 !important;
+        }
+        
+        /* Full screen gradient background */
+        [data-testid="stAppViewContainer"] > section {
+            background: linear-gradient(135deg, #1555AB 0%, #1e6ad1 30%, #2a7dd4 60%, #3a8ecf 100%) !important;
+            min-height: 100vh;
+        }
+        
+        /* Glassmorphism login container */
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.12) !important;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.18) !important;
+            border-radius: 24px !important;
+            padding: 50px 45px !important;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25) !important;
+            max-width: 420px;
+            width: 100%;
+        }
+        
+        .glass-logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .glass-logo img {
+            height: 55px;
+            filter: brightness(0) invert(1);
+            opacity: 0.95;
+        }
+        
+        .glass-title {
+            text-align: center;
+            color: white;
+            font-size: 28px;
+            font-weight: 700;
+            margin: 0 0 8px 0;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .glass-subtitle {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.75);
+            font-size: 14px;
+            margin: 0 0 35px 0;
+        }
+        
+        /* Form styling */
+        .glass-form label {
+            color: rgba(255, 255, 255, 0.85) !important;
+            font-size: 13px !important;
+            font-weight: 500 !important;
+            margin-bottom: 8px !important;
+            display: block;
+        }
+        
+        .glass-form .stTextInput > div > div > input {
+            background: rgba(255, 255, 255, 0.1) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            border-radius: 12px !important;
+            color: white !important;
+            padding: 14px 16px !important;
+            font-size: 14px !important;
+        }
+        
+        .glass-form .stTextInput > div > div > input::placeholder {
+            color: rgba(255, 255, 255, 0.5) !important;
+        }
+        
+        .glass-form .stTextInput > div > div > input:focus {
+            border-color: rgba(255, 255, 255, 0.5) !important;
+            background: rgba(255, 255, 255, 0.15) !important;
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1) !important;
+        }
+        
+        /* Login button */
+        .glass-form .stButton > button {
+            background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%) !important;
+            color: #1555AB !important;
+            border: none !important;
+            border-radius: 12px !important;
+            font-weight: 700 !important;
+            font-size: 15px !important;
+            padding: 16px !important;
+            width: 100% !important;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        }
+        
+        .glass-form .stButton > button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Error message */
+        .glass-error {
+            background: rgba(255, 100, 100, 0.2);
+            border: 1px solid rgba(255, 100, 100, 0.3);
+            border-radius: 10px;
+            padding: 12px;
+            color: white;
+            font-size: 13px;
+            text-align: center;
+            margin-top: 15px;
+        }
+        
+        /* Footer text */
+        .glass-footer {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 11px;
+            margin-top: 25px;
+        }
+        </style>
+    """, unsafe_allow_html=True)
 
-    left_col, right_col = st.columns([5, 7])
-
-    with left_col:
-        st.markdown(
-            f'<div class="login-brand-card">'
-            f'<img src="{LOGO_URL}" class="login-brand-logo">'
-            f'<h1 class="login-brand-heading">Sales Enquiry<br>Dashboard</h1>'
-            f'<p class="login-brand-sub">Ahmedabad &nbsp;&middot;&nbsp; FY 2025-26</p>'
-            f'</div>',
-            unsafe_allow_html=True,
-        )
-
-    with right_col:
-        st.markdown('<div style="height:18vh;"></div>', unsafe_allow_html=True)
-
-        _, form_col, _ = st.columns([1, 8, 1])
-        with form_col:
-            st.markdown(f'<img src="{LOGO_URL}" style="height:36px;object-fit:contain;display:block;margin-bottom:1.25rem;">', unsafe_allow_html=True)
-            st.markdown('<h2 style="font-size:1.85rem;font-weight:700;color:#1E293B;margin:0 0 0.2rem;letter-spacing:-0.3px;">Login</h2>', unsafe_allow_html=True)
-            st.markdown('<p style="color:#64748B;font-size:0.83rem;margin:0 0 1.5rem;">Enter your dashboard credentials</p>', unsafe_allow_html=True)
-
-            with st.form("login_form"):
-                username = st.text_input("Username", placeholder="Enter username", key="_login_user")
-                password = st.text_input("Password", placeholder="••••••••", type="password", key="_login_pass")
-                submitted = st.form_submit_button("SIGN IN", use_container_width=True)
-
-        if submitted:
+    # Render login form
+    st.markdown('<div class="login-container">', unsafe_allow_html=True)
+    
+    st.markdown("""
+        <div class="glass-card">
+            <div class="glass-logo">
+                <img src="https://ik.imagekit.io/salasarservices/Salasar-Logo-new.png" alt="Salasar">
+            </div>
+            <h1 class="glass-title">Welcome Back</h1>
+            <p class="glass-subtitle">Sign in to access your dashboard</p>
+    """, unsafe_allow_html=True)
+    
+    with st.form("login_form", clear_on_submit=True):
+        username = st.text_input("Username", placeholder="Enter your username")
+        password = st.text_input("Password", placeholder="••••••••", type="password")
+        submitted = st.button("Sign in")
+    
+    error_message = None
+    if submitted:
+        if not username or not password:
+            error_message = "Please enter both username and password"
+        else:
             try:
-                user_cfg = st.secrets["credentials"][username]
-            except (KeyError, Exception):
+                user_cfg = st.secrets["credentials"].get(username)
+            except:
                 user_cfg = None
-
-            if user_cfg and _verify_password(password, user_cfg["password_hash"]):
+            
+            if user_cfg and _verify_password(password, user_cfg.get("password_hash", "")):
                 st.session_state["authenticated"] = True
                 st.session_state["username"] = username
                 st.session_state["role"] = user_cfg.get("role", "viewer")
                 st.rerun()
             else:
-                with form_col:
-                    st.error("Invalid username or password.")
-
+                error_message = "Invalid username or password"
+    
+    if error_message:
+        st.markdown(f'<div class="glass-error">{error_message}</div>', unsafe_allow_html=True)
+    
+    st.markdown("""
+            <div class="glass-footer">
+                IRDA License No: 2024-25/SALASAR/001
+            </div>
+        </div>
+    """, unsafe_allow_html=True)
+    
+    st.markdown('</div>', unsafe_allow_html=True)
+    
     return False
-
-
-def render_sidebar_branding() -> None:
-    """Render logo + user info + sign-out in the sidebar."""
-    with st.sidebar:
-        st.markdown(f'<img src="{LOGO_URL}" style="height:40px;object-fit:contain;filter:brightness(0) invert(1);opacity:0.88;display:block;margin:0.75rem 0 0.5rem;">', unsafe_allow_html=True)
-        st.divider()
-
-        role_label = "Admin" if is_admin() else "Viewer"
-        username = st.session_state.get("username", "Unknown")
-
-        st.markdown(
-            f'<div style="display:flex;align-items:center;gap:0.55rem;padding:0.45rem 0 0.6rem;">'
-            f'<div style="width:30px;height:30px;background:rgba(255,255,255,0.11);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.9rem;flex-shrink:0;">👤</div>'
-            f'<div><div style="color:#FFFFFF;font-size:0.84rem;font-weight:600;">{username}</div>'
-            f'<div style="color:rgba(255,255,255,0.46);font-size:0.69rem;">{role_label}</div></div></div>',
-            unsafe_allow_html=True,
-        )
-
-        if st.button("Sign Out", use_container_width=True):
-            logout()
 
 
 def logout():

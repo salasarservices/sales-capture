@@ -1,228 +1,252 @@
 """
-Sidebar component with filters and navigation.
-Implements UI-DESIGN-INSTRUCTION.md specifications.
+Sidebar component - Glassmorphism design with 4 navigation tabs.
 """
 
 import streamlit as st
 from datetime import date
 
 
+# Pastel colors for nav cards (Sentence Case labels)
+PASTEL_COLORS = {
+    "Business Conversion Ratio": "#E8F4FD",      # Light blue
+    "Sales Capture Summary": "#E8F8F0",          # Light green
+    "Conversion Ratio Summary": "#FEF3E2",        # Light amber
+    "Master Data (From April 25 to March 26)": "#F3E8FD",  # Light purple
+}
+
+# Sidebar background color
+SIDEBAR_COLOR = "rgb(22, 85, 171)"
+
+
 def render_sidebar():
-    """Render the sidebar with filters and navigation."""
+    """Render the sidebar with glassmorphism effect and 4 nav tabs."""
+    
+    # Glassmorphism CSS
+    st.markdown(f"""
+        <style>
+        [data-testid="stSidebar"] {{
+            background: linear-gradient(160deg, #1555AB 0%, #1a5aaa 50%, #1a4d80 100%) !important;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-right: none !important;
+            box-shadow: 4px 0 25px rgba(0, 0, 0, 0.2) !important;
+        }}
+        
+        [data-testid="stSidebar"] > div:first-child {{
+            background: transparent !important;
+        }}
+        
+        [data-testid="stSidebar"] .stRadio > label {{
+            display: none !important;
+        }}
+        
+        /* Hide Streamlit radio circle */
+        [data-testid="stSidebar"] .stRadio [aria-disabled="false"] {{
+            opacity: 0;
+            position: absolute;
+        }}
+        
+        /* Logo styling */
+        .sidebar-logo {{
+            text-align: center;
+            padding: 1.2rem 0.5rem 0.5rem;
+            margin-bottom: 0.5rem;
+        }}
+        .sidebar-logo img {{
+            height: 42px;
+            filter: brightness(0) invert(1);
+            opacity: 0.95;
+        }}
+        
+        /* Sidebar title */
+        .sidebar-title {{
+            text-align: center;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            padding: 0 0.5rem;
+        }}
+        
+        /* Navigation cards container */
+        .nav-cards {{
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            padding: 0.75rem;
+            margin-top: 0.5rem;
+        }}
+        
+        /* Individual nav card */
+        .nav-card-item {{
+            padding: 18px 20px;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 14px;
+            font-weight: 500;
+            color: #1A1F36;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }}
+        
+        .nav-card-item:hover {{
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }}
+        
+        .nav-card-item.active {{
+            font-weight: 600;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            transform: translateY(-3px);
+        }}
+        
+        /* Icon styling */
+        .nav-icon {{
+            font-size: 20px;
+            margin-right: 14px;
+            width: 28px;
+            text-align: center;
+        }}
+        
+        /* User info section */
+        .sidebar-user {{
+            position: absolute;
+            bottom: 90px;
+            left: 0;
+            right: 0;
+            padding: 1rem;
+            text-align: center;
+        }}
+        .user-name {{
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }}
+        .user-role {{
+            color: rgba(255, 255, 255, 0.75);
+            font-size: 12px;
+        }}
+        
+        /* Sign out button */
+        .signout-section {{
+            position: absolute;
+            bottom: 25px;
+            left: 0;
+            right: 0;
+            padding: 0 1rem;
+        }}
+        .signout-btn {{
+            width: 100%;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 10px;
+            color: white;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }}
+        .signout-btn:hover {{
+            background: rgba(255, 255, 255, 0.22);
+            border-color: rgba(255, 255, 255, 0.3);
+        }}
+        
+        /* IRDA text */
+        .irda-text {{
+            color: rgba(255, 255, 255, 0.45);
+            font-size: 10px;
+            text-align: center;
+            margin-top: 10px;
+        }}
+        </style>
+    """, unsafe_allow_html=True)
     
     # Logo
     st.markdown("""
-        <div style="text-align: center; padding: 1rem 0;">
-            <img src="https://ik.imagekit.io/salasarservices/Salasar-Logo-new.png" 
-                 style="height: 36px; filter: brightness(0) invert(1); opacity: 0.88;">
+        <div class="sidebar-logo">
+            <img src="https://ik.imagekit.io/salasarservices/Salasar-Logo-new.png" alt="Salasar">
         </div>
     """, unsafe_allow_html=True)
     
-    st.markdown("---")
+    st.markdown('<div class="sidebar-title">Navigation</div>', unsafe_allow_html=True)
     
-    # Context selectors (Branch, FY)
-    st.caption("Context")
-    
-    # Initialize session state for filters
-    if "filters_init" not in st.session_state:
-        st.session_state.branch = "Ahmedabad"
-        st.session_state.fy = "2025-26"
-        st.session_state.filters_init = True
-    
-    branch = st.selectbox(
-        "Branch", 
-        ["Ahmedabad", "Surat", "Rajkot", "Vadodara"],
-        index=0
-    )
-    st.session_state.branch = branch
-    
-    fy = st.selectbox(
-        "Financial year",
-        ["2024-25", "2025-26", "2026-27"],
-        index=1
-    )
-    st.session_state.fy = fy
-    
-    st.markdown("---")
-    
-    # Filter controls
-    st.caption("Filters")
-    
-    # Get filter options from database
-    try:
-        from database.connection import get_db
-        from database.queries import fetch_filter_options
-        db = get_db()
-        opts = fetch_filter_options(db, fy=st.session_state.fy, branch=st.session_state.branch)
-        cre_rms = opts.get("cre_rms", [])
-        products = opts.get("requirements", [])
-        proposal_types = opts.get("proposal_types", ["Fresh", "Renewal", "Expanded"])
-    except Exception:
-        cre_rms = ["Kashyap", "Darshan", "Vijay", "Vipul", "Punit", "Hitesh"]
-        products = ["Standard Fire & Peril Policy", "Marine Policy", "Contractors All Risk Policy"]
-        proposal_types = ["Fresh", "Renewal", "Expanded"]
-    
-    # Multi-select filters
-    selected_cre = st.multiselect(
-        "CRE/RM",
-        cre_rms,
-        default=cre_rms
-    )
-    st.session_state.selected_cre = selected_cre
-    
-    selected_types = st.multiselect(
-        "Proposal type",
-        proposal_types,
-        default=proposal_types
-    )
-    st.session_state.selected_types = selected_types
-    
-    selected_products = st.multiselect(
-        "Product",
-        products,
-        default=products
-    )
-    st.session_state.selected_products = selected_products
-    
-    # Month slider
-    month_options = ["Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "Jan", "Feb", "Mar"]
-    month_range = st.select_slider(
-        "Month range",
-        options=month_options,
-        value=("Apr", "Mar")
-    )
-    st.session_state.month_range = month_range
-    
-    # Reset filters button
-    if st.button("Reset filters", use_container_width=True):
-        st.session_state.selected_cre = cre_rms
-        st.session_state.selected_types = proposal_types
-        st.session_state.selected_products = products
-        st.session_state.month_range = ("Apr", "Mar")
-        st.rerun()
-    
-    # Active filter indicator
-    active_count = 0
-    if set(selected_cre) != set(cre_rms): active_count += 1
-    if set(selected_types) != set(proposal_types): active_count += 1
-    if set(selected_products) != set(products): active_count += 1
-    if month_range != ("Apr", "Mar"): active_count += 1
-    
-    if active_count > 0:
-        st.caption(f"{active_count} filter(s) active")
-    
-    st.markdown("---")
-    
-    # Navigation
-    st.caption("Navigation")
-    
-    nav_options = [
-        "📊 Summary Conversion",
-        "📈 Summary Sales", 
-        "📅 Business Conversion",
-        "🔍 Sales Funnel"
+    # Navigation tabs - 4 cards with different pastel colors (Sentence Case)
+    nav_items = [
+        ("Business Conversion Ratio", "📅"),
+        ("Sales Capture Summary", "📈"),
+        ("Conversion Ratio Summary", "📊"),
+        ("Master Data (From April 25 to March 26)", "📋"),
     ]
     
-    selected_nav = st.radio(
-        "Navigation",
-        nav_options,
-        label_visibility="collapsed"
+    # Get current page or default to first (Business Conversion Ratio)
+    if "current_page" not in st.session_state:
+        st.session_state.current_page = "Business Conversion Ratio"
+    
+    current_page = st.session_state.get("current_page", "Business Conversion Ratio")
+    
+    # Create radio buttons for state management (hidden)
+    selected = st.radio(
+        "nav",
+        [label for label, _ in nav_items],
+        index=[label for label, _ in nav_items].index(current_page) if current_page in [l for l, _ in nav_items] else 0,
+        label_visibility="collapsed",
+        key="nav_radio"
     )
     
-    # Map nav selection to page
-    page_map = {
-        "📊 Summary Conversion": "1_📊_Summary_Conversion",
-        "📈 Summary Sales": "2_📈_Summary_Sales",
-        "📅 Business Conversion": "3_📅_Business_Conversion",
-        "🔍 Sales Funnel": "4_🔍_Sales_Funnel"
-    }
+    if selected:
+        st.session_state.current_page = selected
     
-    st.session_state.current_page = page_map.get(selected_nav, "1_📊_Summary_Conversion")
+    # Render styled cards
+    st.markdown('<div class="nav-cards">', unsafe_allow_html=True)
     
-    st.markdown("---")
+    for label, icon in nav_items:
+        bg_color = PASTEL_COLORS.get(label, "#FFFFFF")
+        is_active = "active" if label == st.session_state.get("current_page") else ""
+        
+        st.markdown(f"""
+            <div class="nav-card-item {is_active}" 
+                 style="background-color: {bg_color};">
+                <span class="nav-icon">{icon}</span>
+                {label}
+            </div>
+        """, unsafe_allow_html=True)
     
-    # Footer - Sign out
+    st.markdown('</div>', unsafe_allow_html=True)
+    
+    # User info at bottom
+    username = st.session_state.get("username", "Admin")
+    role = st.session_state.get("role", "viewer")
+    role_label = "Admin" if role == "admin" else "Viewer"
+    
+    st.markdown(f"""
+        <div class="sidebar-user">
+            <div class="user-name">👤 {username}</div>
+            <div class="user-role">🔐 {role_label}</div>
+        </div>
+    """, unsafe_allow_html=True)
+    
+    # Sign out button
     if st.button("Sign out", use_container_width=True):
         from utils.auth import logout
         logout()
     
     # IRDA license text
-    st.caption("IRDA License No: 2024-25/SALASAR/001")
-
-
-def render_header():
-    """Render the header context bar."""
-    today = date.today().strftime("%d %b %Y")
-    branch = st.session_state.get("branch", "Ahmedabad")
-    fy = st.session_state.get("fy", "2025-26")
-    role = st.session_state.get("role", "viewer")
-    username = st.session_state.get("username", "Admin")
-    
-    role_label = "Admin" if role == "admin" else "Viewer"
-    
-    st.markdown(f"""
-        <div style="
-            background-color: #042C53;
-            padding: 12px 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: -1rem -1rem 1rem -1rem;
-        ">
-            <div>
-                <div style="font-size: 18px; font-weight: 500; color: #B5D4F4;">
-                    Salasar Services — Sales Analytics
-                </div>
-                <div style="font-size: 11px; color: #378ADD;">
-                    {branch} · FY {fy} · {today}
-                </div>
-            </div>
-            <div style="display: flex; gap: 12px; align-items: center;">
-                <div style="
-                    background: #0C447C;
-                    color: #B5D4F4;
-                    padding: 3px 10px;
-                    border-radius: 20px;
-                    font-size: 11px;
-                ">
-                    {role_label}
-                </div>
-                <div style="
-                    background: #0F6E56;
-                    color: #9FE1CB;
-                    padding: 3px 10px;
-                    border-radius: 20px;
-                    font-size: 11px;
-                ">
-                    Live
-                </div>
-            </div>
-        </div>
+    st.markdown("""
+        <div class="irda-text">IRDA License No: 2024-25/SALASAR/001</div>
     """, unsafe_allow_html=True)
 
 
-def get_filtered_data():
-    """Get the filtered data based on current filter state."""
-    from database.connection import get_db
-    from database.queries import fetch_filter_options
-    
-    db = get_db()
-    fy = st.session_state.get("fy", "2025-26")
-    branch = st.session_state.get("branch", "Ahmedabad")
-    
-    # Build match query
-    match = {"fy": fy, "branch": branch}
-    
-    selected_cre = st.session_state.get("selected_cre", [])
-    if selected_cre:
-        match["cre_rm_accountable"] = {"$in": selected_cre}
-    
-    selected_types = st.session_state.get("selected_types", [])
-    if selected_types:
-        match["type_of_proposal"] = {"$in": selected_types}
-    
-    selected_products = st.session_state.get("selected_products", [])
-    if selected_products:
-        match["requirement"] = {"$in": selected_products}
-    
-    return db, match
+def navigate_to_page(page_name: str):
+    """Navigate to a specific page."""
+    st.session_state.current_page = page_name
+    st.rerun()
+
+
+def get_current_page() -> str:
+    """Get the current page name."""
+    return st.session_state.get("current_page", "Business Conversion Ratio")
