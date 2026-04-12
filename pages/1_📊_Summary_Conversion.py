@@ -8,17 +8,22 @@ import streamlit as st
 st.set_page_config(page_title="Summary: Conversion Ratio", layout="wide")
 
 from utils.styles import inject_global_css
-from utils.auth import require_auth, is_admin, render_sidebar_branding
+from utils.auth import require_auth, is_admin
 from database.connection import get_db
 from database.queries import fetch_kpis, fetch_summary_conversion
 from components.kpi_cards import render_kpi_row
 from components.charts import stacked_bar_conversion, grouped_bar_proposal_type
 from components.data_tables import render_html_table, export_csv_button
+from components.sidebar import render_sidebar, render_header, get_active_filters
 from utils.formatters import format_inr, format_pct
 
 require_auth()
 inject_global_css()
-render_sidebar_branding()
+render_sidebar()
+render_header()
+filters = get_active_filters()
+month_map = {"Apr": 4, "May": 5, "Jun": 6, "Jul": 7, "Aug": 8, "Sep": 9, "Oct": 10, "Nov": 11, "Dec": 12, "Jan": 1, "Feb": 2, "Mar": 3}
+month_ints = [month_map[m] for m in filters["months"]]
 
 # ── Page header ───────────────────────────────────────────────────────────────
 st.markdown(
@@ -33,17 +38,33 @@ db = get_db()
 
 # ── KPI Row ───────────────────────────────────────────────────────────────────
 with st.spinner("Loading KPIs…"):
-    kpis = fetch_kpis(db)
+    kpis = fetch_kpis(
+        db,
+        fy=filters["fy"],
+        branch=filters["branch"],
+        cre_rms=filters["cre_rms"],
+        proposal_types=filters["proposal_types"],
+        requirements=filters["requirements"],
+        months=month_ints,
+    )
 render_kpi_row(kpis)
 st.markdown("<div style='height:0.5rem'></div>", unsafe_allow_html=True)
 st.divider()
 
 # ── Load data ─────────────────────────────────────────────────────────────────
 with st.spinner("Loading conversion data…"):
-    df = fetch_summary_conversion(db)
+    df = fetch_summary_conversion(
+        db,
+        fy=filters["fy"],
+        branch=filters["branch"],
+        cre_rms=filters["cre_rms"],
+        proposal_types=filters["proposal_types"],
+        requirements=filters["requirements"],
+        months=month_ints,
+    )
 
 if df.empty:
-    st.warning("No data found for FY 2025-26 / Ahmedabad.")
+    st.warning(f"No data found for FY {filters['fy']} / {filters['branch']}.")
     st.stop()
 
 # ── Charts ────────────────────────────────────────────────────────────────────
@@ -57,9 +78,13 @@ sales_view["Total Enquiries"]= sales_view["total_enquiries"].fillna(0)
 
 col1, col2 = st.columns(2)
 with col1:
-    st.plotly_chart(stacked_bar_conversion(sales_view), use_container_width=True)
+    with st.container(border=True):
+        st.markdown("**Converted vs Not Converted by CRE / RM**")
+        st.plotly_chart(stacked_bar_conversion(sales_view), use_container_width=True)
 with col2:
-    st.plotly_chart(grouped_bar_proposal_type(df), use_container_width=True)
+    with st.container(border=True):
+        st.markdown("**Converted by Proposal Type per CRE / RM**")
+        st.plotly_chart(grouped_bar_proposal_type(df), use_container_width=True)
 
 st.divider()
 

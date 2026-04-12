@@ -8,18 +8,22 @@ import streamlit as st
 st.set_page_config(page_title="Sales Funnel", layout="wide")
 
 from utils.styles import inject_global_css
-from utils.auth import require_auth, is_admin, render_sidebar_branding
+from utils.auth import require_auth, is_admin
 from database.connection import get_db
-from database.queries import fetch_funnel_metrics, fetch_enquiries, fetch_filter_options
+from database.queries import fetch_funnel_metrics, fetch_enquiries
 from components.charts import funnel_chart
 from components.kpi_cards import render_funnel_kpi_row
 from components.data_tables import render_enquiry_table, export_csv_button
-from utils.fiscal_month import all_fiscal_labels, month_label_to_int
+from components.sidebar import render_sidebar, render_header, get_active_filters
 from utils.formatters import format_inr
 
 require_auth()
 inject_global_css()
-render_sidebar_branding()
+render_sidebar()
+render_header()
+filters = get_active_filters()
+month_map = {"Apr": 4, "May": 5, "Jun": 6, "Jul": 7, "Aug": 8, "Sep": 9, "Oct": 10, "Nov": 11, "Dec": 12, "Jan": 1, "Feb": 2, "Mar": 3}
+month_ints = [month_map[m] for m in filters["months"]]
 
 # ── Page header ───────────────────────────────────────────────────────────────
 st.markdown(
@@ -32,38 +36,19 @@ st.markdown(
 
 db = get_db()
 
-# ── Filter options ────────────────────────────────────────────────────────────
-with st.spinner("Loading filter options…"):
-    opts = fetch_filter_options(db)
-
-# ── Filter bar ────────────────────────────────────────────────────────────────
-with st.expander("🔽  Filters", expanded=True):
-    fcol1, fcol2, fcol3, fcol4, fcol5 = st.columns(5)
-    with fcol1:
-        selected_months = st.multiselect("Month", options=all_fiscal_labels(), placeholder="All months")
-    with fcol2:
-        selected_cre    = st.multiselect("CRE / RM", options=opts["cre_rms"], placeholder="All")
-    with fcol3:
-        selected_types  = st.multiselect("Proposal Type", options=opts["proposal_types"], placeholder="All")
-    with fcol4:
-        selected_req    = st.multiselect("Product / Requirement", options=opts["requirements"], placeholder="All")
-    with fcol5:
-        company_search  = st.text_input("Search Company", placeholder="Type to search…")
-
-month_ints = [month_label_to_int(m) for m in selected_months] if selected_months else None
-
-extra_match: dict = {}
-if month_ints:
-    extra_match["$expr"] = {"$in": [{"$month": "$date_referred"}, month_ints]}
-if selected_cre:
-    extra_match["cre_rm_accountable"] = {"$in": selected_cre}
-if selected_types:
-    extra_match["type_of_proposal"] = {"$in": selected_types}
-if selected_req:
-    extra_match["requirement"] = {"$in": selected_req}
-if company_search:
+company_search = st.text_input("Search Company", placeholder="Filter by company name…")
+extra_match: dict = {
+    "$expr": {"$in": [{"$month": "$date_referred"}, month_ints]},
+}
+if filters["cre_rms"]:
+    extra_match["cre_rm_accountable"] = {"$in": filters["cre_rms"]}
+if filters["proposal_types"]:
+    extra_match["type_of_proposal"] = {"$in": filters["proposal_types"]}
+if filters["requirements"]:
+    extra_match["requirement"] = {"$in": filters["requirements"]}
+if company_search.strip():
     import re
-    extra_match["company_name"] = {"$regex": re.escape(company_search), "$options": "i"}
+    extra_match["company_name"] = {"$regex": re.escape(company_search.strip()), "$options": "i"}
 
 # ── Funnel metrics ────────────────────────────────────────────────────────────
 with st.spinner("Loading funnel…"):
@@ -80,7 +65,9 @@ st.markdown("<div style='height:0.5rem'></div>", unsafe_allow_html=True)
 # ── Funnel chart + drop-off analysis ──────────────────────────────────────────
 fcol_l, fcol_r = st.columns([2, 3])
 with fcol_l:
-    st.plotly_chart(funnel_chart(total, quoted, closed), use_container_width=True)
+    with st.container(border=True):
+        st.markdown("**Sales Funnel**")
+        st.plotly_chart(funnel_chart(total, quoted, closed), use_container_width=True)
 
 with fcol_r:
     st.markdown('<p class="section-heading">Pipeline Drop-off Analysis</p>', unsafe_allow_html=True)
@@ -136,7 +123,7 @@ PAGE_SIZE = 100
 if "funnel_page" not in st.session_state:
     st.session_state.funnel_page = 1
 
-filter_key = str((selected_months, selected_cre, selected_types, selected_req, company_search))
+filter_key = str((filters["months"], filters["cre_rms"], filters["proposal_types"], filters["requirements"], company_search))
 if st.session_state.get("_last_filter") != filter_key:
     st.session_state.funnel_page = 1
     st.session_state["_last_filter"] = filter_key
@@ -144,11 +131,13 @@ if st.session_state.get("_last_filter") != filter_key:
 with st.spinner("Loading enquiries…"):
     df, total_rows = fetch_enquiries(
         db,
+        fy=filters["fy"],
+        branch=filters["branch"],
         months=month_ints,
-        cre_rms=selected_cre    if selected_cre    else None,
-        proposal_types=selected_types if selected_types else None,
-        requirements=selected_req   if selected_req   else None,
-        company_search=company_search,
+        cre_rms=filters["cre_rms"] if filters["cre_rms"] else None,
+        proposal_types=filters["proposal_types"] if filters["proposal_types"] else None,
+        requirements=filters["requirements"] if filters["requirements"] else None,
+        company_search=company_search.strip(),
         page=st.session_state.funnel_page,
         page_size=PAGE_SIZE,
     )

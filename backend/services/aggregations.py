@@ -17,9 +17,9 @@ def build_match(fy: str, branch: str, extra: dict = None) -> dict:
     return {"$match": q}
 
 
-def summary_sales_pipeline(fy: str, branch: str) -> list:
+def summary_sales_pipeline(fy: str, branch: str, extra_match: dict = None) -> list:
     return [
-        build_match(fy, branch),
+        build_match(fy, branch, extra_match),
         {
             "$group": {
                 "_id": "$cre_rm_accountable",
@@ -59,9 +59,12 @@ def summary_sales_pipeline(fy: str, branch: str) -> list:
     ]
 
 
-def business_conversion_pipeline(fy: str) -> list:
+def business_conversion_pipeline(fy: str, extra_match: dict = None) -> list:
+    match_query = {"fy": fy}
+    if extra_match:
+        match_query.update(extra_match)
     return [
-        {"$match": {"fy": fy}},
+        {"$match": match_query},
         {
             "$group": {
                 "_id": {
@@ -92,9 +95,9 @@ def business_conversion_pipeline(fy: str) -> list:
     ]
 
 
-def summary_conversion_pipeline(fy: str, branch: str) -> list:
+def summary_conversion_pipeline(fy: str, branch: str, extra_match: dict = None) -> list:
     return [
-        build_match(fy, branch),
+        build_match(fy, branch, extra_match),
         {
             "$group": {
                 "_id": "$cre_rm_accountable",
@@ -284,9 +287,9 @@ def sales_funnel_pipeline(fy: str, branch: str, extra_match: dict = None) -> lis
     ]
 
 
-def kpi_pipeline(fy: str, branch: str) -> list:
+def kpi_pipeline(fy: str, branch: str, extra_match: dict = None) -> list:
     return [
-        build_match(fy, branch),
+        build_match(fy, branch, extra_match),
         {
             "$group": {
                 "_id": None,

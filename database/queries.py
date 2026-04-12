@@ -24,9 +24,26 @@ FY = "2025-26"
 BRANCH = "Ahmedabad"
 
 
-def fetch_kpis(db, fy: str = FY, branch: str = BRANCH) -> dict:
+def fetch_kpis(
+    db,
+    fy: str = FY,
+    branch: str = BRANCH,
+    cre_rms: Optional[list] = None,
+    proposal_types: Optional[list] = None,
+    requirements: Optional[list] = None,
+    months: Optional[list] = None,
+) -> dict:
     """Fetch KPI summary from MongoDB."""
-    pipeline = kpi_pipeline(fy, branch)
+    extra_match = {}
+    if cre_rms:
+        extra_match["cre_rm_accountable"] = {"$in": cre_rms}
+    if proposal_types:
+        extra_match["type_of_proposal"] = {"$in": proposal_types}
+    if requirements:
+        extra_match["requirement"] = {"$in": requirements}
+    if months:
+        extra_match["$expr"] = {"$in": [{"$month": "$date_referred"}, months]}
+    pipeline = kpi_pipeline(fy, branch, extra_match=extra_match if extra_match else None)
     result = list(db.enquiries.aggregate(pipeline))
     if not result:
         return {
@@ -41,9 +58,26 @@ def fetch_kpis(db, fy: str = FY, branch: str = BRANCH) -> dict:
     return r
 
 
-def fetch_summary_sales(db, fy: str = FY, branch: str = BRANCH) -> pd.DataFrame:
+def fetch_summary_sales(
+    db,
+    fy: str = FY,
+    branch: str = BRANCH,
+    cre_rms: Optional[list] = None,
+    proposal_types: Optional[list] = None,
+    requirements: Optional[list] = None,
+    months: Optional[list] = None,
+) -> pd.DataFrame:
     """Fetch Summary: Sales Capture (View D)."""
-    pipeline = summary_sales_pipeline(fy, branch)
+    extra_match = {}
+    if cre_rms:
+        extra_match["cre_rm_accountable"] = {"$in": cre_rms}
+    if proposal_types:
+        extra_match["type_of_proposal"] = {"$in": proposal_types}
+    if requirements:
+        extra_match["requirement"] = {"$in": requirements}
+    if months:
+        extra_match["$expr"] = {"$in": [{"$month": "$date_referred"}, months]}
+    pipeline = summary_sales_pipeline(fy, branch, extra_match=extra_match if extra_match else None)
     rows = list(db.enquiries.aggregate(pipeline))
     if not rows:
         return pd.DataFrame()
@@ -74,9 +108,26 @@ def fetch_summary_sales(db, fy: str = FY, branch: str = BRANCH) -> pd.DataFrame:
     return df
 
 
-def fetch_business_conversion(db, fy: str = FY) -> pd.DataFrame:
+def fetch_business_conversion(
+    db,
+    fy: str = FY,
+    branch: str = BRANCH,
+    cre_rms: Optional[list] = None,
+    proposal_types: Optional[list] = None,
+    requirements: Optional[list] = None,
+    months: Optional[list] = None,
+) -> pd.DataFrame:
     """Fetch Business Conversion Ratio (View C) - monthly."""
-    pipeline = business_conversion_pipeline(fy)
+    extra_match = {"branch": branch}
+    if cre_rms:
+        extra_match["cre_rm_accountable"] = {"$in": cre_rms}
+    if proposal_types:
+        extra_match["type_of_proposal"] = {"$in": proposal_types}
+    if requirements:
+        extra_match["requirement"] = {"$in": requirements}
+    if months:
+        extra_match["$expr"] = {"$in": [{"$month": "$date_referred"}, months]}
+    pipeline = business_conversion_pipeline(fy, extra_match=extra_match if extra_match else None)
     rows = list(db.enquiries.aggregate(pipeline))
     
     # Build a complete 12-month scaffold
@@ -119,9 +170,26 @@ def fetch_business_conversion(db, fy: str = FY) -> pd.DataFrame:
     return df
 
 
-def fetch_summary_conversion(db, fy: str = FY, branch: str = BRANCH) -> pd.DataFrame:
+def fetch_summary_conversion(
+    db,
+    fy: str = FY,
+    branch: str = BRANCH,
+    cre_rms: Optional[list] = None,
+    proposal_types: Optional[list] = None,
+    requirements: Optional[list] = None,
+    months: Optional[list] = None,
+) -> pd.DataFrame:
     """Fetch Summary: Conversion Ratio (View E)."""
-    pipeline = summary_conversion_pipeline(fy, branch)
+    extra_match = {}
+    if cre_rms:
+        extra_match["cre_rm_accountable"] = {"$in": cre_rms}
+    if proposal_types:
+        extra_match["type_of_proposal"] = {"$in": proposal_types}
+    if requirements:
+        extra_match["requirement"] = {"$in": requirements}
+    if months:
+        extra_match["$expr"] = {"$in": [{"$month": "$date_referred"}, months]}
+    pipeline = summary_conversion_pipeline(fy, branch, extra_match=extra_match if extra_match else None)
     rows = list(db.enquiries.aggregate(pipeline))
     if not rows:
         return pd.DataFrame()

@@ -8,16 +8,21 @@ import streamlit as st
 st.set_page_config(page_title="Summary: Sales Capture", layout="wide")
 
 from utils.styles import inject_global_css
-from utils.auth import require_auth, is_admin, render_sidebar_branding
+from utils.auth import require_auth, is_admin
 from database.connection import get_db
 from database.queries import fetch_summary_sales
 from components.charts import horizontal_bar_premium, pie_enquiry_share
 from components.data_tables import render_html_table, export_csv_button
+from components.sidebar import render_sidebar, render_header, get_active_filters
 from utils.formatters import format_inr, format_pct
 
 require_auth()
 inject_global_css()
-render_sidebar_branding()
+render_sidebar()
+render_header()
+filters = get_active_filters()
+month_map = {"Apr": 4, "May": 5, "Jun": 6, "Jul": 7, "Aug": 8, "Sep": 9, "Oct": 10, "Nov": 11, "Dec": 12, "Jan": 1, "Feb": 2, "Mar": 3}
+month_ints = [month_map[m] for m in filters["months"]]
 
 # ── Page header ───────────────────────────────────────────────────────────────
 st.markdown(
@@ -31,7 +36,15 @@ st.markdown(
 db = get_db()
 
 with st.spinner("Loading sales data…"):
-    df = fetch_summary_sales(db)
+    df = fetch_summary_sales(
+        db,
+        fy=filters["fy"],
+        branch=filters["branch"],
+        cre_rms=filters["cre_rms"],
+        proposal_types=filters["proposal_types"],
+        requirements=filters["requirements"],
+        months=month_ints,
+    )
 
 if df.empty:
     st.warning("No data found.")
@@ -40,9 +53,13 @@ if df.empty:
 # ── Charts ────────────────────────────────────────────────────────────────────
 col1, col2 = st.columns([3, 2])
 with col1:
-    st.plotly_chart(horizontal_bar_premium(df), use_container_width=True)
+    with st.container(border=True):
+        st.markdown("**Premium Converted by CRE / RM**")
+        st.plotly_chart(horizontal_bar_premium(df), use_container_width=True)
 with col2:
-    st.plotly_chart(pie_enquiry_share(df), use_container_width=True)
+    with st.container(border=True):
+        st.markdown("**Share of Enquiries by CRE / RM**")
+        st.plotly_chart(pie_enquiry_share(df), use_container_width=True)
 
 st.divider()
 

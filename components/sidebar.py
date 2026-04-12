@@ -7,147 +7,87 @@ import streamlit as st
 from datetime import date
 
 
+MONTH_OPTIONS = ["Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "Jan", "Feb", "Mar"]
+
+
 def render_sidebar():
     """Render the sidebar with filters and navigation."""
-    
-    # Logo
-    st.markdown("""
-        <div style="text-align: center; padding: 1rem 0;">
-            <img src="https://ik.imagekit.io/salasarservices/Salasar-Logo-new.png" 
-                 style="height: 36px; filter: brightness(0) invert(1); opacity: 0.88;">
-        </div>
-    """, unsafe_allow_html=True)
-    
-    st.markdown("---")
-    
-    # Context selectors (Branch, FY)
-    st.caption("Context")
-    
-    # Initialize session state for filters
-    if "filters_init" not in st.session_state:
-        st.session_state.branch = "Ahmedabad"
-        st.session_state.fy = "2025-26"
-        st.session_state.filters_init = True
-    
-    branch = st.selectbox(
-        "Branch", 
-        ["Ahmedabad", "Surat", "Rajkot", "Vadodara"],
-        index=0
-    )
-    st.session_state.branch = branch
-    
-    fy = st.selectbox(
-        "Financial year",
-        ["2024-25", "2025-26", "2026-27"],
-        index=1
-    )
-    st.session_state.fy = fy
-    
-    st.markdown("---")
-    
-    # Filter controls
-    st.caption("Filters")
-    
-    # Get filter options from database
-    try:
-        from database.connection import get_db
-        from database.queries import fetch_filter_options
-        db = get_db()
-        opts = fetch_filter_options(db, fy=st.session_state.fy, branch=st.session_state.branch)
-        cre_rms = opts.get("cre_rms", [])
-        products = opts.get("requirements", [])
-        proposal_types = opts.get("proposal_types", ["Fresh", "Renewal", "Expanded"])
-    except Exception:
-        cre_rms = ["Kashyap", "Darshan", "Vijay", "Vipul", "Punit", "Hitesh"]
-        products = ["Standard Fire & Peril Policy", "Marine Policy", "Contractors All Risk Policy"]
-        proposal_types = ["Fresh", "Renewal", "Expanded"]
-    
-    # Multi-select filters
-    selected_cre = st.multiselect(
-        "CRE/RM",
-        cre_rms,
-        default=cre_rms
-    )
-    st.session_state.selected_cre = selected_cre
-    
-    selected_types = st.multiselect(
-        "Proposal type",
-        proposal_types,
-        default=proposal_types
-    )
-    st.session_state.selected_types = selected_types
-    
-    selected_products = st.multiselect(
-        "Product",
-        products,
-        default=products
-    )
-    st.session_state.selected_products = selected_products
-    
-    # Month slider
-    month_options = ["Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "Jan", "Feb", "Mar"]
-    month_range = st.select_slider(
-        "Month range",
-        options=month_options,
-        value=("Apr", "Mar")
-    )
-    st.session_state.month_range = month_range
-    
-    # Reset filters button
-    if st.button("Reset filters", use_container_width=True):
-        st.session_state.selected_cre = cre_rms
-        st.session_state.selected_types = proposal_types
-        st.session_state.selected_products = products
-        st.session_state.month_range = ("Apr", "Mar")
-        st.rerun()
-    
-    # Active filter indicator
-    active_count = 0
-    if set(selected_cre) != set(cre_rms): active_count += 1
-    if set(selected_types) != set(proposal_types): active_count += 1
-    if set(selected_products) != set(products): active_count += 1
-    if month_range != ("Apr", "Mar"): active_count += 1
-    
-    if active_count > 0:
-        st.caption(f"{active_count} filter(s) active")
-    
-    st.markdown("---")
-    
-    # Navigation
-    st.caption("Navigation")
-    
-    nav_options = [
-        "📊 Summary Conversion",
-        "📈 Summary Sales", 
-        "📅 Business Conversion",
-        "🔍 Sales Funnel"
-    ]
-    
-    selected_nav = st.radio(
-        "Navigation",
-        nav_options,
-        label_visibility="collapsed"
-    )
-    
-    # Map nav selection to page
-    page_map = {
-        "📊 Summary Conversion": "1_📊_Summary_Conversion",
-        "📈 Summary Sales": "2_📈_Summary_Sales",
-        "📅 Business Conversion": "3_📅_Business_Conversion",
-        "🔍 Sales Funnel": "4_🔍_Sales_Funnel"
-    }
-    
-    st.session_state.current_page = page_map.get(selected_nav, "1_📊_Summary_Conversion")
-    
-    st.markdown("---")
-    
-    # Footer - Sign out
-    if st.button("Sign out", use_container_width=True):
-        from utils.auth import logout
-        logout()
-    
-    # IRDA license text
-    st.caption("IRDA License No: 2024-25/SALASAR/001")
+    with st.sidebar:
+        st.markdown("""
+            <div style="padding: 0.6rem 0 0.2rem;">
+                <img src="https://ik.imagekit.io/salasarservices/Salasar-Logo-new.png" 
+                     style="height: 36px;">
+                <div style="margin-top: 0.4rem; font-size: 13px; font-weight: 500; color: #1A1F36;">
+                    Salasar Services — Sales analytics
+                </div>
+            </div>
+        """, unsafe_allow_html=True)
+
+        role = st.session_state.get("role", "viewer")
+        role_label = "Admin" if role == "admin" else "Viewer"
+        username = st.session_state.get("username", "Unknown")
+        st.caption(f"{username} · {role_label}")
+        st.divider()
+
+        if "filters_init" not in st.session_state:
+            st.session_state.branch = "Ahmedabad"
+            st.session_state.fy = "2025-26"
+            st.session_state.filters_init = True
+
+        branch = st.selectbox("Branch", ["Ahmedabad", "Surat", "Rajkot", "Vadodara"], index=0)
+        fy = st.selectbox("Financial year", ["2024-25", "2025-26", "2026-27"], index=1)
+        st.session_state.branch = branch
+        st.session_state.fy = fy
+        st.divider()
+
+        st.caption("Filters")
+        try:
+            from database.connection import get_db
+            from database.queries import fetch_filter_options
+            db = get_db()
+            opts = fetch_filter_options(db, fy=st.session_state.fy, branch=st.session_state.branch)
+            cre_rms = opts.get("cre_rms", [])
+            products = opts.get("requirements", [])
+            proposal_types = opts.get("proposal_types", ["Fresh", "Renewal", "Expanded"])
+        except Exception:
+            cre_rms = ["Kashyap", "Darshan", "Vijay", "Vipul", "Punit", "Hitesh"]
+            products = ["Standard Fire & Peril Policy", "Marine Policy", "Contractors All Risk Policy"]
+            proposal_types = ["Fresh", "Renewal", "Expanded"]
+
+        selected_cre = st.multiselect("CRE/RM", cre_rms, default=cre_rms)
+        selected_types = st.multiselect("Proposal type", proposal_types, default=proposal_types)
+        selected_products = st.multiselect("Product", products, default=products)
+        month_range = st.select_slider("Month range", options=MONTH_OPTIONS, value=("Apr", "Mar"))
+
+        st.session_state.selected_cre = selected_cre
+        st.session_state.selected_types = selected_types
+        st.session_state.selected_products = selected_products
+        st.session_state.month_range = month_range
+
+        if st.button("Reset filters", use_container_width=True):
+            st.session_state.selected_cre = cre_rms
+            st.session_state.selected_types = proposal_types
+            st.session_state.selected_products = products
+            st.session_state.month_range = ("Apr", "Mar")
+            st.rerun()
+
+        st.divider()
+        st.caption("Navigation")
+        nav_options = ["📊 Summary Conversion", "📈 Summary Sales", "📅 Business Conversion", "🔍 Sales Funnel"]
+        selected_nav = st.radio("Navigation", nav_options, label_visibility="collapsed")
+        page_map = {
+            "📊 Summary Conversion": "1_📊_Summary_Conversion",
+            "📈 Summary Sales": "2_📈_Summary_Sales",
+            "📅 Business Conversion": "3_📅_Business_Conversion",
+            "🔍 Sales Funnel": "4_🔍_Sales_Funnel",
+        }
+        st.session_state.current_page = page_map.get(selected_nav, "1_📊_Summary_Conversion")
+
+        st.divider()
+        if st.button("Sign out", use_container_width=True):
+            from utils.auth import logout
+            logout()
+        st.caption("IRDA License No: 2024-25/SALASAR/001")
 
 
 def render_header():
@@ -226,3 +166,19 @@ def get_filtered_data():
         match["requirement"] = {"$in": selected_products}
     
     return db, match
+
+
+def get_active_filters() -> dict:
+    """Return canonical active filters from session state."""
+    start_month, end_month = st.session_state.get("month_range", ("Apr", "Mar"))
+    start_idx = MONTH_OPTIONS.index(start_month)
+    end_idx = MONTH_OPTIONS.index(end_month)
+    selected_months = MONTH_OPTIONS[start_idx:end_idx + 1] if start_idx <= end_idx else MONTH_OPTIONS[start_idx:] + MONTH_OPTIONS[:end_idx + 1]
+    return {
+        "fy": st.session_state.get("fy", "2025-26"),
+        "branch": st.session_state.get("branch", "Ahmedabad"),
+        "cre_rms": st.session_state.get("selected_cre", []),
+        "proposal_types": st.session_state.get("selected_types", []),
+        "requirements": st.session_state.get("selected_products", []),
+        "months": selected_months,
+    }
