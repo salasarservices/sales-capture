@@ -234,109 +234,128 @@ _LOGIN_CSS = """
 
 .main { margin-left: 0 !important; }
 .main .block-container {
-    padding: 0 !important;
+    padding: 2.8rem 1rem 1rem !important;
     max-width: 100% !important;
     margin: 0 !important;
+    position: relative;
+    z-index: 2;
+}
+
+.login-page-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    background:
+        radial-gradient(circle at 15% 20%, rgba(89, 214, 210, 0.38), transparent 32%),
+        radial-gradient(circle at 75% 15%, rgba(114, 187, 239, 0.35), transparent 30%),
+        linear-gradient(125deg, #34658e 0%, #6ea0c3 55%, #b2947f 100%);
+    filter: saturate(112%);
+}
+
+.login-orb {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(2px);
+    z-index: 1;
+    pointer-events: none;
+}
+.orb-one {
+    width: 320px;
+    height: 320px;
+    left: 12%;
+    top: 17%;
+    background: rgba(67, 201, 211, 0.26);
+}
+.orb-two {
+    width: 290px;
+    height: 290px;
+    right: 16%;
+    bottom: 15%;
+    background: rgba(156, 212, 255, 0.24);
 }
 
 [data-testid="stHorizontalBlock"] {
-    gap: 0 !important;
-    padding: 0 !important;
-    align-items: stretch !important;
+    align-items: flex-start !important;
+    position: relative;
+    z-index: 3;
 }
+
 [data-testid="stColumn"] { padding: 0 !important; }
 
-[data-testid="stHorizontalBlock"] > [data-testid="stColumn"]:first-child,
-[data-testid="stHorizontalBlock"] > [data-testid="stColumn"]:first-child > div,
-[data-testid="stHorizontalBlock"] > [data-testid="stColumn"]:first-child > div > div {
-    background: linear-gradient(150deg, #042C53 0%, #185FA5 52%, #2D5FA8 100%) !important;
-    min-height: 100vh !important;
-}
-[data-testid="stHorizontalBlock"] > [data-testid="stColumn"]:first-child > div:first-child {
-    padding: 3rem 2.75rem !important;
-}
-
-[data-testid="stHorizontalBlock"] > [data-testid="stColumn"]:last-child,
-[data-testid="stHorizontalBlock"] > [data-testid="stColumn"]:last-child > div,
-[data-testid="stHorizontalBlock"] > [data-testid="stColumn"]:last-child > div > div {
-    background: #EFF2F7 !important;
-    min-height: 100vh !important;
-}
-
-[data-testid="stHorizontalBlock"] > [data-testid="stColumn"]:last-child
-  [data-testid="stHorizontalBlock"] [data-testid="stColumn"],
-[data-testid="stHorizontalBlock"] > [data-testid="stColumn"]:last-child
-  [data-testid="stHorizontalBlock"] [data-testid="stColumn"] > div,
-[data-testid="stHorizontalBlock"] > [data-testid="stColumn"]:last-child
-  [data-testid="stHorizontalBlock"] [data-testid="stColumn"] > div > div {
-    background: transparent !important;
-    min-height: unset !important;
-}
-
 [data-testid="stForm"] {
-    background: #FFFFFF !important;
-    border: 1px solid #E5E7EB !important;
-    border-radius: 8px !important;
-    padding: 2rem 1.8rem 1.5rem !important;
-    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08) !important;
-    width: 100% !important;
+    background: rgba(201, 224, 240, 0.26) !important;
+    border: 1px solid rgba(255, 255, 255, 0.26) !important;
+    border-radius: 0 !important;
+    padding: 0 1.35rem 1.35rem !important;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.14) !important;
+    backdrop-filter: blur(9px);
+    -webkit-backdrop-filter: blur(9px);
 }
 
 .stFormSubmitButton > button {
-    background: linear-gradient(90deg, #185FA5 0%, #2D5FA8 100%) !important;
+    background: #2f3d54 !important;
     color: #FFFFFF !important;
-    border: none !important;
-    border-radius: 8px !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 0 !important;
     font-weight: 700 !important;
-    font-size: 0.9rem !important;
-    letter-spacing: 1.2px !important;
-    padding: 0.75rem !important;
+    font-size: 0.95rem !important;
+    letter-spacing: 0.2px !important;
+    padding: 0.64rem !important;
     width: 100% !important;
-    text-transform: uppercase !important;
 }
-.stFormSubmitButton > button:hover { filter: brightness(0.97) !important; }
+.stFormSubmitButton > button:hover { filter: brightness(1.06) !important; }
 
 .stTextInput input {
-    border-radius: 8px !important;
-    border-color: #E5E7EB !important;
-    background: #FAFBFC !important;
+    border-radius: 0 !important;
+    border-color: rgba(255, 255, 255, 0.24) !important;
+    background: rgba(238, 246, 252, 0.82) !important;
     font-size: 0.9rem !important;
+    color: #1F2937 !important;
 }
 .stTextInput input:focus {
-    border-color: #185FA5 !important;
-    box-shadow: 0 0 0 2px rgba(24, 95, 165, 0.10) !important;
+    border-color: rgba(94, 152, 201, 0.8) !important;
+    box-shadow: 0 0 0 1px rgba(94, 152, 201, 0.35) !important;
 }
-label { font-size: 0.82rem !important; font-weight: 600 !important; color: #6B7280 !important; }
+label { font-size: 0.8rem !important; font-weight: 600 !important; color: #EBF2FA !important; }
 
-.login-brand-card {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    min-height: 100vh;
-    padding: 3rem 2.75rem;
-    box-sizing: border-box;
+.glass-login-card {
+    margin: 0 auto;
+    width: 100%;
+    min-width: 320px;
+    max-width: 390px;
+    padding: 2rem 1.35rem 1rem;
+    background: rgba(201, 224, 240, 0.26);
+    border: 1px solid rgba(255, 255, 255, 0.26);
+    border-bottom: 0;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.14);
+    backdrop-filter: blur(9px);
+    -webkit-backdrop-filter: blur(9px);
 }
-.login-brand-logo {
-    height: 42px;
+.glass-login-logo {
+    height: 56px;
     object-fit: contain;
-    filter: brightness(0) invert(1);
-    opacity: 0.88;
+    filter: brightness(0) invert(1) drop-shadow(0 2px 6px rgba(0,0,0,0.2));
     display: block;
-    margin-bottom: 2.25rem;
+    margin: 0 auto 1.6rem;
 }
-.login-brand-heading {
-    color: #FFFFFF !important;
-    font-size: 2.4rem !important;
-    font-weight: 800 !important;
-    line-height: 1.18 !important;
-    margin: 0 0 0.75rem !important;
-    letter-spacing: -0.5px !important;
+.glass-login-title {
+    text-align: center;
+    color: #F8FAFC !important;
+    font-size: 2rem !important;
+    font-weight: 700 !important;
+    margin: 0 0 0.35rem !important;
 }
-.login-brand-sub {
-    color: rgba(255,255,255,0.52);
-    font-size: 0.88rem;
-    margin: 0;
-    line-height: 1.5;
+.glass-login-subtitle {
+    text-align: center;
+    color: rgba(238, 248, 255, 0.87);
+    font-size: 0.95rem;
+    margin: 0 0 0.4rem;
+}
+.login-footnote {
+    text-align: center;
+    color: rgba(237, 248, 255, 0.82);
+    font-size: 0.74rem;
+    margin-top: 0.85rem;
 }
 </style>
 """

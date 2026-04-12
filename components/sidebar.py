@@ -72,16 +72,28 @@ def render_sidebar():
             st.rerun()
 
         st.divider()
-        st.caption("Navigation")
-        nav_options = ["📊 Summary Conversion", "📈 Summary Sales", "📅 Business Conversion", "🔍 Sales Funnel"]
-        selected_nav = st.radio("Navigation", nav_options, label_visibility="collapsed")
-        page_map = {
-            "📊 Summary Conversion": "1_📊_Summary_Conversion",
-            "📈 Summary Sales": "2_📈_Summary_Sales",
-            "📅 Business Conversion": "3_📅_Business_Conversion",
-            "🔍 Sales Funnel": "4_🔍_Sales_Funnel",
-        }
-        st.session_state.current_page = page_map.get(selected_nav, "1_📊_Summary_Conversion")
+        st.caption("Tabs")
+        st.page_link("pages/3_📅_Business_Conversion.py", label="Business Conversion Ratio", icon="1️⃣")
+        st.page_link("pages/2_📈_Summary_Sales.py", label="Sales Capture Summary", icon="2️⃣")
+        st.page_link("pages/1_📊_Summary_Conversion.py", label="Conversion Ratio Summary", icon="3️⃣")
+        st.page_link("pages/5_🗂️_Master_Data.py", label="Master Data", icon="4️⃣")
+        st.markdown(
+            """
+            <div style="
+                margin-top:0.35rem;
+                width: fit-content;
+                padding: 0.22rem 0.62rem;
+                border-radius: 999px;
+                background: #FFF7E8;
+                border: 1px solid #FBD38D;
+                color: #9A5B00;
+                font-size: 0.69rem;
+                font-weight: 600;
+                letter-spacing: 0.1px;
+            ">APR 25 to MAR 26</div>
+            """,
+            unsafe_allow_html=True,
+        )
 
         st.divider()
         if st.button("Sign out", use_container_width=True):

@@ -41,47 +41,43 @@ def login_form() -> bool:
 
     from utils.styles import inject_login_css
     inject_login_css()
+    st.markdown('<div class="login-page-bg"></div>', unsafe_allow_html=True)
+    st.markdown('<div class="login-orb orb-one"></div><div class="login-orb orb-two"></div>', unsafe_allow_html=True)
 
-    left_col, right_col = st.columns([5, 7])
-
-    with left_col:
+    _, center_col, _ = st.columns([1.6, 1.1, 1.6])
+    with center_col:
         st.markdown(
-            f'<div class="login-brand-card">'
-            f'<img src="{LOGO_URL}" class="login-brand-logo">'
-            f'<h1 class="login-brand-heading">Sales Enquiry<br>Dashboard</h1>'
-            f'<p class="login-brand-sub">Ahmedabad &nbsp;&middot;&nbsp; FY 2025-26</p>'
-            f'</div>',
+            f"""
+            <div class="glass-login-card">
+                <img src="{LOGO_URL}" class="glass-login-logo">
+                <h1 class="glass-login-title">Business Analytics Portal</h1>
+                <p class="glass-login-subtitle">Sign in to continue</p>
+            </div>
+            """,
             unsafe_allow_html=True,
         )
 
-    with right_col:
-        st.markdown('<div style="height:18vh;"></div>', unsafe_allow_html=True)
+        with st.form("login_form"):
+            username = st.text_input("Username", placeholder="Enter username", key="_login_user")
+            password = st.text_input("Password", placeholder="••••••••", type="password", key="_login_pass")
+            submitted = st.form_submit_button("Sign In", use_container_width=True)
 
-        _, form_col, _ = st.columns([1, 8, 1])
-        with form_col:
-            st.markdown(f'<img src="{LOGO_URL}" style="height:36px;object-fit:contain;display:block;margin-bottom:1.25rem;">', unsafe_allow_html=True)
-            st.markdown('<h2 style="font-size:1.85rem;font-weight:700;color:#1E293B;margin:0 0 0.2rem;letter-spacing:-0.3px;">Login</h2>', unsafe_allow_html=True)
-            st.markdown('<p style="color:#64748B;font-size:0.83rem;margin:0 0 1.5rem;">Enter your dashboard credentials</p>', unsafe_allow_html=True)
+        st.markdown('<p class="login-footnote">© Salasar Services Insurance Brokers Pvt. Ltd. 2026</p>', unsafe_allow_html=True)
 
-            with st.form("login_form"):
-                username = st.text_input("Username", placeholder="Enter username", key="_login_user")
-                password = st.text_input("Password", placeholder="••••••••", type="password", key="_login_pass")
-                submitted = st.form_submit_button("SIGN IN", use_container_width=True)
+    if submitted:
+        try:
+            user_cfg = st.secrets["credentials"][username]
+        except (KeyError, Exception):
+            user_cfg = None
 
-        if submitted:
-            try:
-                user_cfg = st.secrets["credentials"][username]
-            except (KeyError, Exception):
-                user_cfg = None
-
-            if user_cfg and _verify_password(password, user_cfg["password_hash"]):
-                st.session_state["authenticated"] = True
-                st.session_state["username"] = username
-                st.session_state["role"] = user_cfg.get("role", "viewer")
-                st.rerun()
-            else:
-                with form_col:
-                    st.error("Invalid username or password.")
+        if user_cfg and _verify_password(password, user_cfg["password_hash"]):
+            st.session_state["authenticated"] = True
+            st.session_state["username"] = username
+            st.session_state["role"] = user_cfg.get("role", "viewer")
+            st.rerun()
+        else:
+            with center_col:
+                st.error("Invalid username or password.")
 
     return False
 
