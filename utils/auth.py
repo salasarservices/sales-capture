@@ -39,7 +39,6 @@ def login_form() -> bool:
     if st.session_state.get("authenticated"):
         return True
 
-    # Glassmorphism login CSS
     st.markdown("""
         <style>
         /* Hide sidebar on login */
@@ -57,105 +56,124 @@ def login_form() -> bool:
         
         /* Full screen gradient background */
         [data-testid="stAppViewContainer"] > section {
-            background: linear-gradient(135deg, #1555AB 0%, #1e6ad1 30%, #2a7dd4 60%, #3a8ecf 100%) !important;
+            background:
+                radial-gradient(circle at 14% 72%, rgba(34, 165, 214, 0.38) 0%, rgba(34, 165, 214, 0.0) 43%),
+                radial-gradient(circle at 82% 32%, rgba(130, 158, 233, 0.30) 0%, rgba(130, 158, 233, 0.0) 44%),
+                linear-gradient(122deg, #4BB4BB 0%, #4A86C8 44%, #A3938A 100%) !important;
             min-height: 100vh;
         }
-        
+
+        [data-testid="stAppViewContainer"] > section::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            pointer-events: none;
+        }
+
         /* Glassmorphism login container */
         .login-container {
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            padding: 20px;
+            padding: 24px;
+            position: relative;
+            z-index: 1;
         }
-        
+
         .glass-card {
-            background: rgba(255, 255, 255, 0.12) !important;
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.18) !important;
-            border-radius: 24px !important;
-            padding: 50px 45px !important;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25) !important;
-            max-width: 420px;
-            width: 100%;
+            background: rgba(157, 188, 204, 0.32) !important;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            border-radius: 2px !important;
+            padding: 46px 26px 24px !important;
+            box-shadow: 0 28px 75px rgba(0, 0, 0, 0.25) !important;
+            max-width: 360px;
+            width: 360px;
         }
-        
+
         .glass-logo {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 54px;
         }
+
         .glass-logo img {
-            height: 55px;
+            height: 74px;
             filter: brightness(0) invert(1);
-            opacity: 0.95;
+            opacity: 0.96;
         }
-        
-        .glass-title {
-            text-align: center;
-            color: white;
-            font-size: 28px;
-            font-weight: 700;
-            margin: 0 0 8px 0;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        
+
         .glass-subtitle {
             text-align: center;
-            color: rgba(255, 255, 255, 0.75);
-            font-size: 14px;
-            margin: 0 0 35px 0;
+            color: rgba(255, 255, 255, 0.92);
+            font-size: 17px;
+            font-weight: 700;
+            margin: 0 0 26px 0;
+            line-height: 1.2;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.18);
         }
-        
+
+        .glass-divider {
+            margin: 0 0 28px 0;
+            border: 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.26);
+        }
+
         /* Form styling */
         .glass-form label {
-            color: rgba(255, 255, 255, 0.85) !important;
-            font-size: 13px !important;
+            color: rgba(255, 255, 255, 0.0) !important;
+            font-size: 0 !important;
             font-weight: 500 !important;
-            margin-bottom: 8px !important;
+            margin-bottom: 2px !important;
             display: block;
         }
-        
+
         .glass-form .stTextInput > div > div > input {
-            background: rgba(255, 255, 255, 0.1) !important;
-            border: 1px solid rgba(255, 255, 255, 0.2) !important;
-            border-radius: 12px !important;
-            color: white !important;
-            padding: 14px 16px !important;
+            background: rgba(236, 242, 249, 0.92) !important;
+            border: 1px solid rgba(255, 255, 255, 0.45) !important;
+            border-radius: 1px !important;
+            color: #1E2A39 !important;
+            padding: 14px 14px !important;
             font-size: 14px !important;
+            font-weight: 500 !important;
         }
-        
+
         .glass-form .stTextInput > div > div > input::placeholder {
-            color: rgba(255, 255, 255, 0.5) !important;
+            color: rgba(46, 64, 84, 0.56) !important;
         }
-        
+
         .glass-form .stTextInput > div > div > input:focus {
-            border-color: rgba(255, 255, 255, 0.5) !important;
-            background: rgba(255, 255, 255, 0.15) !important;
-            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1) !important;
+            border-color: rgba(198, 225, 240, 0.95) !important;
+            box-shadow: 0 0 0 2px rgba(126, 174, 201, 0.35) !important;
         }
-        
+
+        .glass-form .stTextInput {
+            margin-bottom: 0.36rem;
+        }
+
         /* Login button */
         .glass-form .stButton > button {
-            background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%) !important;
-            color: #1555AB !important;
-            border: none !important;
-            border-radius: 12px !important;
+            background: #24354A !important;
+            color: #FFFFFF !important;
+            border: 1px solid rgba(255, 255, 255, 0.22) !important;
+            border-radius: 1px !important;
             font-weight: 700 !important;
-            font-size: 15px !important;
-            padding: 16px !important;
+            font-size: 16px !important;
+            padding: 13px !important;
             width: 100% !important;
-            margin-top: 20px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            margin-top: 0.5rem;
+            transition: all 0.2s ease;
         }
-        
+
         .glass-form .stButton > button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            background: #1A2A3E !important;
+            border-color: rgba(255, 255, 255, 0.35) !important;
         }
-        
+
         /* Error message */
         .glass-error {
             background: rgba(255, 100, 100, 0.2);
@@ -167,13 +185,13 @@ def login_form() -> bool:
             text-align: center;
             margin-top: 15px;
         }
-        
+
         /* Footer text */
         .glass-footer {
             text-align: center;
-            color: rgba(255, 255, 255, 0.5);
+            color: rgba(255, 255, 255, 0.64);
             font-size: 11px;
-            margin-top: 25px;
+            margin-top: 18px;
         }
         </style>
     """, unsafe_allow_html=True)
@@ -186,14 +204,16 @@ def login_form() -> bool:
             <div class="glass-logo">
                 <img src="https://ik.imagekit.io/salasarservices/Salasar-Logo-new.png" alt="Salasar">
             </div>
-            <h1 class="glass-title">Welcome Back</h1>
-            <p class="glass-subtitle">Sign in to access your dashboard</p>
+            <p class="glass-subtitle">Circular Analysis Tool</p>
+            <hr class="glass-divider">
     """, unsafe_allow_html=True)
-    
+
+    st.markdown('<div class="glass-form">', unsafe_allow_html=True)
     with st.form("login_form", clear_on_submit=True):
-        username = st.text_input("Username", placeholder="Enter your username", key="login_username")
-        password = st.text_input("Password", placeholder="••••••••", type="password", key="login_password")
+        username = st.text_input("Username", placeholder="sal.branch", key="login_username")
+        password = st.text_input("Password", placeholder="••••••••••••••", type="password", key="login_password")
         submitted = st.form_submit_button("Sign in", use_container_width=True)
+    st.markdown('</div>', unsafe_allow_html=True)
     
     error_message = None
     if submitted:
