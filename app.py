@@ -14,7 +14,7 @@ st.set_page_config(
 )
 
 from utils.styles import inject_global_css
-from utils.auth import login_form, is_admin
+from utils.auth import login_form
 
 # ── Auth gate ────────────────────────────────────────────────────────────────
 if not st.session_state.get("authenticated"):
@@ -24,7 +24,7 @@ if not st.session_state.get("authenticated"):
 inject_global_css()
 
 # ── Import sidebar and header ────────────────────────────────────────────────
-from components.sidebar import render_sidebar, render_header, get_filtered_data
+from components.sidebar import render_sidebar, render_header, get_active_filters
 
 # Render sidebar
 render_sidebar()
@@ -33,44 +33,8 @@ render_sidebar()
 render_header()
 
 # ── Home page ─────────────────────────────────────────────────────────────────
-import datetime
-
-today = datetime.date.today().strftime("%d %b %Y")
-branch = st.session_state.get("branch", "Ahmedabad")
-fy = st.session_state.get("fy", "2025-26")
-role_label = "Admin" if is_admin() else "Viewer"
-username = st.session_state.get("username", "Unknown")
-
-st.markdown(f"""
-    <div style="
-        background: linear-gradient(135deg, #042C53 0%, #185FA5 100%);
-        padding: 1.4rem 2rem;
-        color: white;
-        margin-bottom: 1rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    ">
-        <div>
-            <h2 style="color: white; margin: 0 0 0.2rem; font-size: 1.25rem;">
-                Welcome back, {username}!
-            </h2>
-            <p style="color: rgba(255,255,255,0.70); margin: 0; font-size: 0.87rem;">
-                {branch} Branch · FY {fy} · {today}
-            </p>
-        </div>
-        <div style="
-            background: rgba(255,255,255,0.14);
-            border: 1px solid rgba(255,255,255,0.22);
-            padding: 0.28rem 0.85rem;
-            font-size: 0.80rem;
-            font-weight: 600;
-            color: rgba(255,255,255,0.95);
-        ">
-            🔐 {role_label} Access
-        </div>
-    </div>
-""", unsafe_allow_html=True)
+st.markdown('<p class="section-heading">Dashboard Overview</p>', unsafe_allow_html=True)
+st.caption("Use the sidebar filters to refresh KPI and page-level modules instantly.")
 
 # ── Live KPI summary ──────────────────────────────────────────────────────────
 from database.connection import get_db
@@ -79,7 +43,18 @@ from components.kpi_cards import render_kpi_row
 
 db = get_db()
 with st.spinner("Loading summary…"):
-    kpis = fetch_kpis(db, fy=st.session_state.get("fy", "2025-26"), branch=st.session_state.get("branch", "Ahmedabad"))
+    filters = get_active_filters()
+    month_map = {"Apr": 4, "May": 5, "Jun": 6, "Jul": 7, "Aug": 8, "Sep": 9, "Oct": 10, "Nov": 11, "Dec": 12, "Jan": 1, "Feb": 2, "Mar": 3}
+    month_ints = [month_map[m] for m in filters["months"]]
+    kpis = fetch_kpis(
+        db,
+        fy=filters["fy"],
+        branch=filters["branch"],
+        cre_rms=filters["cre_rms"],
+        proposal_types=filters["proposal_types"],
+        requirements=filters["requirements"],
+        months=month_ints,
+    )
 
 render_kpi_row(kpis)
 

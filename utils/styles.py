@@ -160,10 +160,9 @@ hr { border-color: #E5E7EB !important; margin: 0.75rem 0 !important; }
 
 /* ── Chart container ──────────────────────────────────────────────────────── */
 .stPlotlyChart {
-    background: #FFFFFF !important;
-    border: 0.5px solid #E5E7EB;
-    border-radius: 8px;
-    padding: 14px !important;
+    background: transparent !important;
+    border: 0 !important;
+    padding: 0 !important;
 }
 
 /* ── Data tables ──────────────────────────────────────────────────────────── */
@@ -204,9 +203,7 @@ hr { border-color: #E5E7EB !important; margin: 0.75rem 0 !important; }
     cursor: default;
 }
 .nav-card:hover { 
-    box-shadow: 0 4px 18px rgba(24, 95, 165, 0.14); 
-    border-left-color: #EF9F27; 
-    transform: translateX(3px); 
+    border-left-color: #185FA5;
 }
 .nav-card-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.35rem; }
 .nav-card-icon   { font-size: 1.15rem; }
