@@ -71,19 +71,15 @@ def login_form() -> bool:
             max-width: 100% !important;
             padding: 0 1rem !important;
             display: flex;
-            align-items: center;
+            align-items: stretch;
             justify-content: center;
+            flex-direction: column;
             position: relative;
             z-index: 1;
         }
 
-        .main .block-container > div {
-            width: 100%;
-            max-width: 460px;
-        }
-
         div[data-testid="stForm"] {
-            background: rgba(255, 255, 255, 0.16);
+            background: rgb(0 150 136 / 46%);
             border: 1px solid rgba(255, 255, 255, 0.28);
             box-shadow: 0 18px 55px rgba(6, 27, 49, 0.28);
             backdrop-filter: blur(16px);
@@ -166,28 +162,33 @@ def login_form() -> bool:
     )
 
     error_message = None
-    with st.form("login_form", clear_on_submit=True):
-        st.markdown(
-            f"""
-            <div class="login-logo-wrap">
-                <img src="{LOGO_URL}" alt="Salasar">
-            </div>
-            <p class="login-title">Circular Analysis Tool</p>
-            <hr class="login-divider">
-            """,
-            unsafe_allow_html=True,
-        )
+    _, center_col, _ = st.columns([1, 1.8, 1])
+    with center_col:
+        with st.form("login_form", clear_on_submit=True):
+            st.markdown(
+                f"""
+                <div class="login-logo-wrap">
+                    <img src="{LOGO_URL}" alt="Salasar">
+                </div>
+                <p class="login-title">Sales Capture Dashboard - Ahmedabad</p>
+                <hr class="login-divider">
+                """,
+                unsafe_allow_html=True,
+            )
 
-        username = st.text_input("Username", placeholder="sal.branch", key="login_username")
-        password = st.text_input(
-            "Password",
-            placeholder="••••••••••••••",
-            type="password",
-            key="login_password",
-        )
-        submitted = st.form_submit_button("Sign in", width="stretch")
+            username = st.text_input("Username", placeholder="sal.branch", key="login_username")
+            password = st.text_input(
+                "Password",
+                placeholder="••••••••••••••",
+                type="password",
+                key="login_password",
+            )
+            submitted = st.form_submit_button("Sign in", width="stretch")
 
-        st.markdown('<div class="login-footer">IRDA License No: 2024-25/SALASAR/001</div>', unsafe_allow_html=True)
+            st.markdown(
+                '<div class="login-footer">© Salasar Services (Insurance Brokers) Pvt. Ltd 2026</div>',
+                unsafe_allow_html=True,
+            )
 
     if submitted:
         username = st.session_state.get("login_username", "")
