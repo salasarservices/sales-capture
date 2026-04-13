@@ -1,34 +1,36 @@
 """
 Plotly chart builders for the Salasar dashboard.
-- Subtle plot background (not stark white)
-- Transparent paper background (card CSS provides container colour)
-- X-axis labels rotated -30° with automargin to prevent overlap
-- No rounded corners (handled by CSS)
+Rose Pine-inspired visual system applied across all charts.
 """
 
 import plotly.graph_objects as go
 import pandas as pd
 
-# ── Brand palette ─────────────────────────────────────────────────────────────
-COLOR_CONVERTED     = "#15803D"
-COLOR_NOT_CONVERTED = "#B91C1C"
-COLOR_NAVY          = "#1B3A6B"
-COLOR_NAVY_LT       = "#2D5FA8"
-COLOR_GOLD          = "#C8860A"
-COLOR_AMBER         = "#D97706"
-COLOR_BLUE          = "#2563EB"
-COLOR_PURPLE        = "#7C3AED"
-COLOR_TEAL          = "#0D9488"
+# ── Rose Pine palette ────────────────────────────────────────────────────────
+COLOR_BASE          = "#191724"
+COLOR_SURFACE       = "#1f1d2e"
+COLOR_OVERLAY       = "#26233a"
+COLOR_MUTED         = "#6e6a86"
+COLOR_TEXT          = "#e0def4"
+COLOR_CONVERTED     = "#9ccfd8"   # foam
+COLOR_NOT_CONVERTED = "#eb6f92"   # love
+COLOR_NAVY          = "#31748f"   # pine
+COLOR_NAVY_LT       = "#c4a7e7"   # iris
+COLOR_GOLD          = "#f6c177"   # gold
+COLOR_AMBER         = "#ebbcba"   # rose
+COLOR_BLUE          = "#31748f"   # pine
+COLOR_PURPLE        = "#c4a7e7"   # iris
+COLOR_TEAL          = "#9ccfd8"   # foam
 
 # Base layout dict — no margin (added per-chart via _DEFAULT_MARGIN or override)
 _LAYOUT_BASE = dict(
-    font=dict(family="Inter, -apple-system, sans-serif", size=12, color="#1E293B"),
-    plot_bgcolor="rgba(247, 249, 252, 1)",   # very subtle blue-gray — NOT white
-    paper_bgcolor="rgba(0, 0, 0, 0)",         # transparent; CSS card provides white bg
+    font=dict(family="Inter, -apple-system, sans-serif", size=12, color=COLOR_TEXT),
+    plot_bgcolor=COLOR_SURFACE,
+    paper_bgcolor="rgba(0, 0, 0, 0)",
     hoverlabel=dict(
-        bgcolor="#1B3A6B",
-        font_color="#FFFFFF",
-        bordercolor="#1B3A6B",
+        bgcolor=COLOR_OVERLAY,
+        font_color=COLOR_TEXT,
+        bordercolor=COLOR_NAVY,
         font_size=12,
     ),
 )
@@ -45,15 +47,15 @@ def _apply_base(fig: go.Figure, **extra) -> go.Figure:
         zeroline=False,
         tickangle=-30,          # rotate labels to prevent overlap
         automargin=True,        # auto-expand margin when labels overflow
-        tickfont=dict(size=11, color="#64748B"),
-        title_font=dict(size=12, color="#64748B"),
+        tickfont=dict(size=11, color=COLOR_MUTED),
+        title_font=dict(size=12, color=COLOR_MUTED),
     )
     fig.update_yaxes(
-        gridcolor="#E8EDF4",
+        gridcolor="#393552",
         gridwidth=1,
         zeroline=False,
-        tickfont=dict(size=11, color="#64748B"),
-        title_font=dict(size=12, color="#64748B"),
+        tickfont=dict(size=11, color=COLOR_MUTED),
+        title_font=dict(size=12, color=COLOR_MUTED),
     )
     return fig
 
@@ -186,7 +188,7 @@ def pie_enquiry_share(df: pd.DataFrame) -> go.Figure:
         legend=dict(orientation="v", font=dict(size=11), bgcolor="rgba(0,0,0,0)"),
         annotations=[dict(
             text="Enquiries", x=0.5, y=0.5, showarrow=False,
-            font=dict(size=12, color="#64748B"),
+            font=dict(size=12, color=COLOR_MUTED),
         )],
     )
     return fig
@@ -233,16 +235,16 @@ def dual_axis_monthly(df: pd.DataFrame) -> go.Figure:
         xaxis_title="Month",
         yaxis=dict(
             title="No. of Enquiries", side="left",
-            showgrid=True, gridcolor="#E8EDF4",
-            tickfont=dict(size=11, color="#64748B"),
-            title_font=dict(size=12, color="#64748B"),
+            showgrid=True, gridcolor="#393552",
+            tickfont=dict(size=11, color=COLOR_MUTED),
+            title_font=dict(size=12, color=COLOR_MUTED),
         ),
         yaxis2=dict(
             title="Conversion %", side="right", overlaying="y",
             tickformat=".1f", ticksuffix="%",
             showgrid=False,
-            tickfont=dict(size=11, color="#64748B"),
-            title_font=dict(size=12, color="#64748B"),
+            tickfont=dict(size=11, color=COLOR_MUTED),
+            title_font=dict(size=12, color=COLOR_MUTED),
         ),
         legend=dict(orientation="h", yanchor="bottom", y=-0.38,
                     bgcolor="rgba(0,0,0,0)", font=dict(size=12)),
@@ -258,12 +260,12 @@ def funnel_chart(total: int, quoted: int, closed: int) -> go.Figure:
         y=["Total Enquiries", "Quote Submitted", "Business Closed"],
         x=[total, quoted, closed],
         textinfo="value+percent initial",
-        textfont=dict(size=13, color="#FFFFFF"),
+        textfont=dict(size=13, color=COLOR_BASE),
         marker=dict(
             color=[COLOR_NAVY, COLOR_GOLD, COLOR_CONVERTED],
-            line=dict(color=["#FFFFFF"] * 3, width=1),
+            line=dict(color=[COLOR_SURFACE] * 3, width=1),
         ),
-        connector=dict(line=dict(color="#D1D9E6", width=1)),
+        connector=dict(line=dict(color="#393552", width=1)),
         hovertemplate=(
             "<b>%{label}</b><br>Count: %{value}<br>%{percentInitial} of total<extra></extra>"
         ),

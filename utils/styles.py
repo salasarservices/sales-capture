@@ -160,8 +160,8 @@ hr { border-color: #E5E7EB !important; margin: 0.75rem 0 !important; }
 
 /* ── Chart container ──────────────────────────────────────────────────────── */
 .stPlotlyChart {
-    background: #FFFFFF !important;
-    border: 0.5px solid #E5E7EB;
+    background: #1F1D2E !important;
+    border: 0.5px solid #393552;
     border-radius: 8px;
     padding: 14px !important;
 }
