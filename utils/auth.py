@@ -212,7 +212,7 @@ def login_form() -> bool:
     with st.form("login_form", clear_on_submit=True):
         username = st.text_input("Username", placeholder="sal.branch", key="login_username")
         password = st.text_input("Password", placeholder="••••••••••••••", type="password", key="login_password")
-        submitted = st.form_submit_button("Sign in", use_container_width=True)
+        submitted = st.form_submit_button("Sign in", width="stretch")
     st.markdown('</div>', unsafe_allow_html=True)
     
     error_message = None
@@ -256,3 +256,17 @@ def logout():
     for key in ["authenticated", "username", "role"]:
         st.session_state.pop(key, None)
     st.rerun()
+
+
+def render_sidebar_branding():
+    """Backward-compatible sidebar branding for legacy page modules."""
+    st.sidebar.markdown(
+        """
+        <div style="text-align:center; padding: 0.5rem 0.4rem 0.8rem;">
+            <img src="https://ik.imagekit.io/salasarservices/Salasar-Logo-new.png"
+                 alt="Salasar"
+                 style="width:170px; max-width:100%; filter: brightness(0) invert(1); opacity:0.96;">
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
