@@ -35,199 +35,172 @@ def require_auth():
 
 
 def login_form() -> bool:
-    """Render glassmorphism login form."""
+    """Render centered glassmorphism login form."""
     if st.session_state.get("authenticated"):
         return True
 
-    st.markdown("""
+    st.markdown(
+        """
         <style>
-        /* Hide sidebar on login */
         [data-testid="stSidebar"],
-        [data-testid="stSidebarCollapsedControl"] {
+        [data-testid="stSidebarCollapsedControl"],
+        [data-testid="stHeader"] {
             display: none !important;
         }
-        
-        .main { margin-left: 0 !important; }
-        .main .block-container {
-            padding: 0 !important;
-            max-width: 100% !important;
-            margin: 0 !important;
-        }
-        
-        /* Full screen gradient background */
-        [data-testid="stAppViewContainer"] > section {
+
+        [data-testid="stAppViewContainer"] {
             background:
-                radial-gradient(circle at 14% 72%, rgba(34, 165, 214, 0.38) 0%, rgba(34, 165, 214, 0.0) 43%),
-                radial-gradient(circle at 82% 32%, rgba(130, 158, 233, 0.30) 0%, rgba(130, 158, 233, 0.0) 44%),
-                linear-gradient(122deg, #4BB4BB 0%, #4A86C8 44%, #A3938A 100%) !important;
-            min-height: 100vh;
+                radial-gradient(circle at 12% 20%, rgba(141, 196, 255, 0.35) 0%, rgba(141, 196, 255, 0) 42%),
+                radial-gradient(circle at 88% 84%, rgba(125, 241, 220, 0.30) 0%, rgba(125, 241, 220, 0) 40%),
+                linear-gradient(130deg, #1f4e79 0%, #315f8a 45%, #5f7fa6 100%);
         }
 
-        [data-testid="stAppViewContainer"] > section::before {
+        [data-testid="stAppViewContainer"]::before {
             content: "";
             position: fixed;
             inset: 0;
             background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
             pointer-events: none;
+            z-index: 0;
         }
 
-        /* Glassmorphism login container */
-        .login-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        .main .block-container {
             min-height: 100vh;
-            padding: 24px;
+            max-width: 100% !important;
+            padding: 0 1rem !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             position: relative;
             z-index: 1;
         }
 
-        .glass-card {
-            background: rgba(157, 188, 204, 0.32) !important;
+        .main .block-container > div {
+            width: 100%;
+            max-width: 460px;
+        }
+
+        div[data-testid="stForm"] {
+            background: rgba(255, 255, 255, 0.16);
+            border: 1px solid rgba(255, 255, 255, 0.28);
+            box-shadow: 0 18px 55px rgba(6, 27, 49, 0.28);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.2) !important;
-            border-radius: 2px !important;
-            padding: 46px 26px 24px !important;
-            box-shadow: 0 28px 75px rgba(0, 0, 0, 0.25) !important;
-            max-width: 360px;
-            width: 360px;
+            border-radius: 20px;
+            padding: 2rem 1.4rem 1.2rem;
         }
 
-        .glass-logo {
+        .login-logo-wrap {
             text-align: center;
-            margin-bottom: 54px;
+            margin-bottom: 1.2rem;
         }
 
-        .glass-logo img {
-            height: 74px;
+        .login-logo-wrap img {
+            width: 160px;
+            max-width: 60%;
             filter: brightness(0) invert(1);
-            opacity: 0.96;
+            opacity: 0.95;
         }
 
-        .glass-subtitle {
+        .login-title {
             text-align: center;
-            color: rgba(255, 255, 255, 0.92);
-            font-size: 17px;
+            color: rgba(255, 255, 255, 0.95);
+            font-size: 1.05rem;
             font-weight: 700;
-            margin: 0 0 26px 0;
-            line-height: 1.2;
-            text-shadow: 0 2px 8px rgba(0,0,0,0.18);
+            margin: 0.35rem 0 1.1rem;
         }
 
-        .glass-divider {
-            margin: 0 0 28px 0;
+        .login-divider {
             border: 0;
-            border-top: 1px solid rgba(255, 255, 255, 0.26);
+            border-top: 1px solid rgba(255, 255, 255, 0.30);
+            margin: 0 0 1rem;
         }
 
-        /* Form styling */
-        .glass-form label {
-            color: rgba(255, 255, 255, 0.0) !important;
-            font-size: 0 !important;
-            font-weight: 500 !important;
-            margin-bottom: 2px !important;
-            display: block;
+        div[data-testid="stForm"] label {
+            color: rgba(255, 255, 255, 0.92) !important;
+            font-weight: 600 !important;
+            font-size: 0.92rem !important;
         }
 
-        .glass-form .stTextInput > div > div > input {
-            background: rgba(236, 242, 249, 0.92) !important;
+        div[data-testid="stForm"] .stTextInput input {
+            background: rgba(238, 244, 250, 0.94) !important;
             border: 1px solid rgba(255, 255, 255, 0.45) !important;
-            border-radius: 1px !important;
-            color: #1E2A39 !important;
-            padding: 14px 14px !important;
-            font-size: 14px !important;
-            font-weight: 500 !important;
+            border-radius: 10px !important;
+            color: #16263a !important;
+            padding: 0.68rem 0.8rem !important;
         }
 
-        .glass-form .stTextInput > div > div > input::placeholder {
-            color: rgba(46, 64, 84, 0.56) !important;
-        }
-
-        .glass-form .stTextInput > div > div > input:focus {
-            border-color: rgba(198, 225, 240, 0.95) !important;
-            box-shadow: 0 0 0 2px rgba(126, 174, 201, 0.35) !important;
-        }
-
-        .glass-form .stTextInput {
-            margin-bottom: 0.36rem;
-        }
-
-        /* Login button */
-        .glass-form .stButton > button {
-            background: #24354A !important;
-            color: #FFFFFF !important;
-            border: 1px solid rgba(255, 255, 255, 0.22) !important;
-            border-radius: 1px !important;
-            font-weight: 700 !important;
-            font-size: 16px !important;
-            padding: 13px !important;
-            width: 100% !important;
-            margin-top: 0.5rem;
-            transition: all 0.2s ease;
-        }
-
-        .glass-form .stButton > button:hover {
-            background: #1A2A3E !important;
-            border-color: rgba(255, 255, 255, 0.35) !important;
-        }
-
-        /* Error message */
-        .glass-error {
-            background: rgba(255, 100, 100, 0.2);
-            border: 1px solid rgba(255, 100, 100, 0.3);
+        div[data-testid="stForm"] .stButton > button,
+        div[data-testid="stForm"] .stFormSubmitButton > button {
+            width: 100%;
             border-radius: 10px;
-            padding: 12px;
-            color: white;
-            font-size: 13px;
-            text-align: center;
-            margin-top: 15px;
+            background: linear-gradient(110deg, #123a64 0%, #0d4a73 100%);
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            color: #fff;
+            font-weight: 700;
+            padding: 0.62rem 0.75rem;
         }
 
-        /* Footer text */
-        .glass-footer {
+        .login-footer {
             text-align: center;
-            color: rgba(255, 255, 255, 0.64);
-            font-size: 11px;
-            margin-top: 18px;
+            color: rgba(255, 255, 255, 0.75);
+            font-size: 0.72rem;
+            margin-top: 0.65rem;
+        }
+
+        .login-error {
+            margin-top: 0.75rem;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 140, 140, 0.45);
+            background: rgba(180, 44, 44, 0.22);
+            color: #fff;
+            font-size: 0.82rem;
+            padding: 0.55rem 0.65rem;
+            text-align: center;
         }
         </style>
-    """, unsafe_allow_html=True)
+        """,
+        unsafe_allow_html=True,
+    )
 
-    # Render login form
-    st.markdown('<div class="login-container">', unsafe_allow_html=True)
-    
-    st.markdown("""
-        <div class="glass-card">
-            <div class="glass-logo">
-                <img src="https://ik.imagekit.io/salasarservices/Salasar-Logo-new.png" alt="Salasar">
-            </div>
-            <p class="glass-subtitle">Circular Analysis Tool</p>
-            <hr class="glass-divider">
-    """, unsafe_allow_html=True)
-
-    st.markdown('<div class="glass-form">', unsafe_allow_html=True)
-    with st.form("login_form", clear_on_submit=True):
-        username = st.text_input("Username", placeholder="sal.branch", key="login_username")
-        password = st.text_input("Password", placeholder="••••••••••••••", type="password", key="login_password")
-        submitted = st.form_submit_button("Sign in", width="stretch")
-    st.markdown('</div>', unsafe_allow_html=True)
-    
     error_message = None
+    with st.form("login_form", clear_on_submit=True):
+        st.markdown(
+            f"""
+            <div class="login-logo-wrap">
+                <img src="{LOGO_URL}" alt="Salasar">
+            </div>
+            <p class="login-title">Circular Analysis Tool</p>
+            <hr class="login-divider">
+            """,
+            unsafe_allow_html=True,
+        )
+
+        username = st.text_input("Username", placeholder="sal.branch", key="login_username")
+        password = st.text_input(
+            "Password",
+            placeholder="••••••••••••••",
+            type="password",
+            key="login_password",
+        )
+        submitted = st.form_submit_button("Sign in", width="stretch")
+
+        st.markdown('<div class="login-footer">IRDA License No: 2024-25/SALASAR/001</div>', unsafe_allow_html=True)
+
     if submitted:
-        # Get form values from session state
         username = st.session_state.get("login_username", "")
         password = st.session_state.get("login_password", "")
+
         if not username or not password:
             error_message = "Please enter both username and password"
         else:
             try:
                 user_cfg = st.secrets["credentials"].get(username)
-            except:
+            except Exception:
                 user_cfg = None
-            
+
             if user_cfg and _verify_password(password, user_cfg.get("password_hash", "")):
                 st.session_state["authenticated"] = True
                 st.session_state["username"] = username
@@ -235,19 +208,10 @@ def login_form() -> bool:
                 st.rerun()
             else:
                 error_message = "Invalid username or password"
-    
+
     if error_message:
-        st.markdown(f'<div class="glass-error">{error_message}</div>', unsafe_allow_html=True)
-    
-    st.markdown("""
-            <div class="glass-footer">
-                IRDA License No: 2024-25/SALASAR/001
-            </div>
-        </div>
-    """, unsafe_allow_html=True)
-    
-    st.markdown('</div>', unsafe_allow_html=True)
-    
+        st.markdown(f'<div class="login-error">{error_message}</div>', unsafe_allow_html=True)
+
     return False
 
 
