@@ -14,11 +14,11 @@ NAV_ITEMS = [
 
 def _build_user_badge_data() -> dict[str, str]:
     """Prepare profile badge values for sidebar card."""
-    username = st.session_state.get("username", "sallead")
-    role = st.session_state.get("role", "admin")
-    session_text = st.session_state.get("session_duration", "0:38")
-    db_status = st.session_state.get("db_status", "Connected")
-    env = st.session_state.get("app_env", "Production")
+    username = st.session_state.get("username", "User")
+    role = st.session_state.get("role", "viewer")
+    session_text = st.session_state.get("session_duration")
+    db_status = st.session_state.get("db_status")
+    env = st.session_state.get("app_env")
 
     initials = (username[:3] or "SAL").upper()
 
@@ -28,7 +28,7 @@ def _build_user_badge_data() -> dict[str, str]:
         "role": role.upper(),
         "session_text": session_text,
         "db_status": db_status,
-        "env": env.upper(),
+        "env": env.upper() if env else "",
         "initials": initials,
     }
 
@@ -231,6 +231,20 @@ def render_sidebar():
     )
 
     badge_data = _build_user_badge_data()
+    meta_rows = []
+    if badge_data["session_text"]:
+        meta_rows.append(
+            f'<span class="meta-label">Session</span><span class="meta-value">Active • {badge_data["session_text"]}</span>'
+        )
+    if badge_data["db_status"]:
+        meta_rows.append(
+            f'<span class="meta-label">DB</span><span class="meta-db"><span class="meta-db-dot">●</span>{badge_data["db_status"]}</span>'
+        )
+    if badge_data["env"]:
+        meta_rows.append(
+            f'<span class="meta-label">Env</span><span class="meta-env">{badge_data["env"]}</span>'
+        )
+    meta_html = f'<div class="badge-meta">{"".join(meta_rows)}</div>' if meta_rows else ""
 
     with st.sidebar:
         st.markdown(
@@ -253,14 +267,7 @@ def render_sidebar():
                     </div>
                     <span class="badge-role">{badge_data['role']}</span>
                 </div>
-                <div class="badge-meta">
-                    <span class="meta-label">Session</span>
-                    <span class="meta-value">Active • {badge_data['session_text']}</span>
-                    <span class="meta-label">DB</span>
-                    <span class="meta-db"><span class="meta-db-dot">●</span>{badge_data['db_status']}</span>
-                    <span class="meta-label">Env</span>
-                    <span class="meta-env">{badge_data['env']}</span>
-                </div>
+                {meta_html}
             </div>
         """,
             unsafe_allow_html=True,
@@ -270,14 +277,14 @@ def render_sidebar():
             st.session_state.current_page = "Business Conversion Ratio"
 
         for item in NAV_ITEMS:
-            if st.button(item, width="stretch", key=f"nav_{item}"):
+            if st.button(item, use_container_width=True, key=f"nav_{item}"):
                 st.session_state.current_page = item
                 st.rerun()
             if item == "Master Data (From April 25 to March 26)":
                 st.markdown('<div class="masterdata-note">April 25 to March 26</div>', unsafe_allow_html=True)
 
         st.markdown('<div class="logout-wrap">', unsafe_allow_html=True)
-        submitted = st.button("Logout", width="stretch", key="logout_btn")
+        submitted = st.button("Logout", use_container_width=True, key="logout_btn")
         st.markdown('</div>', unsafe_allow_html=True)
 
     if submitted:
