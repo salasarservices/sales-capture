@@ -47,12 +47,31 @@ def render_sidebar():
         [data-testid="stSidebar"] {
             background: #26479D !important;
             border-right: none !important;
+            min-width: 18rem !important;
+            max-width: 18rem !important;
         }
 
         [data-testid="stSidebar"] > div:first-child {
             background: transparent !important;
             padding-top: 0.5rem;
             padding-bottom: 1rem;
+        }
+
+        [data-testid="stSidebarCollapsedControl"] {
+            display: none !important;
+            pointer-events: none !important;
+            visibility: hidden !important;
+        }
+
+        [data-testid="stSidebar"][aria-expanded="false"] {
+            transform: translateX(0) !important;
+            margin-left: 0 !important;
+            min-width: 18rem !important;
+            max-width: 18rem !important;
+        }
+
+        [data-testid="stSidebar"][aria-expanded="false"] > div:first-child {
+            width: 18rem !important;
         }
 
         [data-testid="stSidebar"], [data-testid="stSidebar"] * {
