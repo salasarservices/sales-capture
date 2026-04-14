@@ -91,34 +91,22 @@ with fcol_r:
         pct_drop2 = round(drop2 / quoted * 100, 1) if quoted else 0
         st.markdown(
             f"""
-            <div style="display:flex; flex-direction:column; gap:0.75rem; margin-top:0.5rem;">
-                <div style="background:#FEF2F2; border-left:4px solid #B91C1C;
-                            padding:1rem 1.25rem;">
-                    <div style="font-size:0.68rem; font-weight:700; color:#B91C1C;
-                                text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.3rem;">
-                        Enquiry → Quote Drop-off
-                    </div>
-                    <div style="font-size:1.4rem; font-weight:700; color:#1E293B;">
+            <div class="hs-dropoff-stack">
+                <div class="hs-dropoff-card hs-dropoff-red">
+                    <div class="hs-dropoff-tag">Enquiry → Quote Drop-off</div>
+                    <div class="hs-dropoff-value">
                         {drop1}
-                        <span style="font-size:0.9rem; color:#B91C1C;">({pct_drop1}%)</span>
+                        <span class="hs-dropoff-pct">({pct_drop1}%)</span>
                     </div>
-                    <div style="font-size:0.80rem; color:#64748B; margin-top:0.2rem;">
-                        enquiries did not receive a quote
-                    </div>
+                    <div class="hs-dropoff-sub">enquiries did not receive a quote</div>
                 </div>
-                <div style="background:#FFFBEB; border-left:4px solid #D97706;
-                            padding:1rem 1.25rem;">
-                    <div style="font-size:0.68rem; font-weight:700; color:#D97706;
-                                text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.3rem;">
-                        Quote → Closed Drop-off
-                    </div>
-                    <div style="font-size:1.4rem; font-weight:700; color:#1E293B;">
+                <div class="hs-dropoff-card hs-dropoff-amber">
+                    <div class="hs-dropoff-tag">Quote → Closed Drop-off</div>
+                    <div class="hs-dropoff-value">
                         {drop2}
-                        <span style="font-size:0.9rem; color:#D97706;">({pct_drop2}%)</span>
+                        <span class="hs-dropoff-pct">({pct_drop2}%)</span>
                     </div>
-                    <div style="font-size:0.80rem; color:#64748B; margin-top:0.2rem;">
-                        quoted enquiries did not close
-                    </div>
+                    <div class="hs-dropoff-sub">quoted enquiries did not close</div>
                 </div>
             </div>
             """,

@@ -123,40 +123,207 @@ h1 { font-size: 18px !important; }
 h2 { font-size: 14px !important; }
 hr { border-color: #E5E7EB !important; margin: 0.75rem 0 !important; }
 
-/* ── KPI Cards ─────────────────────────────────────────────────────────────── */
-[data-testid="metric-container"] {
-    background: #EFF2F7;
-    border-radius: 8px;
-    padding: 12px;
-    border: 0.5px solid #E5E7EB;
-}
-
-/* KPI tint backgrounds */
-.kpi-blue { background: #E6F1FB !important; }
-.kpi-green { background: #EAF3DE !important; }
-.kpi-amber { background: #FAEEDA !important; }
-
-[data-testid="stMetricLabel"] p { 
-    font-size: 12px !important; 
-    font-weight: 400 !important; 
-    color: #6B7280 !important; 
-}
-[data-testid="stMetricValue"] { 
-    font-size: 24px !important; 
-    font-weight: 500 !important; 
-    color: #1A1F36 !important; 
-}
-
 /* ── Section heading ──────────────────────────────────────────────────────── */
 .section-heading {
-    font-size: 14px;
-    font-weight: 500;
+    font-size: 13px;
+    font-weight: 600;
     color: #1A1F36;
     border-left: 3px solid #185FA5;
-    padding-left: 8px;
-    margin: 0.5rem 0 0.75rem 0;
+    padding-left: 10px;
+    margin: 0.75rem 0 0.6rem 0;
+    display: block;
 }
 .page-subtitle { font-size: 13px; color: #6B7280; margin: -0.5rem 0 1rem 0; }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   PRELINE-STYLE KPI STAT CARDS
+══════════════════════════════════════════════════════════════════════════ */
+.hs-kpi-grid {
+    display: grid;
+    gap: 12px;
+    margin: 0.5rem 0 0.75rem;
+}
+.hs-kpi-grid-5 { grid-template-columns: repeat(5, 1fr); }
+.hs-kpi-grid-3 { grid-template-columns: repeat(3, 1fr); }
+
+.hs-kpi-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 16px 18px 14px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    position: relative;
+    overflow: hidden;
+}
+.hs-kpi-card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    border-radius: 12px 12px 0 0;
+}
+.hs-kpi-blue::after  { background: #185FA5; }
+.hs-kpi-green::after { background: #1D9E75; }
+.hs-kpi-amber::after { background: #EF9F27; }
+
+.hs-kpi-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+.hs-kpi-label {
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    font-weight: 700;
+    color: #6b7280;
+    line-height: 1.4;
+    margin: 0;
+}
+.hs-kpi-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    flex-shrink: 0;
+    line-height: 1;
+}
+.hs-kpi-icon-blue  { background: #E6F1FB; }
+.hs-kpi-icon-green { background: #EAF3DE; }
+.hs-kpi-icon-amber { background: #FAEEDA; }
+
+.hs-kpi-value {
+    font-size: 1.45rem;
+    font-weight: 600;
+    line-height: 1.1;
+    margin: 0;
+}
+.hs-kpi-blue  .hs-kpi-value { color: #0C447C; }
+.hs-kpi-green .hs-kpi-value { color: #27500A; }
+.hs-kpi-amber .hs-kpi-value { color: #633806; }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   PRELINE-STYLE DATA TABLES
+══════════════════════════════════════════════════════════════════════════ */
+.hs-table-wrap {
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #ffffff;
+}
+.hs-table-scroll {
+    overflow: auto;
+}
+.hs-table-scroll::-webkit-scrollbar { width: 5px; height: 5px; }
+.hs-table-scroll::-webkit-scrollbar-track { background: #f9fafb; }
+.hs-table-scroll::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 10px; }
+
+.hs-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12.5px;
+    background: #ffffff;
+}
+.hs-table thead {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+.hs-table thead tr { background: #f9fafb; }
+.hs-table thead th {
+    padding: 10px 14px;
+    text-align: left;
+    font-size: 10.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #6b7280;
+    white-space: nowrap;
+    border-bottom: 1.5px solid #e5e7eb;
+}
+.hs-table tbody tr {
+    border-bottom: 1px solid #f3f4f6;
+    transition: background 0.1s ease;
+}
+.hs-table tbody tr:last-child { border-bottom: none; }
+.hs-table tbody tr:hover td { background: #f9fafb !important; }
+.hs-table tbody td {
+    padding: 9px 14px;
+    color: #374151;
+    white-space: nowrap;
+}
+
+/* Row state classes */
+.hs-row-total td {
+    background: #f1f5f9 !important;
+    font-weight: 700;
+    color: #1a1f36 !important;
+    border-top: 1.5px solid #dde3ea !important;
+}
+.hs-row-red   td { background: #fff1f2 !important; color: #9b1c1c !important; }
+.hs-row-amber td { background: #fffbeb !important; color: #92400e !important; }
+
+/* Yes / No badges in enquiry table */
+.badge-yes { color: #065f46; font-weight: 600; font-size: 11px; }
+.badge-no  { color: #991b1b; font-weight: 600; font-size: 11px; }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   PRELINE-STYLE DROP-OFF CARDS
+══════════════════════════════════════════════════════════════════════════ */
+.hs-dropoff-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 6px;
+}
+.hs-dropoff-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 14px 18px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    position: relative;
+    overflow: hidden;
+}
+.hs-dropoff-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; bottom: 0;
+    width: 4px;
+    border-radius: 12px 0 0 12px;
+}
+.hs-dropoff-red::before   { background: #B91C1C; }
+.hs-dropoff-amber::before { background: #D97706; }
+.hs-dropoff-tag {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+}
+.hs-dropoff-red   .hs-dropoff-tag { color: #B91C1C; }
+.hs-dropoff-amber .hs-dropoff-tag { color: #D97706; }
+.hs-dropoff-value {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #1E293B;
+    line-height: 1.1;
+}
+.hs-dropoff-pct {
+    font-size: 0.88rem;
+    margin-left: 4px;
+}
+.hs-dropoff-red   .hs-dropoff-pct { color: #B91C1C; }
+.hs-dropoff-amber .hs-dropoff-pct { color: #D97706; }
+.hs-dropoff-sub {
+    font-size: 12px;
+    color: #64748B;
+    margin-top: 3px;
+}
 
 /* ── Chart container ──────────────────────────────────────────────────────── */
 .stPlotlyChart {

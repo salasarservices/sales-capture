@@ -93,12 +93,12 @@ def render_html_table(
 
         # Row class
         if id_col and str(row.get(id_col, "")) == "TOTAL":
-            row_cls = "dash-table-total"
+            row_cls = "hs-row-total"
         elif raw_conv is not None:
             try:
                 val = float(raw_conv.iloc[idx])
-                row_cls = "dash-table-red" if val < 50 else (
-                    "dash-table-amber" if val < 70 else ""
+                row_cls = "hs-row-red" if val < 50 else (
+                    "hs-row-amber" if val < 70 else ""
                 )
             except (TypeError, ValueError):
                 row_cls = ""
@@ -113,11 +113,13 @@ def render_html_table(
 
     st.markdown(
         f"""
-        <div class="dash-table-wrapper" style="max-height:{height}px;">
-            <table class="dash-table">
-                <thead><tr>{header_cells}</tr></thead>
-                <tbody>{"".join(rows_html)}</tbody>
-            </table>
+        <div class="hs-table-wrap">
+            <div class="hs-table-scroll" style="max-height:{height}px;">
+                <table class="hs-table">
+                    <thead><tr>{header_cells}</tr></thead>
+                    <tbody>{"".join(rows_html)}</tbody>
+                </table>
+            </div>
         </div>
         """,
         unsafe_allow_html=True,
@@ -167,12 +169,14 @@ def render_enquiry_table(df: pd.DataFrame, height: int = 600) -> None:
 
     st.markdown(
         f"""
-        <div class="dash-table-wrapper" style="max-height:{height}px; overflow-x:hidden;">
-            <table class="dash-table enquiry-table">
-                <colgroup>{col_els}</colgroup>
-                <thead><tr>{header_cells}</tr></thead>
-                <tbody>{"".join(rows_html)}</tbody>
-            </table>
+        <div class="hs-table-wrap">
+            <div class="hs-table-scroll" style="max-height:{height}px; overflow-x:hidden;">
+                <table class="hs-table">
+                    <colgroup>{col_els}</colgroup>
+                    <thead><tr>{header_cells}</tr></thead>
+                    <tbody>{"".join(rows_html)}</tbody>
+                </table>
+            </div>
         </div>
         """,
         unsafe_allow_html=True,
