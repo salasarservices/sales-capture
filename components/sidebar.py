@@ -212,6 +212,15 @@ def render_sidebar():
             margin: 0.14rem 0.35rem !important;
         }
 
+        /* Keep nav buttons tightly stacked (remove large default element gaps). */
+        [data-testid="stSidebar"] [data-testid="stElementContainer"]:has(.stButton) {
+            margin-bottom: 0.28rem !important;
+        }
+
+        [data-testid="stSidebar"] [data-testid="stElementContainer"]:has(.stButton) + [data-testid="stElementContainer"]:has(.stButton) {
+            margin-top: 0 !important;
+        }
+
         [data-testid="stSidebar"] .stButton > button {
             width: 100%;
             border-radius: 10px;
