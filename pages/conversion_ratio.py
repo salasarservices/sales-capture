@@ -9,17 +9,17 @@ import streamlit_shadcn_ui as ui
 def render_page():
     """Render the Conversion Ratio Summary page."""
 
-    # Breadcrumb — page context
+    # Breadcrumb — page context  ("text" is the required key, not "label")
     ui.breadcrumb(
-        [{"label": "Salasar Analytics", "href": None}, {"label": "Conversion Ratio Summary", "href": None}],
-        class_name="mb-2",
+        [{"text": "Salasar Analytics", "href": None}, {"text": "Conversion Ratio Summary", "href": None}],
+        key="cr_breadcrumb",
     )
 
-    # Page header
+    # Page header — .render() required; bare calls return a UIElement without rendering
     ui.element("h1", children=["📊 Conversion Ratio Summary"],
-               className="text-[22px] font-semibold text-gray-900 mt-0 mb-1 leading-tight")
+               className="text-[22px] font-semibold text-gray-900 mt-0 mb-1 leading-tight").render()
     ui.element("p", children=["Per CRE/RM breakdown by proposal type (Fresh, Renewal, Expanded)"],
-               className="text-sm text-gray-500 mt-0 mb-6")
+               className="text-sm text-gray-500 mt-0 mb-6").render()
 
     # Load data
     from database.connection import get_db
@@ -37,7 +37,7 @@ def render_page():
     render_kpi_row(kpis)
 
     # Divider
-    ui.element("hr", className="border-t border-gray-200 my-5")
+    ui.element("hr", className="border-t border-gray-200 my-5").render()
 
     # Charts
     with st.spinner("Loading data..."):
@@ -54,7 +54,6 @@ def render_page():
     from components.data_tables import render_html_table
     from utils.formatters import format_inr, format_pct
 
-    # Prepare chart data
     sales_view = df[["CRE / RM", "fresh_converted", "renewal_converted",
                      "expanded_converted", "total_not_converted", "total_enquiries"]].copy()
     sales_view["Converted"] = (sales_view["fresh_converted"].fillna(0) +
@@ -70,11 +69,11 @@ def render_page():
         st.plotly_chart(grouped_bar_proposal_type(df), width='stretch')
 
     # Divider
-    ui.element("hr", className="border-t border-gray-200 my-6")
+    ui.element("hr", className="border-t border-gray-200 my-6").render()
 
     # Section heading
     ui.element("h2", children=["Conversion Ratio Details"],
-               className="text-sm font-semibold text-gray-800 border-l-4 border-[#185FA5] pl-3 mt-0 mb-3")
+               className="text-sm font-semibold text-gray-800 border-l-4 border-[#185FA5] pl-3 mt-0 mb-3").render()
 
     display_cols = {
         "CRE / RM": "CRE / RM",

@@ -11,17 +11,17 @@ import streamlit_shadcn_ui as ui
 def render_page():
     """Render the Master Data page."""
 
-    # Breadcrumb — page context
+    # Breadcrumb — page context  ("text" is the required key, not "label")
     ui.breadcrumb(
-        [{"label": "Salasar Analytics", "href": None}, {"label": "Master Data", "href": None}],
-        class_name="mb-2",
+        [{"text": "Salasar Analytics", "href": None}, {"text": "Master Data", "href": None}],
+        key="md_breadcrumb",
     )
 
-    # Page header
+    # Page header — .render() required; bare calls return a UIElement without rendering
     ui.element("h1", children=["📋 Master Data"],
-               className="text-[22px] font-semibold text-gray-900 mt-0 mb-1 leading-tight")
+               className="text-[22px] font-semibold text-gray-900 mt-0 mb-1 leading-tight").render()
     ui.element("p", children=["Enquiry details from April 2025 to March 2026"],
-               className="text-sm text-gray-500 mt-0 mb-6")
+               className="text-sm text-gray-500 mt-0 mb-6").render()
 
     # Load data
     from database.connection import get_db
@@ -31,7 +31,6 @@ def render_page():
     fy = st.session_state.get("fy", "2025-26")
     branch = st.session_state.get("branch", "Ahmedabad")
 
-    # Get filter options
     with st.spinner("Loading filters..."):
         opts = fetch_filter_options(db, fy=fy, branch=branch)
 
@@ -54,7 +53,6 @@ def render_page():
         with col5:
             company_search = st.text_input("Search Company", placeholder="Type to search...")
 
-    # Map month labels to numbers
     month_map = {
         "Apr": 4, "May": 5, "Jun": 6, "Jul": 7, "Aug": 8, "Sep": 9,
         "Oct": 10, "Nov": 11, "Dec": 12, "Jan": 1, "Feb": 2, "Mar": 3,
@@ -66,15 +64,14 @@ def render_page():
     if "master_page" not in st.session_state:
         st.session_state.master_page = 1
 
-    # Reset page when filters change; use filter hash as pagination key so
-    # ui.pagination resets to page 1 automatically on filter change
+    # Reset page on filter change; hash drives pagination component key so it
+    # resets to page 1 automatically when filters change
     filter_key = str((selected_cre, selected_types, selected_req, selected_months, company_search))
     filter_hash = hashlib.md5(filter_key.encode()).hexdigest()[:8]
     if st.session_state.get("_last_master_filter") != filter_key:
         st.session_state.master_page = 1
         st.session_state["_last_master_filter"] = filter_key
 
-    # Load data
     with st.spinner("Loading data..."):
         df, total_rows = fetch_enquiries(
             db,
@@ -108,18 +105,17 @@ def render_page():
     st.dataframe(df, width='stretch', height=500, hide_index=True)
 
     # ── Pagination ──────────────────────────────────────────────────────────────
-    ui.element("div", className="h-4")  # spacer
-
     # Record count summary
     start_rec = (st.session_state.master_page - 1) * PAGE_SIZE + 1
     end_rec = min(st.session_state.master_page * PAGE_SIZE, total_rows)
     ui.element(
         "p",
         children=[f"Showing {start_rec:,}–{end_rec:,} of {total_rows:,} records  ·  Page {st.session_state.master_page} of {total_pages}"],
-        className="text-xs text-gray-400 text-center mb-2 mt-0",
-    )
+        className="text-xs text-gray-400 text-center mb-2 mt-2",
+    ).render()
 
-    # shadcn pagination component — key changes with filter so it resets to page 1
+    # shadcn pagination component — key is filter-hash-scoped so it resets to
+    # page 1 automatically when filters change
     clicked_page = ui.pagination(
         key=f"pag_{filter_hash}",
         totalPages=total_pages,

@@ -9,17 +9,17 @@ import streamlit_shadcn_ui as ui
 def render_page():
     """Render the Sales Capture Summary page."""
 
-    # Breadcrumb — page context
+    # Breadcrumb — page context  ("text" is the required key, not "label")
     ui.breadcrumb(
-        [{"label": "Salasar Analytics", "href": None}, {"label": "Sales Capture Summary", "href": None}],
-        class_name="mb-2",
+        [{"text": "Salasar Analytics", "href": None}, {"text": "Sales Capture Summary", "href": None}],
+        key="sc_breadcrumb",
     )
 
-    # Page header
+    # Page header — .render() required; bare calls return a UIElement without rendering
     ui.element("h1", children=["📈 Sales Capture Summary"],
-               className="text-[22px] font-semibold text-gray-900 mt-0 mb-1 leading-tight")
+               className="text-[22px] font-semibold text-gray-900 mt-0 mb-1 leading-tight").render()
     ui.element("p", children=["Enquiry volume and premium conversion per sales person"],
-               className="text-sm text-gray-500 mt-0 mb-6")
+               className="text-sm text-gray-500 mt-0 mb-6").render()
 
     # Load data
     from database.connection import get_db
@@ -39,7 +39,6 @@ def render_page():
         )
         return
 
-    # Charts
     from components.charts import horizontal_bar_premium, pie_enquiry_share
     from components.data_tables import render_html_table
     from utils.formatters import format_inr, format_pct
@@ -51,11 +50,11 @@ def render_page():
         st.plotly_chart(pie_enquiry_share(df), width='stretch')
 
     # Divider
-    ui.element("hr", className="border-t border-gray-200 my-6")
+    ui.element("hr", className="border-t border-gray-200 my-6").render()
 
     # Section heading
     ui.element("h2", children=["Sales Capture Details"],
-               className="text-sm font-semibold text-gray-800 border-l-4 border-[#185FA5] pl-3 mt-0 mb-3")
+               className="text-sm font-semibold text-gray-800 border-l-4 border-[#185FA5] pl-3 mt-0 mb-3").render()
 
     display_df = df.copy()
     display_df["Premium Converted (₹)"] = display_df["Premium Converted (₹)"].apply(format_inr)
