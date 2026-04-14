@@ -45,6 +45,9 @@ def render_sidebar():
         }
 
         [data-testid="stSidebar"] {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
             background: #26479D !important;
             border-right: none !important;
             min-width: 18rem !important;
@@ -64,6 +67,9 @@ def render_sidebar():
         }
 
         [data-testid="stSidebar"][aria-expanded="false"] {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
             transform: translateX(0) !important;
             margin-left: 0 !important;
             min-width: 18rem !important;
@@ -73,6 +79,7 @@ def render_sidebar():
         [data-testid="stSidebar"][aria-expanded="false"] > div:first-child {
             width: 18rem !important;
         }
+
 
         [data-testid="stSidebar"], [data-testid="stSidebar"] * {
             font-family: 'Roboto', sans-serif !important;
