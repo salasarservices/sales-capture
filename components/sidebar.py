@@ -1,144 +1,209 @@
+"""
+Sidebar component — solid RGB(22, 85, 171) with glassmorphism overlay.
+4 nav cards in pastel colors, UPPERCASE labels.
+"""
+
 import streamlit as st
 
-# Pastel colors for nav cards (in order)
-PASTEL_COLORS = [
-    '#E8F4FD',  # Business Conversion Ratio - light blue
-    '#E8F8F0',  # Sales Capture Summary - light green
-    '#FEF3E2',  # Conversion Ratio Summary - light amber
-    '#F3E8FD',  # Master Data - light purple
+
+# Nav items: (page_key, display_label, icon, pastel_bg, pill_text)
+NAV_ITEMS = [
+    ("Business Conversion Ratio",              "BUSINESS CONVERSION RATIO",  "📅", "#DBEAFE", None),
+    ("Sales Capture Summary",                   "SALES CAPTURE SUMMARY",       "📈", "#DCFCE7", None),
+    ("Conversion Ratio Summary",                "CONVERSION RATIO SUMMARY",    "📊", "#FEF9C3", None),
+    ("Master Data (From April 25 to March 26)", "MASTER DATA",                 "📋", "#EDE9FE", "Apr 25 – Mar 26"),
 ]
+
+# Pill badge colors paired with each card
+PILL_COLORS = {
+    "Master Data (From April 25 to March 26)": {"bg": "#C4B5FD", "text": "#3B0764"},
+}
 
 
 def render_sidebar():
-    st.markdown('''
+    """Render the sidebar."""
+
+    st.markdown("""
         <style>
-        [data-testid=\"stSidebar\"] {
-            background: linear-gradient(160deg, #1555AB 0%, #1a5aaa 50%, #1a4d80 100%) !important;
-            backdrop-filter: blur(12px);
-            border-right: none !important;
-            box-shadow: 4px 0 25px rgba(0, 0, 0, 0.2) !important;
+        /* ── Sidebar base: solid RGB(22,85,171) + glass overlay ── */
+        [data-testid="stSidebar"] {
+            background: rgba(22, 85, 171, 0.96) !important;
+            backdrop-filter: blur(20px) saturate(1.4);
+            -webkit-backdrop-filter: blur(20px) saturate(1.4);
+            border-right: 1px solid rgba(255, 255, 255, 0.12) !important;
+            box-shadow: 4px 0 32px rgba(0, 0, 0, 0.28) !important;
         }
-        [data-testid=\"stSidebar\"] > div:first-child { background: transparent !important; }
-        [data-testid=\"stSidebar\"] hr { display: none !important; }
-        
-        .sidebar-logo { text-align: center; padding: 1rem 0.5rem; }
-        .sidebar-logo img { height: 38px; filter: brightness(0) invert(1); }
-        
-        .sidebar-title {
+        [data-testid="stSidebar"] > div:first-child {
+            background: transparent !important;
+            padding-top: 0 !important;
+        }
+
+        /* ── Hide the Streamlit radio widget entirely ── */
+        [data-testid="stSidebar"] .stRadio {
+            display: none !important;
+        }
+
+        /* ── Logo ── */
+        .sb-logo {
             text-align: center;
-            color: rgba(255, 255, 255, 0.85);
+            padding: 28px 20px 18px;
+        }
+        .sb-logo img {
+            height: 44px;
+            filter: brightness(0) invert(1);
+            opacity: 0.95;
+        }
+
+        /* ── Divider ── */
+        .sb-divider {
+            border: none;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            margin: 0 16px 20px;
+        }
+
+        /* ── Nav cards container ── */
+        .sb-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 0 14px;
+        }
+
+        /* ── Individual card ── */
+        .sb-card {
+            padding: 16px 18px;
+            border-radius: 12px;
+            cursor: default;
             font-size: 12px;
-            font-weight: 500;
-            margin-bottom: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            font-weight: 700;
+            color: #1A1F36;
+            letter-spacing: 0.6px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.10);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            border: 1.5px solid transparent;
         }
-        
-        .sidebar-user {
-            position: absolute;
-            bottom: 85px;
-            left: 0; right: 0;
-            padding: 0.75rem;
-            text-align: center;
+        .sb-card.active {
+            border-color: rgba(255, 255, 255, 0.55);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+            transform: translateY(-2px);
         }
-        .user-name { color: white; font-size: 13px; font-weight: 600; }
-        .user-role { color: rgba(255, 255, 255, 0.7); font-size: 11px; }
-        
-        .irda-text {
-            position: absolute;
-            bottom: 15px;
-            left: 0; right: 0;
-            color: rgba(255, 255, 255, 0.4);
-            font-size: 9px;
-            text-align: center;
+
+        /* ── Icon ── */
+        .sb-icon {
+            font-size: 18px;
+            flex-shrink: 0;
         }
-        
-        [data-testid=\"stSidebar\"] .stButton > button {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            color: white;
-            border-radius: 8px;
-            font-size: 12px;
+
+        /* ── Label + pill wrapper ── */
+        .sb-label-row {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            line-height: 1.3;
+        }
+
+        /* ── Pill badge ── */
+        .sb-pill {
+            display: inline-block;
+            padding: 2px 9px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            width: fit-content;
+        }
+
+        /* ── Sign out button ── */
+        [data-testid="stSidebar"] .stButton > button {
+            background: rgba(255, 255, 255, 0.10) !important;
+            border: 1px solid rgba(255, 255, 255, 0.20) !important;
+            border-radius: 10px !important;
+            color: rgba(255, 255, 255, 0.85) !important;
+            font-size: 13px !important;
+            font-weight: 500 !important;
+            transition: background 0.2s ease !important;
+            margin-top: 6px !important;
+        }
+        [data-testid="stSidebar"] .stButton > button:hover {
+            background: rgba(255, 255, 255, 0.20) !important;
+            border-color: rgba(255, 255, 255, 0.35) !important;
+        }
+
+        /* ── Bottom section ── */
+        .sb-bottom {
+            padding: 14px 14px 20px;
         }
         </style>
-    ''', unsafe_allow_html=True)
-    
-    st.markdown('''
-        <div class=\"sidebar-logo\">
-            <img src=\"https://ik.imagekit.io/salasarservices/Salasar-Logo-new.png\" alt=\"Salasar\">
+    """, unsafe_allow_html=True)
+
+    # Logo
+    st.markdown("""
+        <div class="sb-logo">
+            <img src="https://ik.imagekit.io/salasarservices/Salasar-Logo-new.png" alt="Salasar">
         </div>
-    ''', unsafe_allow_html=True)
-    
-    st.markdown('<div class=\"sidebar-title\">Navigation</div>', unsafe_allow_html=True)
-    
-    nav_items = [
-        ('Business Conversion Ratio', '📅'),
-        ('Sales Capture Summary', '📈'),
-        ('Conversion Ratio Summary', '📊'),
-        ('Master Data (From April 25 to March 26)', '📋'),
-    ]
-    
-    if 'current_page' not in st.session_state:
-        st.session_state['current_page'] = 'Business Conversion Ratio'
-    
-    # Render navigation buttons with different pastel colors
-    for i, (label, icon) in enumerate(nav_items):
-        color = PASTEL_COLORS[i]
-        
-        # Custom CSS for this specific button
-        st.markdown(f'''
-            <style>
-            [data-testid=\"stSidebar\"] button[key=\"nav_{label}\"] {{
-                background-color: {color} !important;
-                border: none !important;
-                border-radius: 12px !important;
-                padding: 14px 16px !important;
-                margin-bottom: 8px !important;
-                text-align: left !important;
-                color: #1A1F36 !important;
-                font-size: 13px !important;
-                font-weight: 500 !important;
-                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05) !important;
-                transition: all 0.2s ease !important;
-                display: flex !important;
-                align-items: center !important;
-            }}
-            [data-testid=\"stSidebar\"] button[key=\"nav_{label}\"]:hover {{
-                transform: translateY(-2px) !important;
-                box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1) !important;
-            }}
-            </style>
-        ''', unsafe_allow_html=True)
-        
-        if st.button(f'{icon} {label}', key=f'nav_{label}', use_container_width=True):
-            st.session_state['current_page'] = label
-            st.rerun()
-    
-    # User info
-    username = st.session_state.get('username', 'Admin')
-    role = st.session_state.get('role', 'viewer')
-    role_label = 'Admin' if role == 'admin' else 'Viewer'
-    
-    st.markdown(f'''
-        <div class=\"sidebar-user\">
-            <div class=\"user-name\">👤 {username}</div>
-            <div class=\"user-role\">🔐 {role_label}</div>
-        </div>
-    ''', unsafe_allow_html=True)
-    
-    if st.button('Sign out', key='signout'):
+        <hr class="sb-divider">
+    """, unsafe_allow_html=True)
+
+    # State: default to first page
+    if "current_page" not in st.session_state:
+        st.session_state.current_page = "Business Conversion Ratio"
+
+    current_page = st.session_state.get("current_page", "Business Conversion Ratio")
+
+    # Hidden radio for state (Streamlit needs this for reruns)
+    page_keys = [key for key, *_ in NAV_ITEMS]
+    selected = st.radio(
+        "nav",
+        page_keys,
+        index=page_keys.index(current_page) if current_page in page_keys else 0,
+        label_visibility="collapsed",
+        key="nav_radio",
+    )
+    if selected:
+        st.session_state.current_page = selected
+
+    # Render styled cards
+    st.markdown('<div class="sb-nav">', unsafe_allow_html=True)
+
+    for key, label, icon, bg, pill in NAV_ITEMS:
+        active_cls = "active" if key == st.session_state.get("current_page") else ""
+        pill_html = ""
+        if pill:
+            pc = PILL_COLORS.get(key, {"bg": "#DDD", "text": "#333"})
+            pill_html = (
+                f'<span class="sb-pill" style="background:{pc["bg"]};color:{pc["text"]};">'
+                f"{pill}</span>"
+            )
+
+        st.markdown(f"""
+            <div class="sb-card {active_cls}" style="background:{bg};">
+                <span class="sb-icon">{icon}</span>
+                <div class="sb-label-row">
+                    <span>{label}</span>
+                    {pill_html}
+                </div>
+            </div>
+        """, unsafe_allow_html=True)
+
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    # Sign out at bottom
+    st.markdown('<div class="sb-bottom">', unsafe_allow_html=True)
+    if st.button("Sign out", use_container_width=True):
         from utils.auth import logout
         logout()
-    
-    st.markdown('''
-        <div class=\"irda-text\">IRDA License No: 2024-25/SALASAR/001</div>
-    ''', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
 
 def navigate_to_page(page_name: str):
-    st.session_state['current_page'] = page_name
+    """Navigate to a specific page."""
+    st.session_state.current_page = page_name
     st.rerun()
 
 
 def get_current_page() -> str:
-    return st.session_state.get('current_page', 'Business Conversion Ratio')
+    """Get the current page name."""
+    return st.session_state.get("current_page", "Business Conversion Ratio")
