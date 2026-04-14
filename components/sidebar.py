@@ -2,13 +2,14 @@
 
 import streamlit as st
 from utils.auth import logout
+from utils.tailwind import tw_button
 
 
 NAV_ITEMS = [
     "Business Conversion Ratio",
     "Sales Capture Summary",
     "Conversion Ratio Summary",
-    "Master Data (From April 25 to March 26)",
+    "Master Data",
 ]
 
 
@@ -184,9 +185,9 @@ def render_sidebar():
         [data-testid="stSidebar"] .stButton > button {
             width: 100%;
             border-radius: 14px;
-            background: #9AD8E8 !important;
-            color: #101826 !important;
-            border: none !important;
+            background: #9AD8E8;
+            color: #101826;
+            border: none;
             font-size: 1.08rem;
             font-weight: 700;
             min-height: 42px;
@@ -194,18 +195,25 @@ def render_sidebar():
         }
 
         [data-testid="stSidebar"] .stButton > button:hover {
-            background: #A5DFED !important;
+            background: #A5DFED;
         }
 
-        .masterdata-note {
-            margin-top: -0.25rem;
-            margin-left: 6.05rem;
-            font-size: 0.64rem;
-            color: white;
+        [data-testid="stSidebar"] .stButton:nth-of-type(4) > button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+        }
+
+        [data-testid="stSidebar"] .stButton:nth-of-type(4) > button::after {
+            content: "April 25 to March 26";
+            font-size: 0.62rem;
+            color: #FFFFFF;
             background: #44BC7A;
             border-radius: 999px;
-            padding: 0.26rem 0.55rem;
-            display: inline-block;
+            padding: 0.22rem 0.5rem;
+            line-height: 1.05;
+            white-space: nowrap;
         }
 
         .logout-wrap {
@@ -220,8 +228,8 @@ def render_sidebar():
         }
 
         .logout-wrap [data-testid="stButton"] button {
-            background: #6B4BA6 !important;
-            color: #FFFFFF !important;
+            background: #6B4BA6;
+            color: #FFFFFF;
             font-size: 1.05rem;
             font-weight: 700;
         }
@@ -277,14 +285,36 @@ def render_sidebar():
             st.session_state.current_page = "Business Conversion Ratio"
 
         for item in NAV_ITEMS:
-            if st.button(item, use_container_width=True, key=f"nav_{item}"):
+            button_classes = (
+                "w-full min-h-[42px] rounded-[14px] bg-sky-200 text-slate-900 "
+                "font-bold hover:bg-sky-300 transition-colors duration-150 "
+                "flex items-center justify-center gap-2"
+            )
+            if item == "Master Data":
+                button_classes += (
+                    " after:content-['April_25_to_March_26'] after:text-[10px] after:leading-none "
+                    "after:text-white after:bg-emerald-500 after:px-2 after:py-1 after:rounded-full"
+                )
+
+            if tw_button(
+                item,
+                classes=button_classes,
+                use_container_width=True,
+                key=f"nav_{item}",
+            ):
                 st.session_state.current_page = item
                 st.rerun()
-            if item == "Master Data (From April 25 to March 26)":
-                st.markdown('<div class="masterdata-note">April 25 to March 26</div>', unsafe_allow_html=True)
 
         st.markdown('<div class="logout-wrap">', unsafe_allow_html=True)
-        submitted = st.button("Logout", use_container_width=True, key="logout_btn")
+        submitted = tw_button(
+            "Logout",
+            classes=(
+                "w-full rounded-[14px] bg-violet-700 text-white font-bold "
+                "hover:bg-violet-600 transition-colors duration-150"
+            ),
+            use_container_width=True,
+            key="logout_btn",
+        )
         st.markdown('</div>', unsafe_allow_html=True)
 
     if submitted:
