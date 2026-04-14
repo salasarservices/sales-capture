@@ -57,29 +57,21 @@ def login_form() -> bool:
                 #C8956A 100%) !important;
         }
 
-        /* Remove default padding so card can be truly centred */
+        /* Vertically centre, remove default padding */
         .main .block-container {
-            padding-top: 0 !important;
-            padding-bottom: 0 !important;
+            padding-top: 8vh !important;
+            padding-bottom: 4vh !important;
             max-width: 100% !important;
         }
 
-        /* Vertically centre the entire viewport */
-        [data-testid="stVerticalBlock"] {
-            min-height: 100vh;
-            display: flex !important;
-            flex-direction: column !important;
-            justify-content: center !important;
-        }
-
-        /* Glass card — applied to the centre column */
-        [data-testid="column"]:nth-child(2) {
+        /* Glass card — applied to the Streamlit form element */
+        [data-testid="stForm"] {
             background: rgba(255, 255, 255, 0.14) !important;
             backdrop-filter: blur(24px) !important;
             -webkit-backdrop-filter: blur(24px) !important;
             border: 1px solid rgba(255, 255, 255, 0.22) !important;
             border-radius: 20px !important;
-            padding: 48px 44px !important;
+            padding: 44px 40px 36px !important;
             box-shadow: 0 24px 64px rgba(0, 0, 0, 0.22) !important;
         }
 
@@ -116,7 +108,7 @@ def login_form() -> bool:
             font-size: 15px !important;
             padding: 15px !important;
             width: 100% !important;
-            margin-top: 6px;
+            margin-top: 6px !important;
             transition: all 0.25s ease;
             box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
             letter-spacing: 0.3px;
@@ -129,43 +121,62 @@ def login_form() -> bool:
         </style>
     """, unsafe_allow_html=True)
 
-    # Three-column layout: side gutters + centred card
-    _, card_col, _ = st.columns([1.5, 2, 1.5])
+    # Two side gutters + narrow centred card
+    _, card_col, _ = st.columns([2, 1.5, 2])
 
     with card_col:
-        # Logo
-        st.markdown(
-            '<div style="text-align:center; margin-bottom:24px;">'
-            f'<img src="{LOGO_URL}" alt="Salasar" '
-            'style="height:52px; filter:brightness(0) invert(1); opacity:0.96;">'
-            '</div>',
-            unsafe_allow_html=True,
-        )
-
-        # Divider
-        st.markdown(
-            '<hr style="border:none; border-top:1px solid rgba(255,255,255,0.22); margin:0 0 28px 0;">',
-            unsafe_allow_html=True,
-        )
-
-        # Title
-        st.markdown(
-            '<h1 style="text-align:center; color:white; font-size:22px; font-weight:700; '
-            'margin:0 0 28px 0; letter-spacing:0.3px; text-shadow:0 2px 6px rgba(0,0,0,0.15);">'
-            'Sales Capture Dashboard- Ahmedabad</h1>',
-            unsafe_allow_html=True,
-        )
-
-        # Login form
+        # Everything inside the form → form element IS the glass card
         with st.form("login_form", clear_on_submit=True):
+
+            # Logo
+            st.markdown(
+                '<div style="text-align:center; margin-bottom:20px;">'
+                f'<img src="{LOGO_URL}" alt="Salasar" '
+                'style="width:250px; filter:brightness(0) invert(1); opacity:0.96;">'
+                '</div>',
+                unsafe_allow_html=True,
+            )
+
+            # Title (no divider)
+            st.markdown(
+                '<h1 style="text-align:center; color:white; font-size:20px; font-weight:700; '
+                'margin:0 0 24px 0; letter-spacing:0.3px; '
+                'text-shadow:0 2px 6px rgba(0,0,0,0.15);">'
+                'Sales Capture Dashboard - Ahmedabad</h1>',
+                unsafe_allow_html=True,
+            )
+
+            # Inputs
             username = st.text_input("Username", placeholder="Username")
             password = st.text_input("Password", placeholder="Password", type="password")
             submitted = st.form_submit_button("Sign In", use_container_width=True)
 
-        error_message = None
+            # Error from previous attempt
+            if st.session_state.get("_login_error"):
+                st.markdown(
+                    f'<div style="background:rgba(255,100,100,0.18); '
+                    f'border:1px solid rgba(255,100,100,0.28); border-radius:10px; '
+                    f'padding:12px; color:white; font-size:13px; text-align:center; '
+                    f'margin-top:10px;">'
+                    f'{st.session_state["_login_error"]}</div>',
+                    unsafe_allow_html=True,
+                )
+
+            # Card footer
+            st.markdown(
+                '<div style="text-align:center; color:rgba(255,255,255,0.5); '
+                'font-size:11px; margin-top:28px; padding-top:16px; '
+                'border-top:1px solid rgba(255,255,255,0.15);">'
+                '&copy; Salasar Services (Insurance Brokers) Pvt. Ltd 2026</div>',
+                unsafe_allow_html=True,
+            )
+
+        # Handle submission after the form block
         if submitted:
+            st.session_state.pop("_login_error", None)
             if not username or not password:
-                error_message = "Please enter both username and password"
+                st.session_state["_login_error"] = "Please enter both username and password"
+                st.rerun()
             else:
                 try:
                     user_cfg = st.secrets["credentials"].get(username)
@@ -176,24 +187,11 @@ def login_form() -> bool:
                     st.session_state["authenticated"] = True
                     st.session_state["username"] = username
                     st.session_state["role"] = user_cfg.get("role", "viewer")
+                    st.session_state.pop("_login_error", None)
                     st.rerun()
                 else:
-                    error_message = "Invalid username or password"
-
-        if error_message:
-            st.markdown(
-                f'<div style="background:rgba(255,100,100,0.18); border:1px solid rgba(255,100,100,0.28); '
-                f'border-radius:10px; padding:12px; color:white; font-size:13px; text-align:center; margin-top:14px;">'
-                f'{error_message}</div>',
-                unsafe_allow_html=True,
-            )
-
-        # Footer
-        st.markdown(
-            '<div style="text-align:center; color:rgba(255,255,255,0.52); font-size:11px; margin-top:28px;">'
-            '&copy; Salasar Services Insurance Brokers Pvt. Ltd. 2026</div>',
-            unsafe_allow_html=True,
-        )
+                    st.session_state["_login_error"] = "Invalid username or password"
+                    st.rerun()
 
     return False
 
