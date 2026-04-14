@@ -14,6 +14,7 @@ st.set_page_config(
 
 from utils.styles import inject_global_css
 from utils.auth import login_form, is_admin
+from utils.tailwind import initialize_tailwind
 
 # ── Auth gate ────────────────────────────────────────────────────────────────
 if not st.session_state.get("authenticated"):
@@ -21,6 +22,7 @@ if not st.session_state.get("authenticated"):
     st.stop()
 
 inject_global_css()
+initialize_tailwind()
 
 # ── Import sidebar ───────────────────────────────────────────────────────────
 from components.sidebar import render_sidebar, get_current_page
@@ -40,7 +42,7 @@ elif current_page == "Sales Capture Summary":
 elif current_page == "Conversion Ratio Summary":
     from pages.conversion_ratio import render_page
     render_page()
-elif current_page == "Master Data (From April 25 to March 26)":
+elif current_page == "Master Data":
     from pages.master_data import render_page
     render_page()
 else:
