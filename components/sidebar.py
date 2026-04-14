@@ -217,7 +217,7 @@ def render_sidebar():
                 </div>
             """
         cards_html += '</div>'
-        st.markdown(cards_html, unsafe_allow_html=True)
+        st.html(cards_html)
 
         # Spacer
         st.markdown('<div style="height:16px"></div>', unsafe_allow_html=True)
