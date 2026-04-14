@@ -35,11 +35,11 @@ def require_auth():
 
 
 def login_form() -> bool:
-    """Render glassmorphism login form."""
+    """Render glassmorphism login form - centered fixed position."""
     if st.session_state.get("authenticated"):
         return True
 
-    # Glassmorphism login CSS - Fixed positioning
+    # Glassmorphism login CSS - Fixed center positioning
     st.markdown("""
         <style>
         /* Hide sidebar on login */
@@ -48,54 +48,64 @@ def login_form() -> bool:
             display: none !important;
         }
         
-        .main { 
-            margin-left: 0 !important; 
+        /* Reset main container */
+        .main {
+            margin-left: 0 !important;
+            margin-top: 0 !important;
+            padding-top: 0 !important;
         }
-        .main .block-container {
+        
+        .block-container {
             padding: 0 !important;
             max-width: 100% !important;
             margin: 0 !important;
             width: 100% !important;
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            height: 100vh !important;
         }
         
         /* Full screen gradient background */
         [data-testid="stAppViewContainer"] > section {
             background: linear-gradient(135deg, #1555AB 0%, #1e6ad1 30%, #2a7dd4 60%, #3a8ecf 100%) !important;
             min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
         }
         
-        /* Glassmorphism login container - centered */
+        /* Centered login card */
         .login-wrapper {
+            position: fixed !important;
+            top: 50% !important;
+            left: 50% !important;
+            transform: translate(-50%, -50%) !important;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
             width: 100%;
-            padding: 20px;
+            height: 100%;
+            padding: 0;
         }
         
-        /* Glass card - centered two columns style */
         .glass-card {
             background: rgba(0, 150, 136, 0.46) !important;
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.25) !important;
             border-radius: 20px !important;
-            padding: 40px 45px !important;
+            padding: 35px 40px !important;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25) !important;
-            max-width: 420px;
-            width: 100%;
+            max-width: 380px;
+            width: 90%;
         }
         
         .glass-logo {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         .glass-logo img {
-            height: 50px;
+            height: 45px;
             filter: brightness(0) invert(1);
             opacity: 0.95;
         }
@@ -103,17 +113,11 @@ def login_form() -> bool:
         .glass-title {
             text-align: center;
             color: white;
-            font-size: 20px;
+            font-size: 1.6rem !important;
             font-weight: 600;
             margin: 0 0 5px 0;
             text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        .glass-subtitle {
-            text-align: center;
-            color: rgba(255, 255, 255, 0.85);
-            font-size: 14px;
-            margin: 0 0 25px 0;
+            line-height: 1.3;
         }
         
         /* Form styling */
@@ -136,7 +140,6 @@ def login_form() -> bool:
             box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.15) !important;
         }
         
-        /* Labels */
         .glass-form label {
             color: rgba(255, 255, 255, 0.9) !important;
             font-size: 13px !important;
@@ -145,7 +148,6 @@ def login_form() -> bool:
             display: block;
         }
         
-        /* Input container spacing */
         .glass-form > div {
             margin-bottom: 15px !important;
         }
@@ -191,13 +193,7 @@ def login_form() -> bool:
             font-weight: 500;
         }
         
-        /* Adjust Streamlit form container */
-        .glass-form {
-            background: transparent !important;
-            padding: 0 !important;
-        }
-        
-        /* Remove Streamlit default padding */
+        /* Remove Streamlit default styling */
         [data-testid="stForm"] {
             background: transparent !important;
             border: none !important;
@@ -206,7 +202,7 @@ def login_form() -> bool:
         </style>
     """, unsafe_allow_html=True)
 
-    # Render login form - centered
+    # Render login form - fixed center position
     st.markdown('<div class="login-wrapper">', unsafe_allow_html=True)
     
     st.markdown("""
@@ -214,8 +210,7 @@ def login_form() -> bool:
             <div class="glass-logo">
                 <img src="https://ik.imagekit.io/salasarservices/Salasar-Logo-new.png" alt="Salasar">
             </div>
-            <h1 class="glass-title">Sales Capture Dashboard</h1>
-            <p class="glass-subtitle">- Ahmedabad -</p>
+            <h1 class="glass-title">Sales Capture Dashboard - Ahmedabad</h1>
     """, unsafe_allow_html=True)
     
     with st.form("login_form", clear_on_submit=True):
