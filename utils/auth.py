@@ -143,7 +143,8 @@ def login_form() -> bool:
         }
 
         /* Login button — dark charcoal */
-        [data-testid="stForm"] .stButton > button {
+        [data-testid="stForm"] .stButton > button,
+        [data-testid="stFormSubmitButton"] > button {
             background: #2C3344 !important;
             color: #FFFFFF !important;
             border: none !important;
@@ -158,7 +159,8 @@ def login_form() -> bool:
             letter-spacing: 0.3px;
         }
 
-        [data-testid="stForm"] .stButton > button:hover {
+        [data-testid="stForm"] .stButton > button:hover,
+        [data-testid="stFormSubmitButton"] > button:hover {
             background: #1E2535 !important;
             transform: translateY(-1px);
             box-shadow: 0 8px 22px rgba(0, 0, 0, 0.3);
@@ -201,7 +203,7 @@ def login_form() -> bool:
     with st.form("login_form", clear_on_submit=True):
         username = st.text_input("Username", placeholder="Username")
         password = st.text_input("Password", placeholder="Password", type="password")
-        submitted = st.button("Sign In")
+        submitted = st.form_submit_button("Sign In", use_container_width=True)
     
     error_message = None
     if submitted:
