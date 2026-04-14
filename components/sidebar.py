@@ -1,17 +1,41 @@
 """
 Sidebar component — solid RGB(22, 85, 171) with glassmorphism overlay.
-4 nav cards in pastel colors, UPPERCASE labels.
+4 nav cards in pastel colors, UPPERCASE labels with image icons.
 """
 
 import streamlit as st
 
 
-# Nav items: (page_key, display_label, icon, pastel_bg, pill_text)
+# Nav items: (page_key, display_label, icon_url, pastel_bg, pill_text)
 NAV_ITEMS = [
-    ("Business Conversion Ratio",              "BUSINESS CONVERSION RATIO",  "📅", "#DBEAFE", None),
-    ("Sales Capture Summary",                   "SALES CAPTURE SUMMARY",       "📈", "#DCFCE7", None),
-    ("Conversion Ratio Summary",                "CONVERSION RATIO SUMMARY",    "📊", "#FEF9C3", None),
-    ("Master Data (From April 25 to March 26)", "MASTER DATA",                 "📋", "#EDE9FE", "Apr 25 – Mar 26"),
+    (
+        "Business Conversion Ratio",
+        "BUSINESS CONVERSION RATIO",
+        "https://ik.imagekit.io/salasarservices/sales-capture/ratio.png",
+        "#DBEAFE",
+        None,
+    ),
+    (
+        "Sales Capture Summary",
+        "SALES CAPTURE SUMMARY",
+        "https://ik.imagekit.io/salasarservices/sales-capture/summary.png",
+        "#DCFCE7",
+        None,
+    ),
+    (
+        "Conversion Ratio Summary",
+        "CONVERSION RATIO SUMMARY",
+        "https://ik.imagekit.io/salasarservices/sales-capture/conversion.png",
+        "#FEF9C3",
+        None,
+    ),
+    (
+        "Master Data (From April 25 to March 26)",
+        "MASTER DATA",
+        "https://ik.imagekit.io/salasarservices/sales-capture/database.png",
+        "#EDE9FE",
+        "Apr 25 – Mar 26",
+    ),
 ]
 
 # Pill badge colors paired with each card
@@ -23,8 +47,17 @@ PILL_COLORS = {
 def render_sidebar():
     """Render the sidebar."""
 
+    # Global CSS — applied outside sidebar context so it takes effect everywhere
     st.markdown("""
         <style>
+        /* ── Hide Streamlit's automatic page navigation ── */
+        [data-testid="stSidebarNav"],
+        [data-testid="stSidebarNavItems"],
+        [data-testid="stSidebarNavSeparator"],
+        section[data-testid="stSidebar"] nav {
+            display: none !important;
+        }
+
         /* ── Sidebar base: solid RGB(22,85,171) + glass overlay ── */
         [data-testid="stSidebar"] {
             background: rgba(22, 85, 171, 0.96) !important;
@@ -71,16 +104,16 @@ def render_sidebar():
 
         /* ── Individual card ── */
         .sb-card {
-            padding: 16px 18px;
+            padding: 14px 16px;
             border-radius: 12px;
             cursor: default;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 700;
             color: #1A1F36;
-            letter-spacing: 0.6px;
+            letter-spacing: 0.7px;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 11px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.10);
             transition: transform 0.2s ease, box-shadow 0.2s ease;
             border: 1.5px solid transparent;
@@ -91,10 +124,12 @@ def render_sidebar():
             transform: translateY(-2px);
         }
 
-        /* ── Icon ── */
+        /* ── Icon image ── */
         .sb-icon {
-            font-size: 18px;
+            width: 22px;
+            height: 22px;
             flex-shrink: 0;
+            object-fit: contain;
         }
 
         /* ── Label + pill wrapper ── */
@@ -131,71 +166,66 @@ def render_sidebar():
             background: rgba(255, 255, 255, 0.20) !important;
             border-color: rgba(255, 255, 255, 0.35) !important;
         }
-
-        /* ── Bottom section ── */
-        .sb-bottom {
-            padding: 14px 14px 20px;
-        }
         </style>
     """, unsafe_allow_html=True)
 
-    # Logo
-    st.markdown("""
-        <div class="sb-logo">
-            <img src="https://ik.imagekit.io/salasarservices/Salasar-Logo-new.png" alt="Salasar">
-        </div>
-        <hr class="sb-divider">
-    """, unsafe_allow_html=True)
-
-    # State: default to first page
-    if "current_page" not in st.session_state:
-        st.session_state.current_page = "Business Conversion Ratio"
-
-    current_page = st.session_state.get("current_page", "Business Conversion Ratio")
-
-    # Hidden radio for state (Streamlit needs this for reruns)
-    page_keys = [key for key, *_ in NAV_ITEMS]
-    selected = st.radio(
-        "nav",
-        page_keys,
-        index=page_keys.index(current_page) if current_page in page_keys else 0,
-        label_visibility="collapsed",
-        key="nav_radio",
-    )
-    if selected:
-        st.session_state.current_page = selected
-
-    # Render styled cards
-    st.markdown('<div class="sb-nav">', unsafe_allow_html=True)
-
-    for key, label, icon, bg, pill in NAV_ITEMS:
-        active_cls = "active" if key == st.session_state.get("current_page") else ""
-        pill_html = ""
-        if pill:
-            pc = PILL_COLORS.get(key, {"bg": "#DDD", "text": "#333"})
-            pill_html = (
-                f'<span class="sb-pill" style="background:{pc["bg"]};color:{pc["text"]};">'
-                f"{pill}</span>"
-            )
-
-        st.markdown(f"""
-            <div class="sb-card {active_cls}" style="background:{bg};">
-                <span class="sb-icon">{icon}</span>
-                <div class="sb-label-row">
-                    <span>{label}</span>
-                    {pill_html}
-                </div>
+    with st.sidebar:
+        # Logo
+        st.markdown("""
+            <div class="sb-logo">
+                <img src="https://ik.imagekit.io/salasarservices/Salasar-Logo-new.png" alt="Salasar">
             </div>
+            <hr class="sb-divider">
         """, unsafe_allow_html=True)
 
-    st.markdown('</div>', unsafe_allow_html=True)
+        # State: default to first page
+        if "current_page" not in st.session_state:
+            st.session_state.current_page = "Business Conversion Ratio"
 
-    # Sign out at bottom
-    st.markdown('<div class="sb-bottom">', unsafe_allow_html=True)
-    if st.button("Sign out", use_container_width=True):
-        from utils.auth import logout
-        logout()
-    st.markdown('</div>', unsafe_allow_html=True)
+        current_page = st.session_state.get("current_page", "Business Conversion Ratio")
+
+        # Hidden radio for state (Streamlit needs this for reruns)
+        page_keys = [key for key, *_ in NAV_ITEMS]
+        selected = st.radio(
+            "nav",
+            page_keys,
+            index=page_keys.index(current_page) if current_page in page_keys else 0,
+            label_visibility="collapsed",
+            key="nav_radio",
+        )
+        if selected:
+            st.session_state.current_page = selected
+
+        # Build all card HTML in a single markdown call to avoid orphan </div> text
+        cards_html = '<div class="sb-nav">'
+        for key, label, icon_url, bg, pill in NAV_ITEMS:
+            active_cls = "active" if key == st.session_state.get("current_page") else ""
+            pill_html = ""
+            if pill:
+                pc = PILL_COLORS.get(key, {"bg": "#DDD", "text": "#333"})
+                pill_html = (
+                    f'<span class="sb-pill" style="background:{pc["bg"]};color:{pc["text"]};">'
+                    f"{pill}</span>"
+                )
+            cards_html += f"""
+                <div class="sb-card {active_cls}" style="background:{bg};">
+                    <img class="sb-icon" src="{icon_url}" alt="">
+                    <div class="sb-label-row">
+                        <span>{label}</span>
+                        {pill_html}
+                    </div>
+                </div>
+            """
+        cards_html += '</div>'
+        st.markdown(cards_html, unsafe_allow_html=True)
+
+        # Spacer
+        st.markdown('<div style="height:16px"></div>', unsafe_allow_html=True)
+
+        # Sign out at bottom
+        if st.button("Sign out", use_container_width=True):
+            from utils.auth import logout
+            logout()
 
 
 def navigate_to_page(page_name: str):
