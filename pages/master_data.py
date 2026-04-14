@@ -94,7 +94,7 @@ def render_page():
     # Display table
     from components.data_tables import render_enquiry_table
     
-    st.dataframe(df, use_container_width=True, height=500, hide_index=True)
+    st.dataframe(df, width='stretch', height=500, hide_index=True)
     
     # Pagination
     st.markdown("<div style='height: 1rem'></div>", unsafe_allow_html=True)
