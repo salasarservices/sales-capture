@@ -1,4 +1,0 @@
-# Hide the radio button completely and use onclick to navigate
-# Or use session state directly without the radio
-
-# Let me update the sidebar to remove the radio button and use HTML links/buttons instead

@@ -39,7 +39,7 @@ def login_form() -> bool:
     if st.session_state.get("authenticated"):
         return True
 
-    # Glassmorphism login CSS
+    # Glassmorphism login CSS - Fixed positioning
     st.markdown("""
         <style>
         /* Hide sidebar on login */
@@ -48,35 +48,43 @@ def login_form() -> bool:
             display: none !important;
         }
         
-        .main { margin-left: 0 !important; }
+        .main { 
+            margin-left: 0 !important; 
+        }
         .main .block-container {
             padding: 0 !important;
             max-width: 100% !important;
             margin: 0 !important;
+            width: 100% !important;
         }
         
         /* Full screen gradient background */
         [data-testid="stAppViewContainer"] > section {
             background: linear-gradient(135deg, #1555AB 0%, #1e6ad1 30%, #2a7dd4 60%, #3a8ecf 100%) !important;
             min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
-        /* Glassmorphism login container */
-        .login-container {
+        /* Glassmorphism login container - centered */
+        .login-wrapper {
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            width: 100%;
             padding: 20px;
         }
         
+        /* Glass card - centered two columns style */
         .glass-card {
-            background: rgba(255, 255, 255, 0.12) !important;
+            background: rgba(0, 150, 136, 0.46) !important;
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.18) !important;
-            border-radius: 24px !important;
-            padding: 50px 45px !important;
+            border: 1px solid rgba(255, 255, 255, 0.25) !important;
+            border-radius: 20px !important;
+            padding: 40px 45px !important;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25) !important;
             max-width: 420px;
             width: 100%;
@@ -84,10 +92,10 @@ def login_form() -> bool:
         
         .glass-logo {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
         .glass-logo img {
-            height: 55px;
+            height: 50px;
             filter: brightness(0) invert(1);
             opacity: 0.95;
         }
@@ -95,58 +103,64 @@ def login_form() -> bool:
         .glass-title {
             text-align: center;
             color: white;
-            font-size: 28px;
-            font-weight: 700;
-            margin: 0 0 8px 0;
+            font-size: 20px;
+            font-weight: 600;
+            margin: 0 0 5px 0;
             text-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         
         .glass-subtitle {
             text-align: center;
-            color: rgba(255, 255, 255, 0.75);
+            color: rgba(255, 255, 255, 0.85);
             font-size: 14px;
-            margin: 0 0 35px 0;
+            margin: 0 0 25px 0;
         }
         
         /* Form styling */
-        .glass-form label {
-            color: rgba(255, 255, 255, 0.85) !important;
-            font-size: 13px !important;
-            font-weight: 500 !important;
-            margin-bottom: 8px !important;
-            display: block;
-        }
-        
         .glass-form .stTextInput > div > div > input {
-            background: rgba(255, 255, 255, 0.1) !important;
-            border: 1px solid rgba(255, 255, 255, 0.2) !important;
-            border-radius: 12px !important;
+            background: rgba(255, 255, 255, 0.15) !important;
+            border: 1px solid rgba(255, 255, 255, 0.3) !important;
+            border-radius: 10px !important;
             color: white !important;
-            padding: 14px 16px !important;
+            padding: 12px 14px !important;
             font-size: 14px !important;
         }
         
         .glass-form .stTextInput > div > div > input::placeholder {
-            color: rgba(255, 255, 255, 0.5) !important;
+            color: rgba(255, 255, 255, 0.6) !important;
         }
         
         .glass-form .stTextInput > div > div > input:focus {
-            border-color: rgba(255, 255, 255, 0.5) !important;
-            background: rgba(255, 255, 255, 0.15) !important;
-            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1) !important;
+            border-color: rgba(255, 255, 255, 0.6) !important;
+            background: rgba(255, 255, 255, 0.2) !important;
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.15) !important;
+        }
+        
+        /* Labels */
+        .glass-form label {
+            color: rgba(255, 255, 255, 0.9) !important;
+            font-size: 13px !important;
+            font-weight: 500 !important;
+            margin-bottom: 6px !important;
+            display: block;
+        }
+        
+        /* Input container spacing */
+        .glass-form > div {
+            margin-bottom: 15px !important;
         }
         
         /* Login button */
         .glass-form .stButton > button {
-            background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%) !important;
+            background: linear-gradient(135deg, #ffffff 0%, #e8e8e8 100%) !important;
             color: #1555AB !important;
             border: none !important;
-            border-radius: 12px !important;
+            border-radius: 10px !important;
             font-weight: 700 !important;
-            font-size: 15px !important;
-            padding: 16px !important;
+            font-size: 14px !important;
+            padding: 14px !important;
             width: 100% !important;
-            margin-top: 20px;
+            margin-top: 10px;
             transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
         }
@@ -158,50 +172,63 @@ def login_form() -> bool:
         
         /* Error message */
         .glass-error {
-            background: rgba(255, 100, 100, 0.2);
-            border: 1px solid rgba(255, 100, 100, 0.3);
-            border-radius: 10px;
+            background: rgba(255, 100, 100, 0.25);
+            border: 1px solid rgba(255, 100, 100, 0.4);
+            border-radius: 8px;
             padding: 12px;
             color: white;
             font-size: 13px;
             text-align: center;
-            margin-top: 15px;
+            margin-top: 12px;
         }
         
         /* Footer text */
         .glass-footer {
             text-align: center;
-            color: rgba(255, 255, 255, 0.5);
+            color: rgba(255, 255, 255, 0.7);
             font-size: 11px;
             margin-top: 25px;
+            font-weight: 500;
+        }
+        
+        /* Adjust Streamlit form container */
+        .glass-form {
+            background: transparent !important;
+            padding: 0 !important;
+        }
+        
+        /* Remove Streamlit default padding */
+        [data-testid="stForm"] {
+            background: transparent !important;
+            border: none !important;
+            padding: 0 !important;
         }
         </style>
     """, unsafe_allow_html=True)
 
-    # Render login form
-    st.markdown('<div class="login-container">', unsafe_allow_html=True)
+    # Render login form - centered
+    st.markdown('<div class="login-wrapper">', unsafe_allow_html=True)
     
     st.markdown("""
         <div class="glass-card">
             <div class="glass-logo">
                 <img src="https://ik.imagekit.io/salasarservices/Salasar-Logo-new.png" alt="Salasar">
             </div>
-            <h1 class="glass-title">Welcome Back</h1>
-            <p class="glass-subtitle">Sign in to access your dashboard</p>
+            <h1 class="glass-title">Sales Capture Dashboard</h1>
+            <p class="glass-subtitle">- Ahmedabad -</p>
     """, unsafe_allow_html=True)
     
     with st.form("login_form", clear_on_submit=True):
-        username = st.text_input("Username", placeholder="Enter your username", key="login_username")
-        password = st.text_input("Password", placeholder="••••••••", type="password", key="login_password")
-        submitted = st.form_submit_button("Sign in", use_container_width=True)
+        username = st.text_input("Username", placeholder="Enter username", key="login_username")
+        password = st.text_input("Password", placeholder="Enter password", type="password", key="login_password")
+        submitted = st.form_submit_button("Login", use_container_width=True)
     
     error_message = None
     if submitted:
-        # Get form values from session state
         username = st.session_state.get("login_username", "")
         password = st.session_state.get("login_password", "")
         if not username or not password:
-            error_message = "Please enter both username and password"
+            error_message = "Please enter username and password"
         else:
             try:
                 user_cfg = st.secrets["credentials"].get(username)
@@ -221,7 +248,7 @@ def login_form() -> bool:
     
     st.markdown("""
             <div class="glass-footer">
-                IRDA License No: 2024-25/SALASAR/001
+                © Salasar Services (Insurance Brokers) Pvt. Ltd 2026
             </div>
         </div>
     """, unsafe_allow_html=True)
