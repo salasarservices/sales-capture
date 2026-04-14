@@ -55,10 +55,16 @@ CHART = {
 # ─────────────────────────────────────────────────────────────────────────────
 _CSS = """
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;800&display=swap');
+
 /* ═══════════════════════════════════════════════════════════════════════════
    SALASAR SERVICES — SALES DASHBOARD
    UI Design: Metric-First Layout with Sidebar Filters
 ═══════════════════════════════════════════════════════════════════════════ */
+
+html, body, [class*="css"], .stApp, .stMarkdown, .stButton > button, .stTextInput input {
+    font-family: 'Roboto', sans-serif !important;
+}
 
 /* ── Chrome off ──────────────────────────────────────────────────────────── */
 #MainMenu, footer,
@@ -147,6 +153,40 @@ hr { border-color: #E5E7EB !important; margin: 0.75rem 0 !important; }
     color: #1A1F36 !important; 
 }
 
+.kpi-card {
+    border-radius: 14px;
+    border: 1px solid #E2E8F0;
+    background: #FFFFFF;
+    box-shadow: 0 8px 16px rgba(15, 23, 42, 0.06);
+    padding: 0.85rem 0.9rem;
+    min-height: 134px;
+}
+.kpi-tone-blue { border-top: 4px solid #3B82F6; }
+.kpi-tone-green { border-top: 4px solid #10B981; }
+.kpi-tone-amber { border-top: 4px solid #F59E0B; }
+.kpi-head { display: flex; align-items: center; justify-content: space-between; gap: 0.45rem; }
+.kpi-label { font-size: 0.74rem; color: #334155; text-transform: uppercase; font-weight: 700; letter-spacing: 0.04em; }
+.kpi-pill {
+    font-size: 0.65rem;
+    border-radius: 999px;
+    padding: 0.16rem 0.45rem;
+    color: #334155;
+    background: #E2E8F0;
+    font-weight: 700;
+}
+.kpi-value { font-size: 1.65rem; font-weight: 800; color: #0F172A; line-height: 1.12; margin-top: 0.45rem; }
+.kpi-sub { font-size: 0.75rem; color: #64748B; margin-top: 0.15rem; }
+.kpi-delta {
+    margin-top: 0.55rem;
+    width: fit-content;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.14rem 0.45rem;
+}
+.kpi-delta-up { background: #DCFCE7; color: #166534; }
+.kpi-delta-down { background: #FEE2E2; color: #991B1B; }
+
 /* ── Section heading ──────────────────────────────────────────────────────── */
 .section-heading {
     font-size: 14px;
@@ -171,6 +211,72 @@ hr { border-color: #E5E7EB !important; margin: 0.75rem 0 !important; }
     border: 0.5px solid #E5E7EB;
     border-radius: 8px;
 }
+
+.dash-table-wrapper {
+    border: 1px solid #D8E3F2;
+    border-radius: 14px;
+    overflow: auto;
+    background: #FFFFFF;
+    box-shadow: 0 10px 26px rgba(15, 23, 42, 0.06);
+}
+
+.dash-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 0.82rem;
+}
+
+.dash-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: linear-gradient(180deg, #EAF2FF 0%, #E2ECFB 100%);
+    color: #0F3B67;
+    text-transform: uppercase;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    padding: 0.62rem 0.56rem;
+    border-bottom: 1px solid #CFE0F5;
+    white-space: nowrap;
+}
+
+.dash-table tbody td {
+    border-bottom: 1px solid #EDF2F7;
+    padding: 0.56rem;
+    color: #1E293B;
+}
+
+.dash-table tbody tr:nth-child(even) td { background: #FAFCFF; }
+.dash-table tbody tr:hover td { background: #EEF6FF; }
+.dash-table-total td {
+    font-weight: 800;
+    background: #E8F1FF !important;
+    color: #0E4170;
+}
+.dash-table-red td { background: #FFF1F2 !important; }
+.dash-table-amber td { background: #FFF8EC !important; }
+
+.badge-yes,
+.badge-no {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    padding: 0.16rem 0.5rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+}
+.badge-yes {
+    color: #065F46;
+    background: #D1FAE5;
+}
+.badge-no {
+    color: #991B1B;
+    background: #FEE2E2;
+}
+
+.enquiry-table thead th { font-size: 0.74rem; }
+.enquiry-table tbody td { font-size: 0.74rem; }
 
 /* ── Form elements ───────────────────────────────────────────────────────── */
 .stSelectbox > div > div,

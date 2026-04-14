@@ -55,6 +55,10 @@ def render_sidebar():
             padding-bottom: 1rem;
         }
 
+        [data-testid="stSidebar"], [data-testid="stSidebar"] * {
+            font-family: 'Roboto', sans-serif !important;
+        }
+
         .sidebar-logo {
             text-align: center;
             padding: 0.4rem 0.4rem 0.6rem;
@@ -179,23 +183,26 @@ def render_sidebar():
         }
 
         [data-testid="stSidebar"] .stButton {
-            margin: 0.45rem 0.35rem;
+            margin: 0.14rem 0.35rem !important;
         }
 
         [data-testid="stSidebar"] .stButton > button {
             width: 100%;
-            border-radius: 14px;
-            background: #9AD8E8;
+            border-radius: 10px;
+            background: #F1F5F9;
             color: #101826;
-            border: none;
-            font-size: 1.08rem;
-            font-weight: 700;
-            min-height: 42px;
+            border: 1px solid #D7E1EE;
+            font-size: 0.82rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            min-height: 40px;
             cursor: pointer;
         }
 
         [data-testid="stSidebar"] .stButton > button:hover {
-            background: #A5DFED;
+            background: #DCEFFE;
+            border-color: #B7D2F5;
         }
 
         [data-testid="stSidebar"] .stButton:nth-of-type(4) > button {
@@ -206,18 +213,20 @@ def render_sidebar():
         }
 
         [data-testid="stSidebar"] .stButton:nth-of-type(4) > button::after {
-            content: "April 25 to March 26";
-            font-size: 0.62rem;
+            content: "From Mar 25 - Apr 26";
+            font-size: 0.64rem;
             color: #FFFFFF;
-            background: #44BC7A;
+            background: linear-gradient(90deg, #14B8A6 0%, #3B82F6 50%, #A855F7 100%);
             border-radius: 999px;
-            padding: 0.22rem 0.5rem;
+            padding: 0.24rem 0.56rem;
             line-height: 1.05;
             white-space: nowrap;
+            text-transform: none;
+            letter-spacing: 0;
         }
 
         .logout-wrap {
-            margin-top: 9rem;
+            margin-top: 2.5rem;
             margin-left: 0.35rem;
             margin-right: 0.35rem;
             margin-bottom: 0.5rem;
@@ -286,14 +295,16 @@ def render_sidebar():
 
         for item in NAV_ITEMS:
             button_classes = (
-                "w-full min-h-[42px] rounded-[14px] bg-sky-200 text-slate-900 "
-                "font-bold hover:bg-sky-300 transition-colors duration-150 "
+                "w-full min-h-[40px] rounded-[10px] bg-slate-100 text-slate-900 "
+                "font-extrabold uppercase tracking-[0.08em] border border-slate-200 "
+                "hover:bg-sky-100 hover:border-sky-200 transition-colors duration-150 "
                 "flex items-center justify-center gap-2"
             )
             if item == "Master Data":
                 button_classes += (
-                    " after:content-['April_25_to_March_26'] after:text-[10px] after:leading-none "
-                    "after:text-white after:bg-emerald-500 after:px-2 after:py-1 after:rounded-full"
+                    " after:content-['From_Mar_25_-_Apr_26'] after:text-[10px] after:leading-none "
+                    "after:text-white after:bg-gradient-to-r after:from-teal-500 after:via-blue-500 "
+                    "after:to-violet-500 after:px-2 after:py-1 after:rounded-full after:normal-case"
                 )
 
             if tw_button(
