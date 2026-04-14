@@ -201,21 +201,48 @@ def render_sidebar():
     if selected:
         st.session_state.current_page = selected
     
-    # Render styled cards
+    # Render interactive nav cards (buttons) so clicking a card changes page
     st.markdown('<div class="nav-cards">', unsafe_allow_html=True)
-    
-    for label, icon in nav_items:
+
+    for index, (label, icon) in enumerate(nav_items):
         bg_color = PASTEL_COLORS.get(label, "#FFFFFF")
-        is_active = "active" if label == st.session_state.get("current_page") else ""
-        
-        st.markdown(f"""
-            <div class="nav-card-item {is_active}" 
-                 style="background-color: {bg_color};">
-                <span class="nav-icon">{icon}</span>
-                {label}
-            </div>
-        """, unsafe_allow_html=True)
-    
+        is_active = label == st.session_state.get("current_page")
+        border_color = "rgba(26, 31, 54, 0.25)" if is_active else "rgba(26, 31, 54, 0.08)"
+        shadow = "0 8px 25px rgba(0, 0, 0, 0.15)" if is_active else "0 2px 8px rgba(0, 0, 0, 0.06)"
+        weight = "600" if is_active else "500"
+
+        st.markdown(
+            f"""
+            <style>
+            div[data-testid="stVerticalBlock"] div[data-testid="stButton"] button[key="nav_card_{index}"] {{
+                background: {bg_color} !important;
+                color: #1A1F36 !important;
+                border: 1px solid {border_color} !important;
+                border-radius: 14px !important;
+                padding: 0.85rem 0.9rem !important;
+                min-height: 58px !important;
+                font-size: 14px !important;
+                font-weight: {weight} !important;
+                text-align: left !important;
+                box-shadow: {shadow} !important;
+                transition: all 0.25s ease !important;
+                justify-content: flex-start !important;
+                margin-bottom: 0.45rem !important;
+            }}
+            div[data-testid="stVerticalBlock"] div[data-testid="stButton"] button[key="nav_card_{index}"]:hover {{
+                transform: translateY(-3px);
+                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12) !important;
+            }}
+            </style>
+            """,
+            unsafe_allow_html=True
+        )
+
+        if st.button(f"{icon}  {label}", key=f"nav_card_{index}", use_container_width=True):
+            if st.session_state.get("current_page") != label:
+                st.session_state.current_page = label
+                st.rerun()
+
     st.markdown('</div>', unsafe_allow_html=True)
     
     # User info at bottom
