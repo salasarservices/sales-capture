@@ -42,9 +42,9 @@ def render_page():
     
     col1, col2 = st.columns([3, 2])
     with col1:
-        st.plotly_chart(horizontal_bar_premium(df), use_container_width=True)
+        st.plotly_chart(horizontal_bar_premium(df), width='stretch')
     with col2:
-        st.plotly_chart(pie_enquiry_share(df), use_container_width=True)
+        st.plotly_chart(pie_enquiry_share(df), width='stretch')
     
     st.markdown("<div style='height: 1.5rem'></div>", unsafe_allow_html=True)
     st.divider()
