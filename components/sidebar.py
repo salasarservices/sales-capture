@@ -31,6 +31,13 @@ def render_sidebar():
             "https://ik.imagekit.io/salasarservices/Salasar-Logo-new.png",
             use_container_width=True,
         )
+        st.markdown(
+            "<div style='text-align:center; line-height:1.5;'>"
+            "<span style='font-size:15px;'>Sales capture report</span><br>"
+            "<span style='font-size:15px;'>Ahmedabad</span>"
+            "</div>",
+            unsafe_allow_html=True,
+        )
         st.divider()
 
         if "current_page" not in st.session_state:
