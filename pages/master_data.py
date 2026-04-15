@@ -8,17 +8,8 @@ import streamlit as st
 def render_page():
     """Render the Master Data page."""
     
-    # Page header
-    st.markdown("""
-        <div style="margin-bottom: 1.5rem;">
-            <h1 style="color: #1A1F36; margin: 0; font-size: 22px; font-weight: 600;">
-                📋 Master Data
-            </h1>
-            <p style="color: #6B7280; margin: 8px 0 0 0; font-size: 14px;">
-                Enquiry details from April 2025 to March 2026
-            </p>
-        </div>
-    """, unsafe_allow_html=True)
+    st.title("📋 Master Data")
+    st.caption("Enquiry details from April 2025 to March 2026")
     
     # Load data
     from database.connection import get_db
@@ -97,8 +88,6 @@ def render_page():
     st.dataframe(df, width='stretch', height=500, hide_index=True)
     
     # Pagination
-    st.markdown("<div style='height: 1rem'></div>", unsafe_allow_html=True)
-    
     col1, col2, col3 = st.columns([1, 4, 1])
     with col1:
         if st.button("← Previous", disabled=st.session_state.master_page <= 1):

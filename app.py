@@ -12,17 +12,12 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-from utils.styles import inject_global_css
-from utils.shadcn_theme import inject_shadcn_theme
 from utils.auth import login_form, is_admin
 
 # ── Auth gate ────────────────────────────────────────────────────────────────
 if not st.session_state.get("authenticated"):
     login_form()
     st.stop()
-
-inject_global_css()
-inject_shadcn_theme()
 
 # ── Import sidebar ───────────────────────────────────────────────────────────
 from components.sidebar import render_sidebar, get_current_page

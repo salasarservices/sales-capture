@@ -8,17 +8,8 @@ import streamlit as st
 def render_page():
     """Render the Sales Capture Summary page."""
     
-    # Page header
-    st.markdown("""
-        <div style="margin-bottom: 1.5rem;">
-            <h1 style="color: #1A1F36; margin: 0; font-size: 22px; font-weight: 600;">
-                📈 Sales Capture Summary
-            </h1>
-            <p style="color: #6B7280; margin: 8px 0 0 0; font-size: 14px;">
-                Enquiry volume and premium conversion per sales person
-            </p>
-        </div>
-    """, unsafe_allow_html=True)
+    st.title("📈 Sales Capture Summary")
+    st.caption("Enquiry volume and premium conversion per sales person")
     
     # Load data
     from database.connection import get_db
@@ -46,11 +37,9 @@ def render_page():
     with col2:
         st.plotly_chart(pie_enquiry_share(df), width='stretch')
     
-    st.markdown("<div style='height: 1.5rem'></div>", unsafe_allow_html=True)
     st.divider()
-    
-    # Table
-    st.markdown('<p class="section-heading">Sales Capture Details</p>', unsafe_allow_html=True)
+
+    st.subheader("Sales Capture Details")
     
     display_df = df.copy()
     display_df["Premium Converted (₹)"] = display_df["Premium Converted (₹)"].apply(format_inr)

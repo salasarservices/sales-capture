@@ -8,17 +8,8 @@ import streamlit as st
 def render_page():
     """Render the Conversion Ratio Summary page."""
     
-    # Page header
-    st.markdown("""
-        <div style="margin-bottom: 1.5rem;">
-            <h1 style="color: #1A1F36; margin: 0; font-size: 22px; font-weight: 600;">
-                📊 Conversion Ratio Summary
-            </h1>
-            <p style="color: #6B7280; margin: 8px 0 0 0; font-size: 14px;">
-                Per CRE/RM breakdown by proposal type (Fresh, Renewal, Expanded)
-            </p>
-        </div>
-    """, unsafe_allow_html=True)
+    st.title("📊 Conversion Ratio Summary")
+    st.caption("Per CRE/RM breakdown by proposal type (Fresh, Renewal, Expanded)")
     
     # Load data
     from database.connection import get_db
@@ -35,7 +26,6 @@ def render_page():
     from components.kpi_cards import render_kpi_row
     render_kpi_row(kpis)
     
-    st.markdown("<div style='height: 1rem'></div>", unsafe_allow_html=True)
     st.divider()
     
     # Charts
@@ -65,11 +55,9 @@ def render_page():
     with col2:
         st.plotly_chart(grouped_bar_proposal_type(df), width='stretch')
     
-    st.markdown("<div style='height: 1.5rem'></div>", unsafe_allow_html=True)
     st.divider()
-    
-    # Table
-    st.markdown('<p class="section-heading">Conversion Ratio Details</p>', unsafe_allow_html=True)
+
+    st.subheader("Conversion Ratio Details")
     
     display_cols = {
         "CRE / RM": "CRE / RM",
