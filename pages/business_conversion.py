@@ -17,10 +17,11 @@ def render_page():
     from database.queries import fetch_business_conversion
     
     db = get_db()
-    fy = st.session_state.get("fy", "2025-26")
-    
+    fy     = st.session_state.get("fy",     "2025-26")
+    branch = st.session_state.get("branch", "Ahmedabad")
+
     with st.spinner("Loading data..."):
-        df = fetch_business_conversion(db, fy=fy)
+        df = fetch_business_conversion(db, fy=fy, branch=branch)
     
     if df.empty:
         st.warning("No data found.")
@@ -40,8 +41,11 @@ def render_page():
     st.subheader("Monthly Conversion Details")
     st.caption("Total = full year aggregate")
     
-    raw_conv = df["Conversion %"].copy()
-    display_df = df.copy()
-    display_df["Conversion %"] = display_df["Conversion %"].apply(format_pct)
-    
-    render_html_table(display_df, height=500, id_col="Month", raw_conv=raw_conv)
+    display_df = df.rename(columns={
+        "No. of Enquiries":  "No. of Enquiries",
+        "Business Converted": "Business Converted",
+        "Conversion %":       "Percentage Converted",
+    }).copy()
+    display_df["Percentage Converted"] = display_df["Percentage Converted"].apply(format_pct)
+
+    render_html_table(display_df, height=500, id_col="Month")

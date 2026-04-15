@@ -74,9 +74,9 @@ def fetch_summary_sales(db, fy: str = FY, branch: str = BRANCH) -> pd.DataFrame:
     return df
 
 
-def fetch_business_conversion(db, fy: str = FY) -> pd.DataFrame:
-    """Fetch Business Conversion Ratio (View C) - monthly."""
-    pipeline = business_conversion_pipeline(fy)
+def fetch_business_conversion(db, fy: str = FY, branch: str = BRANCH) -> pd.DataFrame:
+    """Fetch Business Conversion Ratio (View C) - monthly, filtered by branch."""
+    pipeline = business_conversion_pipeline(fy, branch)
     rows = list(db.enquiries.aggregate(pipeline))
     
     # Build a complete 12-month scaffold

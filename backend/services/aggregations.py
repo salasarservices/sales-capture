@@ -59,9 +59,9 @@ def summary_sales_pipeline(fy: str, branch: str) -> list:
     ]
 
 
-def business_conversion_pipeline(fy: str) -> list:
+def business_conversion_pipeline(fy: str, branch: str = "Ahmedabad") -> list:
     return [
-        {"$match": {"fy": fy}},
+        {"$match": {"fy": fy, "branch": branch}},
         {
             "$group": {
                 "_id": {
