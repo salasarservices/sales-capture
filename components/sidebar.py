@@ -1,7 +1,7 @@
 """
 Sidebar component — dark admin-panel style with Material Icons Round.
-Navigation via inline onclick handlers that click the hidden radio input,
-so Streamlit's state management still drives page routing.
+Navigation uses a hidden Streamlit radio for state/routing, while users
+interact with custom icon+label nav items.
 """
 
 import streamlit as st
@@ -33,7 +33,9 @@ NAV_ITEMS = [
 
 _SIDEBAR_CSS = """
 <style>
-/* ── Hide Streamlit's auto page-nav ── */
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons+Round');
+
+/* Hide Streamlit auto page-nav */
 [data-testid="stSidebarNav"],
 [data-testid="stSidebarNavItems"],
 [data-testid="stSidebarNavSeparator"],
@@ -55,7 +57,9 @@ section[data-testid="stSidebar"] nav {
     border-right: 1px solid rgba(255, 255, 255, 0.07) !important;
     box-shadow: 4px 0 24px rgba(0, 0, 0, 0.35) !important;
 }
-[data-testid="stSidebar"] > div:first-child {
+
+/* Sidebar inner content scroll */
+section[data-testid="stSidebar"] > div:first-child {
     background: transparent !important;
     padding-top: 0 !important;
     height: 100vh !important;
@@ -70,7 +74,7 @@ section[data-testid="stSidebar"] nav {
     max-width: 100% !important;
 }
 
-/* ── Logo ── */
+/* Logo */
 .sb-logo {
     text-align: center;
     padding: 28px 20px 22px;
@@ -81,7 +85,7 @@ section[data-testid="stSidebar"] nav {
     opacity: 0.92;
 }
 
-/* ── Divider ── */
+/* Divider */
 .sb-divider {
     border: none;
     border-top: 1px solid rgba(255, 255, 255, 0.08);
@@ -148,11 +152,13 @@ section[data-testid="stSidebar"] nav {
     justify-content: center !important;
     gap: 8px !important;
 }
+
 [data-testid="stSidebar"] .stButton > button:hover {
     background: rgba(255, 255, 255, 0.07) !important;
     border-color: rgba(255, 255, 255, 0.25) !important;
     color: rgba(255, 255, 255, 0.85) !important;
 }
+
 [data-testid="stSidebar"] .stButton > button:active {
     background: rgba(255, 255, 255, 0.12) !important;
 }
@@ -167,15 +173,17 @@ def render_sidebar():
     st.markdown(_SIDEBAR_CSS, unsafe_allow_html=True)
 
     with st.sidebar:
-        # ── Logo ──────────────────────────────────────────────────────────────
-        st.markdown("""
+        st.markdown(
+            """
             <div class="sb-logo">
                 <img src="https://ik.imagekit.io/salasarservices/Salasar-Logo-new.png" alt="Salasar">
             </div>
             <hr class="sb-divider">
-        """, unsafe_allow_html=True)
+            """,
+            unsafe_allow_html=True,
+        )
 
-        # ── State init ────────────────────────────────────────────────────────
+        # State init
         if "current_page" not in st.session_state:
             st.session_state.current_page = NAV_ITEMS[0]["key"]
 
@@ -198,6 +206,7 @@ def render_sidebar():
             format_func=lambda key: label_map.get(key, key.upper()),
             key="nav_radio",
         )
+
         if selected and selected != current_page:
             st.session_state.current_page = selected
 
@@ -216,5 +225,5 @@ def navigate_to_page(page_name: str):
 
 
 def get_current_page() -> str:
-    """Return the currently active page key."""
+    """Return currently active page key."""
     return st.session_state.get("current_page", NAV_ITEMS[0]["key"])
