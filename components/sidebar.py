@@ -30,8 +30,7 @@ NAV_ITEMS = [
     },
 ]
 
-
-_SIDEBAR_CSS = """
+_SIDEBAR_STYLES = """
 <style>
 @import url('https://fonts.googleapis.com/icon?family=Material+Icons+Round');
 
@@ -43,16 +42,13 @@ section[data-testid="stSidebar"] nav {
     display: none !important;
 }
 
-/* ── Fixed, dark sidebar base ── */
-[data-testid="stSidebar"] {
+/* Fixed sidebar */
+section[data-testid="stSidebar"] {
     position: fixed !important;
     top: 0 !important;
     left: 0 !important;
-    width: 17.5rem !important;
-    min-width: 17.5rem !important;
-    max-width: 17.5rem !important;
     height: 100vh !important;
-    z-index: 100 !important;
+    z-index: 999 !important;
     background: #0f172a !important;
     border-right: 1px solid rgba(255, 255, 255, 0.07) !important;
     box-shadow: 4px 0 24px rgba(0, 0, 0, 0.35) !important;
@@ -66,12 +62,17 @@ section[data-testid="stSidebar"] > div:first-child {
     overflow-y: auto !important;
 }
 
-/* ── Shift main content so fixed sidebar does not overlap visuals ── */
-[data-testid="stAppViewContainer"] section.main {
-    margin-left: 17.5rem !important;
-}
-[data-testid="stAppViewContainer"] .main .block-container {
-    max-width: 100% !important;
+/* Keep hidden radio in DOM, but invisible */
+[data-testid="stSidebar"] div[data-testid="stRadio"],
+[data-testid="stSidebar"] .stRadio {
+    position: absolute !important;
+    left: -9999px !important;
+    top: -9999px !important;
+    width: 1px !important;
+    height: 1px !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    overflow: hidden !important;
 }
 
 /* Logo */
@@ -92,52 +93,61 @@ section[data-testid="stSidebar"] > div:first-child {
     margin: 0 0 8px 0;
 }
 
-/* ── Sidebar radio nav restyle (icon + uppercase labels) ── */
-[data-testid="stSidebar"] .stRadio {
-    padding: 6px 8px 4px !important;
-}
-[data-testid="stSidebar"] .stRadio > div {
-    gap: 6px !important;
-}
-[data-testid="stSidebar"] .stRadio label {
-    margin: 0 !important;
-    padding: 12px 14px !important;
-    border-radius: 8px !important;
-    color: #94a3b8 !important;
-    font-size: 13px !important;
-    font-weight: 700 !important;
-    letter-spacing: 0.6px !important;
-    text-transform: uppercase !important;
-    background: transparent !important;
-    transition: background 0.15s ease, color 0.15s ease !important;
-}
-[data-testid="stSidebar"] .stRadio label:hover {
-    background: rgba(255, 255, 255, 0.07) !important;
-    color: #e2e8f0 !important;
-}
-[data-testid="stSidebar"] .stRadio label:has(input:checked) {
-    background: #1e40af !important;
-    color: #ffffff !important;
-}
-[data-testid="stSidebar"] .stRadio label:has(input:checked):hover {
-    background: #1d4ed8 !important;
-}
-[data-testid="stSidebar"] .stRadio input[type="radio"] {
-    display: none !important;
+/* Nav list */
+.sb-nav-list {
+    padding: 8px;
 }
 
-/* ── Sidebar section label (optional) ── */
-.sb-section-label {
-    padding: 14px 22px 6px;
-    font-size: 10px;
+/* Nav item */
+.sb-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+    color: #94a3b8;
+    font-size: 13px;
     font-weight: 700;
-    letter-spacing: 1px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    letter-spacing: 0.6px;
     text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.28);
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    margin-bottom: 4px;
+    user-select: none;
+    -webkit-user-select: none;
 }
 
-/* ── Bottom sign-out button ── */
+.sb-nav-item:hover {
+    background: rgba(255, 255, 255, 0.07);
+    color: #e2e8f0;
+}
+
+.sb-nav-item.active {
+    background: #1e40af;
+    color: #ffffff;
+}
+
+.sb-nav-item.active:hover {
+    background: #1d4ed8;
+}
+
+/* Material icon */
+.sb-nav-item .material-icons-round {
+    font-size: 20px;
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+/* Label */
+.sb-nav-label {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Bottom sign-out button */
 [data-testid="stSidebar"] .stButton > button {
     background: transparent !important;
     border: 1px solid rgba(255, 255, 255, 0.14) !important;
@@ -167,10 +177,9 @@ section[data-testid="stSidebar"] > div:first-child {
 
 
 def render_sidebar():
-    """Render the dark admin-panel sidebar."""
-
-    # Inject CSS in app DOM.
-    st.markdown(_SIDEBAR_CSS, unsafe_allow_html=True)
+    """Render fixed dark sidebar with custom nav."""
+    # Use markdown HTML injection so styles apply to main app DOM (not iframe)
+    st.markdown(_SIDEBAR_STYLES, unsafe_allow_html=True)
 
     with st.sidebar:
         st.markdown(
@@ -190,27 +199,39 @@ def render_sidebar():
         current_page = st.session_state.get("current_page", NAV_ITEMS[0]["key"])
         page_keys = [item["key"] for item in NAV_ITEMS]
 
-        label_map = {
-            "Business Conversion Ratio": "📈  BUSINESS CONVERSION",
-            "Sales Capture Summary": "📄  SALES CAPTURE",
-            "Conversion Ratio Summary": "📊  CONVERSION RATIO",
-            "Master Data (From April 25 to March 26)": "🗃️  MASTER DATA",
-        }
-
-        # ── Clickable routing nav ─────────────────────────────────────────────
+        # Hidden radio for Streamlit-native state/rerun behavior
         selected = st.radio(
             "nav",
             page_keys,
             index=page_keys.index(current_page) if current_page in page_keys else 0,
             label_visibility="collapsed",
-            format_func=lambda key: label_map.get(key, key.upper()),
             key="nav_radio",
         )
 
         if selected and selected != current_page:
             st.session_state.current_page = selected
 
-        # ── Spacer + sign-out ─────────────────────────────────────────────────
+        # Visual nav items
+        nav_html = '<div class="sb-nav-list">'
+        for idx, item in enumerate(NAV_ITEMS):
+            active_cls = "active" if item["key"] == current_page else ""
+
+            js = (
+                "var r=document.querySelectorAll("
+                "'[data-testid=\"stSidebar\"] input[type=\"radio\"]');"
+                f"if(r[{idx}])r[{idx}].click();"
+            )
+
+            nav_html += (
+                f'<div class="sb-nav-item {active_cls}" onclick="{js}">'
+                f'<span class="material-icons-round">{item["icon"]}</span>'
+                f'<span class="sb-nav-label">{item["label"]}</span>'
+                "</div>"
+            )
+
+        nav_html += "</div>"
+        st.markdown(nav_html, unsafe_allow_html=True)
+
         st.markdown('<div style="height:20px"></div>', unsafe_allow_html=True)
 
         if st.button("Sign out", use_container_width=True):
