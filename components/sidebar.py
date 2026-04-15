@@ -12,32 +12,29 @@ NAV_ITEMS = [
         "key": "Business Conversion Ratio",
         "label": "Business Conversion",
         "icon": "query_stats",
-        "pill": None,
     },
     {
         "key": "Sales Capture Summary",
         "label": "Sales Capture",
         "icon": "description",
-        "pill": None,
     },
     {
         "key": "Conversion Ratio Summary",
         "label": "Conversion Ratio",
         "icon": "bar_chart",
-        "pill": None,
     },
     {
         "key": "Master Data (From April 25 to March 26)",
         "label": "Master Data",
         "icon": "storage",
-        "pill": "Apr 25 – Mar 26",
     },
 ]
 
 
 _SIDEBAR_CSS = """
-<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
 <style>
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons+Round');
+
 /* ── Hide Streamlit's auto page-nav ── */
 [data-testid="stSidebarNav"],
 [data-testid="stSidebarNavItems"],
@@ -46,8 +43,13 @@ section[data-testid="stSidebar"] nav {
     display: none !important;
 }
 
-/* ── Dark sidebar base ── */
+/* ── Fixed, dark sidebar base ── */
 [data-testid="stSidebar"] {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    height: 100vh !important;
+    z-index: 100 !important;
     background: #0f172a !important;
     border-right: 1px solid rgba(255, 255, 255, 0.07) !important;
     box-shadow: 4px 0 24px rgba(0, 0, 0, 0.35) !important;
@@ -55,13 +57,21 @@ section[data-testid="stSidebar"] nav {
 [data-testid="stSidebar"] > div:first-child {
     background: transparent !important;
     padding-top: 0 !important;
+    height: 100vh !important;
+    overflow-y: auto !important;
 }
 
-/* ── Move radio off-screen; stays in DOM so .click() works ── */
+/* ── Keep routing radio in DOM but fully hidden ── */
+[data-testid="stSidebar"] div[data-testid="stRadio"],
 [data-testid="stSidebar"] .stRadio {
     position: absolute !important;
-    left: -9999px !important;
-    top: -9999px !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 1px !important;
+    height: 1px !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    overflow: hidden !important;
 }
 
 /* ── Logo ── */
@@ -92,16 +102,17 @@ section[data-testid="stSidebar"] nav {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 10px 14px;
+    padding: 12px 14px;
     border-radius: 8px;
     cursor: pointer;
     transition: background 0.15s ease, color 0.15s ease;
     color: #94a3b8;
-    font-size: 13.5px;
-    font-weight: 500;
+    font-size: 13px;
+    font-weight: 700;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    letter-spacing: 0.1px;
-    margin-bottom: 2px;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
     user-select: none;
     -webkit-user-select: none;
 }
@@ -130,25 +141,6 @@ section[data-testid="stSidebar"] nav {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-}
-
-/* ── Pill badge ── */
-.sb-pill {
-    display: inline-flex;
-    align-items: center;
-    padding: 2px 8px;
-    border-radius: 20px;
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 0.2px;
-    background: rgba(255, 255, 255, 0.13);
-    color: #cbd5e1;
-    white-space: nowrap;
-    flex-shrink: 0;
-}
-.sb-nav-item.active .sb-pill {
-    background: rgba(255, 255, 255, 0.22);
-    color: #dbeafe;
 }
 
 /* ── Sidebar section label (optional) ── */
@@ -192,8 +184,11 @@ section[data-testid="stSidebar"] nav {
 def render_sidebar():
     """Render the dark admin-panel sidebar."""
 
-    # Inject CSS + Material Icons font (applied globally so font loads early)
-    st.markdown(_SIDEBAR_CSS, unsafe_allow_html=True)
+    # Inject CSS + icon font (wrapped to avoid raw CSS text leakage in app body)
+    if hasattr(st, "html"):
+        st.html(_SIDEBAR_CSS)
+    else:
+        st.markdown(_SIDEBAR_CSS, unsafe_allow_html=True)
 
     with st.sidebar:
         # ── Logo ──────────────────────────────────────────────────────────────
@@ -227,11 +222,6 @@ def render_sidebar():
         nav_html = '<div class="sb-nav-list">'
         for idx, item in enumerate(NAV_ITEMS):
             active_cls = "active" if item["key"] == current_page else ""
-            pill_html = (
-                f'<span class="sb-pill">{item["pill"]}</span>'
-                if item.get("pill")
-                else ""
-            )
             # Single-quoted JS string avoids conflict with the outer double-quote attr
             js = (
                 "var r=document.querySelectorAll("
@@ -242,7 +232,6 @@ def render_sidebar():
                 f'<div class="sb-nav-item {active_cls}" onclick="{js}">'
                 f'<span class="material-icons-round">{item["icon"]}</span>'
                 f'<span class="sb-nav-label">{item["label"]}</span>'
-                f"{pill_html}"
                 f"</div>"
             )
         nav_html += "</div>"
