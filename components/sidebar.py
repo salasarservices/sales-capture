@@ -62,8 +62,10 @@ section[data-testid="stSidebar"] {
     box-shadow: 4px 0 24px rgba(0, 0, 0, 0.35) !important;
 }
 
-/* Keep dashboard content from sliding under fixed sidebar */
-[data-testid="stAppViewContainer"] > section.main {
+/* Keep dashboard content from sliding under fixed sidebar.
+   Target BOTH old (section.main) and new (stMain) Streamlit ≥1.35 selectors. */
+[data-testid="stAppViewContainer"] > section.main,
+[data-testid="stAppViewContainer"] > [data-testid="stMain"] {
     margin-left: calc(var(--app-sidebar-width) + var(--app-sidebar-gap)) !important;
     width: calc(100% - var(--app-sidebar-width) - var(--app-sidebar-gap)) !important;
     max-width: calc(100% - var(--app-sidebar-width) - var(--app-sidebar-gap)) !important;
@@ -71,11 +73,14 @@ section[data-testid="stSidebar"] {
     padding-right: 0 !important;
 }
 
-/* Ensure Streamlit inner container also respects fixed sidebar width */
-[data-testid="stAppViewContainer"] > section.main .block-container {
+/* Ensure Streamlit inner container also respects fixed sidebar width.
+   Target both .block-container (old) and stMainBlockContainer (Streamlit ≥1.35). */
+[data-testid="stAppViewContainer"] > section.main .block-container,
+[data-testid="stMain"] .block-container,
+[data-testid="stMain"] [data-testid="stMainBlockContainer"] {
     max-width: 100% !important;
-    padding-left: 1rem !important;
-    padding-right: 1.25rem !important;
+    padding-left: 1.5rem !important;
+    padding-right: 1.5rem !important;
 }
 
 /* Responsive behavior: keep fixed sidebar, only tighten width/offset on smaller screens */
@@ -90,7 +95,9 @@ section[data-testid="stSidebar"] {
         --app-sidebar-width: 16rem;
     }
 
-    [data-testid="stAppViewContainer"] > section.main .block-container {
+    [data-testid="stAppViewContainer"] > section.main .block-container,
+    [data-testid="stMain"] .block-container,
+    [data-testid="stMain"] [data-testid="stMainBlockContainer"] {
         padding-left: 1rem !important;
         padding-right: 1rem !important;
     }

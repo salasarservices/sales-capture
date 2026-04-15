@@ -67,8 +67,17 @@ _CSS = """
 [data-testid="stStatusWidget"] { display: none !important; }
 
 /* ── Page background ─────────────────────────────────────────────────────── */
-[data-testid="stAppViewContainer"] > section.main { background-color: #F8F9FA; }
-.main .block-container { padding-top: 0.5rem; padding-bottom: 3rem; padding-left: 2rem; padding-right: 2rem; max-width: 100%; }
+/* Target both old (.main) and new (stMain) selectors for Streamlit ≥1.35 */
+[data-testid="stAppViewContainer"] > section.main,
+[data-testid="stMain"] { background-color: #F8F9FA !important; }
+
+/* Block container — target both old and new selectors */
+.main .block-container,
+[data-testid="stMainBlockContainer"] {
+    padding-top: 0.5rem;
+    padding-bottom: 3rem;
+    max-width: 100%;
+}
 
 /* ── Sidebar ─────────────────────────────────────────────────────────────── */
 [data-testid="stSidebar"] {
