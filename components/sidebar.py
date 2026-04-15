@@ -124,7 +124,7 @@ section[data-testid="stSidebar"] > div:first-child {
 }
 
 .sb-nav-item.active {
-    background: #1e40af;
+    background: #c1f99e;
     color: #ffffff;
 }
 
