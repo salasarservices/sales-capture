@@ -33,8 +33,6 @@ NAV_ITEMS = [
 
 _SIDEBAR_CSS = """
 <style>
-@import url('https://fonts.googleapis.com/icon?family=Material+Icons+Round');
-
 /* ── Hide Streamlit's auto page-nav ── */
 [data-testid="stSidebarNav"],
 [data-testid="stSidebarNavItems"],
@@ -48,6 +46,9 @@ section[data-testid="stSidebar"] nav {
     position: fixed !important;
     top: 0 !important;
     left: 0 !important;
+    width: 17.5rem !important;
+    min-width: 17.5rem !important;
+    max-width: 17.5rem !important;
     height: 100vh !important;
     z-index: 100 !important;
     background: #0f172a !important;
@@ -61,17 +62,12 @@ section[data-testid="stSidebar"] nav {
     overflow-y: auto !important;
 }
 
-/* ── Keep routing radio in DOM but fully hidden ── */
-[data-testid="stSidebar"] div[data-testid="stRadio"],
-[data-testid="stSidebar"] .stRadio {
-    position: absolute !important;
-    left: 0 !important;
-    top: 0 !important;
-    width: 1px !important;
-    height: 1px !important;
-    opacity: 0 !important;
-    pointer-events: none !important;
-    overflow: hidden !important;
+/* ── Shift main content so fixed sidebar does not overlap visuals ── */
+[data-testid="stAppViewContainer"] section.main {
+    margin-left: 17.5rem !important;
+}
+[data-testid="stAppViewContainer"] .main .block-container {
+    max-width: 100% !important;
 }
 
 /* ── Logo ── */
@@ -92,55 +88,38 @@ section[data-testid="stSidebar"] nav {
     margin: 0 0 8px 0;
 }
 
-/* ── Nav list ── */
-.sb-nav-list {
-    padding: 8px;
+/* ── Sidebar radio nav restyle (icon + uppercase labels) ── */
+[data-testid="stSidebar"] .stRadio {
+    padding: 6px 8px 4px !important;
 }
-
-/* ── Nav item ── */
-.sb-nav-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 14px;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background 0.15s ease, color 0.15s ease;
-    color: #94a3b8;
-    font-size: 13px;
-    font-weight: 700;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    letter-spacing: 0.6px;
-    text-transform: uppercase;
-    margin-bottom: 4px;
-    user-select: none;
-    -webkit-user-select: none;
+[data-testid="stSidebar"] .stRadio > div {
+    gap: 6px !important;
 }
-.sb-nav-item:hover {
-    background: rgba(255, 255, 255, 0.07);
-    color: #e2e8f0;
+[data-testid="stSidebar"] .stRadio label {
+    margin: 0 !important;
+    padding: 12px 14px !important;
+    border-radius: 8px !important;
+    color: #94a3b8 !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.6px !important;
+    text-transform: uppercase !important;
+    background: transparent !important;
+    transition: background 0.15s ease, color 0.15s ease !important;
 }
-.sb-nav-item.active {
-    background: #1e40af;
-    color: #ffffff;
+[data-testid="stSidebar"] .stRadio label:hover {
+    background: rgba(255, 255, 255, 0.07) !important;
+    color: #e2e8f0 !important;
 }
-.sb-nav-item.active:hover {
-    background: #1d4ed8;
+[data-testid="stSidebar"] .stRadio label:has(input:checked) {
+    background: #1e40af !important;
+    color: #ffffff !important;
 }
-
-/* ── Material icon inside nav item ── */
-.sb-nav-item .material-icons-round {
-    font-size: 20px;
-    flex-shrink: 0;
-    line-height: 1;
+[data-testid="stSidebar"] .stRadio label:has(input:checked):hover {
+    background: #1d4ed8 !important;
 }
-
-/* ── Nav label ── */
-.sb-nav-label {
-    flex: 1;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+[data-testid="stSidebar"] .stRadio input[type="radio"] {
+    display: none !important;
 }
 
 /* ── Sidebar section label (optional) ── */
@@ -184,11 +163,8 @@ section[data-testid="stSidebar"] nav {
 def render_sidebar():
     """Render the dark admin-panel sidebar."""
 
-    # Inject CSS + icon font (wrapped to avoid raw CSS text leakage in app body)
-    if hasattr(st, "html"):
-        st.html(_SIDEBAR_CSS)
-    else:
-        st.markdown(_SIDEBAR_CSS, unsafe_allow_html=True)
+    # Inject CSS in app DOM.
+    st.markdown(_SIDEBAR_CSS, unsafe_allow_html=True)
 
     with st.sidebar:
         # ── Logo ──────────────────────────────────────────────────────────────
@@ -206,37 +182,24 @@ def render_sidebar():
         current_page = st.session_state.get("current_page", NAV_ITEMS[0]["key"])
         page_keys = [item["key"] for item in NAV_ITEMS]
 
-        # ── Hidden radio — off-screen but in DOM so JS .click() works ─────────
+        label_map = {
+            "Business Conversion Ratio": "📈  BUSINESS CONVERSION",
+            "Sales Capture Summary": "📄  SALES CAPTURE",
+            "Conversion Ratio Summary": "📊  CONVERSION RATIO",
+            "Master Data (From April 25 to March 26)": "🗃️  MASTER DATA",
+        }
+
+        # ── Clickable routing nav ─────────────────────────────────────────────
         selected = st.radio(
             "nav",
             page_keys,
             index=page_keys.index(current_page) if current_page in page_keys else 0,
             label_visibility="collapsed",
+            format_func=lambda key: label_map.get(key, key.upper()),
             key="nav_radio",
         )
         if selected and selected != current_page:
             st.session_state.current_page = selected
-
-        # ── Visual nav items ──────────────────────────────────────────────────
-        # onclick: clicks the matching hidden radio <input> so Streamlit reruns
-        nav_html = '<div class="sb-nav-list">'
-        for idx, item in enumerate(NAV_ITEMS):
-            active_cls = "active" if item["key"] == current_page else ""
-            # Single-quoted JS string avoids conflict with the outer double-quote attr
-            js = (
-                "var r=document.querySelectorAll("
-                "'[data-testid=\"stSidebar\"] input[type=\"radio\"]');"
-                f"if(r[{idx}])r[{idx}].click();"
-            )
-            nav_html += (
-                f'<div class="sb-nav-item {active_cls}" onclick="{js}">'
-                f'<span class="material-icons-round">{item["icon"]}</span>'
-                f'<span class="sb-nav-label">{item["label"]}</span>'
-                f"</div>"
-            )
-        nav_html += "</div>"
-
-        st.markdown(nav_html, unsafe_allow_html=True)
 
         # ── Spacer + sign-out ─────────────────────────────────────────────────
         st.markdown('<div style="height:20px"></div>', unsafe_allow_html=True)
