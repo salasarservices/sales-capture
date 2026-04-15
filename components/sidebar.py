@@ -14,11 +14,15 @@ NAV_ITEMS = [
 
 def render_sidebar():
     """Render the sidebar using only native Streamlit widgets."""
-    # Hide auto-generated multipage nav and the collapse/expand toggle
-    # so the sidebar is always visible and can never be accidentally hidden.
+    # Hide auto-generated multipage nav and the collapse/expand toggle.
+    # Also load Roboto and apply it across the entire app.
     st.markdown(
         """
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
         <style>
+        html, body, [class*="css"], [data-testid] {
+            font-family: 'Roboto', sans-serif !important;
+        }
         [data-testid="stSidebarNav"]             { display: none !important; }
         [data-testid="stSidebarCollapseButton"]  { display: none !important; }
         [data-testid="stSidebarCollapsedControl"]{ display: none !important; }
@@ -32,9 +36,9 @@ def render_sidebar():
             use_container_width=True,
         )
         st.markdown(
-            "<div style='text-align:center; line-height:1.5;'>"
-            "<span style='font-size:15px;'>Sales capture report</span><br>"
-            "<span style='font-size:15px;'>Ahmedabad</span>"
+            "<div style='text-align:center; line-height:1.4;'>"
+            "<span style='font-size:26px; font-weight:700; text-transform:uppercase; font-family:Roboto,sans-serif;'>Sales Capture Report</span><br>"
+            "<span style='font-size:26px; font-weight:700; text-transform:uppercase; font-family:Roboto,sans-serif;'>Ahmedabad</span>"
             "</div>",
             unsafe_allow_html=True,
         )
