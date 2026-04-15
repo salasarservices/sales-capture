@@ -14,9 +14,16 @@ NAV_ITEMS = [
 
 def render_sidebar():
     """Render the sidebar using only native Streamlit widgets."""
-    # Hide Streamlit's auto-generated multipage navigation
+    # Hide auto-generated multipage nav and the collapse/expand toggle
+    # so the sidebar is always visible and can never be accidentally hidden.
     st.markdown(
-        "<style>[data-testid='stSidebarNav']{display:none !important;}</style>",
+        """
+        <style>
+        [data-testid="stSidebarNav"]             { display: none !important; }
+        [data-testid="stSidebarCollapseButton"]  { display: none !important; }
+        [data-testid="stSidebarCollapsedControl"]{ display: none !important; }
+        </style>
+        """,
         unsafe_allow_html=True,
     )
     with st.sidebar:
