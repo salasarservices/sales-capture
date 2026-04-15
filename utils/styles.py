@@ -68,7 +68,7 @@ _CSS = """
 
 /* ── Page background ─────────────────────────────────────────────────────── */
 [data-testid="stAppViewContainer"] > section.main { background-color: #F8F9FA; }
-.main .block-container { padding-top: 0.5rem; padding-bottom: 3rem; max-width: 100%; }
+.main .block-container { padding-top: 0.5rem; padding-bottom: 3rem; padding-left: 2rem; padding-right: 2rem; max-width: 100%; }
 
 /* ── Sidebar ─────────────────────────────────────────────────────────────── */
 [data-testid="stSidebar"] {
