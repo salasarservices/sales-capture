@@ -28,6 +28,10 @@ NAV_ITEMS = [
 
 _SIDEBAR_STYLES = """
 <style>
+:root {
+    --app-sidebar-width: 21rem;
+}
+
 /* Never show Streamlit's sidebar collapse controls */
 [data-testid="stSidebarCollapsedControl"],
 button[kind="header"][aria-label*="sidebar" i] {
@@ -43,10 +47,6 @@ section[data-testid="stSidebar"] nav {
 }
 
 /* Fixed sidebar */
-:root {
-    --app-sidebar-width: 21rem;
-}
-
 section[data-testid="stSidebar"] {
     position: fixed !important;
     top: 0 !important;
@@ -64,6 +64,14 @@ section[data-testid="stSidebar"] {
 /* Keep dashboard content from sliding under fixed sidebar */
 [data-testid="stAppViewContainer"] > section.main {
     margin-left: var(--app-sidebar-width) !important;
+    width: calc(100% - var(--app-sidebar-width)) !important;
+}
+
+/* Ensure Streamlit inner container also respects fixed sidebar width */
+[data-testid="stAppViewContainer"] > section.main .block-container {
+    max-width: 100% !important;
+    padding-left: 1.25rem !important;
+    padding-right: 1.25rem !important;
 }
 
 /* Responsive behavior: keep fixed sidebar, only tighten width/offset on smaller screens */
@@ -76,6 +84,11 @@ section[data-testid="stSidebar"] {
 @media (max-width: 992px) {
     :root {
         --app-sidebar-width: 16rem;
+    }
+
+    [data-testid="stAppViewContainer"] > section.main .block-container {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
     }
 }
 
@@ -93,9 +106,7 @@ section[data-testid="stSidebar"] > div:first-child {
     padding: 28px 20px 22px;
 }
 .sb-logo img {
-    width: 250px;
-    max-width: 100%;
-    height: auto;
+    height: 42px;
     filter: brightness(0) invert(1);
     opacity: 0.92;
 }
@@ -113,7 +124,7 @@ section[data-testid="stSidebar"] > div:first-child {
     border: 1px solid transparent !important;
     border-radius: 8px !important;
     background: transparent !important;
-    color: #ffffff !important;
+    color: #94a3b8 !important;
     text-transform: uppercase !important;
     font-size: 13px !important;
     font-weight: 700 !important;
@@ -127,13 +138,12 @@ section[data-testid="stSidebar"] > div:first-child {
 
 [data-testid="stSidebar"] div[data-testid="stButton"]:nth-of-type(-n+4) > button:hover {
     background: rgba(255, 255, 255, 0.07) !important;
-    color: #ffffff !important;
+    color: #e2e8f0 !important;
 }
 
 [data-testid="stSidebar"] div[data-testid="stButton"]:nth-of-type(-n+4) > button[kind="primary"] {
     background: #1e40af !important;
     color: #ffffff !important;
-    font-weight: 700 !important;
 }
 
 [data-testid="stSidebar"] div[data-testid="stButton"]:nth-of-type(-n+4) > button[kind="primary"]:hover {
