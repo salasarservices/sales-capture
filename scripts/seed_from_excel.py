@@ -5,7 +5,7 @@ One-time script to import the Excel workbook into MongoDB (sync PyMongo version)
 Usage:
     python scripts/seed_from_excel.py \
         --file "../Sales_Capture__Ahmedabad__2025-26.xlsx" \
-        --sheet "Enquiry Capture Sheet" \
+        --sheet "Sales Funnel & Enquiry Capture(Apr25 To Mar26)" \
         --fy "2025-26" \
         --branch "Ahmedabad"
 
@@ -83,7 +83,7 @@ def main(file_path: str, sheet_name: str, fy: str, branch: str):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Seed MongoDB from Excel file")
     parser.add_argument("--file", required=True, help="Path to .xlsx file")
-    parser.add_argument("--sheet", default="Enquiry Capture Sheet", help="Sheet name")
+    parser.add_argument("--sheet", default="Sales Funnel & Enquiry Capture(Apr25 To Mar26)", help="Sheet name")
     parser.add_argument("--fy", default="2025-26", help="Financial year")
     parser.add_argument("--branch", default="Ahmedabad", help="Branch name")
     args = parser.parse_args()

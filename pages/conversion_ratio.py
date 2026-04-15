@@ -35,7 +35,23 @@ def render_page():
     if df.empty:
         st.warning("No data found.")
         return
-    
+
+    # Data currency note
+    with st.expander("ℹ️ Data source note", expanded=False):
+        st.markdown(
+            """
+Conversion ratios are calculated from the MongoDB database, seeded from the source Excel file
+(`Sales Funnel & Enquiry Capture(Apr25 To Mar26)`).
+
+If per-person totals appear lower than expected, MongoDB may need to be re-seeded with the
+latest Excel data using `scripts/seed_from_excel.py`.
+Note: the source Excel sheet's own monthly totals contain formula errors for Jan/Feb/Mar '26
+(see the *Business Conversion Ratio* page for details) — the figures here are derived directly
+from individual row data and are not affected by those sheet-level formula bugs.
+            """,
+            unsafe_allow_html=False,
+        )
+
     from components.charts import stacked_bar_conversion, grouped_bar_proposal_type
     from components.data_tables import render_html_table
     from utils.formatters import format_inr, format_pct

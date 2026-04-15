@@ -19,6 +19,29 @@ def render_page():
     fy = st.session_state.get("fy", "2025-26")
     branch = st.session_state.get("branch", "Ahmedabad")
     
+    # Data currency note
+    with st.expander("ℹ️ Data source note", expanded=False):
+        st.markdown(
+            """
+Records shown here come from the MongoDB database, seeded from the source Excel file
+(`Sales Funnel & Enquiry Capture(Apr25 To Mar26)`).
+
+The source sheet contains **~408 rows** for FY 2025-26. If the total record count here
+is significantly lower, the database needs to be re-seeded with the current Excel file:
+
+```
+python scripts/seed_from_excel.py \\
+  --file "<path-to-xlsx>" \\
+  --sheet "Sales Funnel & Enquiry Capture(Apr25 To Mar26)" \\
+  --fy "2025-26" \\
+  --branch "Ahmedabad"
+```
+
+The script is idempotent — it upserts by `enquiry_no`, so re-running it will not create duplicates.
+            """,
+            unsafe_allow_html=False,
+        )
+
     # Get filter options
     with st.spinner("Loading filters..."):
         opts = fetch_filter_options(db, fy=fy, branch=branch)

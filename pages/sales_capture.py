@@ -25,7 +25,21 @@ def render_page():
     if df.empty:
         st.warning("No data found.")
         return
-    
+
+    # Data currency note
+    with st.expander("ℹ️ Data source note", expanded=False):
+        st.markdown(
+            """
+Dashboard figures are calculated from the MongoDB database, which was seeded from the
+source Excel file (`Sales Funnel & Enquiry Capture(Apr25 To Mar26)`).
+
+If totals appear lower than expected (e.g. the source sheet shows ~408 records but the
+dashboard total is lower), MongoDB likely needs to be re-seeded with the latest Excel data
+using `scripts/seed_from_excel.py`.
+            """,
+            unsafe_allow_html=False,
+        )
+
     # Charts
     from components.charts import horizontal_bar_premium, pie_enquiry_share
     from components.data_tables import render_html_table
