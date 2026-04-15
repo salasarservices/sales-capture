@@ -1,8 +1,4 @@
-"""
-Sidebar component — dark admin-panel style with Material Icons Round.
-Navigation uses a hidden Streamlit radio for state/routing, while users
-interact with custom icon+label nav items.
-"""
+"""Sidebar component — dark admin-panel style with Streamlit buttons for nav."""
 
 import streamlit as st
 
@@ -32,8 +28,6 @@ NAV_ITEMS = [
 
 _SIDEBAR_STYLES = """
 <style>
-@import url('https://fonts.googleapis.com/icon?family=Material+Icons+Round');
-
 /* Hide Streamlit auto page-nav */
 [data-testid="stSidebarNav"],
 [data-testid="stSidebarNavItems"],
@@ -62,19 +56,6 @@ section[data-testid="stSidebar"] > div:first-child {
     overflow-y: auto !important;
 }
 
-/* Keep hidden radio in DOM, but invisible */
-[data-testid="stSidebar"] div[data-testid="stRadio"],
-[data-testid="stSidebar"] .stRadio {
-    position: absolute !important;
-    left: -9999px !important;
-    top: -9999px !important;
-    width: 1px !important;
-    height: 1px !important;
-    opacity: 0 !important;
-    pointer-events: none !important;
-    overflow: hidden !important;
-}
-
 /* Logo */
 .sb-logo {
     text-align: center;
@@ -93,62 +74,40 @@ section[data-testid="stSidebar"] > div:first-child {
     margin: 0 0 8px 0;
 }
 
-/* Nav list */
-.sb-nav-list {
-    padding: 8px;
+/* Sidebar nav buttons (first four st.button widgets in sidebar) */
+[data-testid="stSidebar"] div[data-testid="stButton"]:nth-of-type(-n+4) > button {
+    width: 100% !important;
+    border: 1px solid transparent !important;
+    border-radius: 8px !important;
+    background: transparent !important;
+    color: #94a3b8 !important;
+    text-transform: uppercase !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.6px !important;
+    text-align: left !important;
+    justify-content: flex-start !important;
+    padding: 0.75rem 0.875rem !important;
+    margin-bottom: 0.25rem !important;
+    transition: background 0.15s ease, color 0.15s ease !important;
 }
 
-/* Nav item */
-.sb-nav-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 14px;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background 0.15s ease, color 0.15s ease;
-    color: #94a3b8;
-    font-size: 13px;
-    font-weight: 700;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    letter-spacing: 0.6px;
-    text-transform: uppercase;
-    margin-bottom: 4px;
-    user-select: none;
-    -webkit-user-select: none;
+[data-testid="stSidebar"] div[data-testid="stButton"]:nth-of-type(-n+4) > button:hover {
+    background: rgba(255, 255, 255, 0.07) !important;
+    color: #e2e8f0 !important;
 }
 
-.sb-nav-item:hover {
-    background: rgba(255, 255, 255, 0.07);
-    color: #e2e8f0;
+[data-testid="stSidebar"] div[data-testid="stButton"]:nth-of-type(-n+4) > button[kind="primary"] {
+    background: #1e40af !important;
+    color: #ffffff !important;
 }
 
-.sb-nav-item.active {
-    background: #1e40af;
-    color: #ffffff;
-}
-
-.sb-nav-item.active:hover {
-    background: #1d4ed8;
-}
-
-/* Material icon */
-.sb-nav-item .material-icons-round {
-    font-size: 20px;
-    flex-shrink: 0;
-    line-height: 1;
-}
-
-/* Label */
-.sb-nav-label {
-    flex: 1;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+[data-testid="stSidebar"] div[data-testid="stButton"]:nth-of-type(-n+4) > button[kind="primary"]:hover {
+    background: #1d4ed8 !important;
 }
 
 /* Bottom sign-out button */
-[data-testid="stSidebar"] .stButton > button {
+[data-testid="stSidebar"] div[data-testid="stButton"]:nth-of-type(5) > button {
     background: transparent !important;
     border: 1px solid rgba(255, 255, 255, 0.14) !important;
     border-radius: 8px !important;
@@ -161,15 +120,16 @@ section[data-testid="stSidebar"] > div:first-child {
     align-items: center !important;
     justify-content: center !important;
     gap: 8px !important;
+    width: 100% !important;
 }
 
-[data-testid="stSidebar"] .stButton > button:hover {
+[data-testid="stSidebar"] div[data-testid="stButton"]:nth-of-type(5) > button:hover {
     background: rgba(255, 255, 255, 0.07) !important;
     border-color: rgba(255, 255, 255, 0.25) !important;
     color: rgba(255, 255, 255, 0.85) !important;
 }
 
-[data-testid="stSidebar"] .stButton > button:active {
+[data-testid="stSidebar"] div[data-testid="stButton"]:nth-of-type(5) > button:active {
     background: rgba(255, 255, 255, 0.12) !important;
 }
 </style>
@@ -197,40 +157,16 @@ def render_sidebar():
             st.session_state.current_page = NAV_ITEMS[0]["key"]
 
         current_page = st.session_state.get("current_page", NAV_ITEMS[0]["key"])
-        page_keys = [item["key"] for item in NAV_ITEMS]
 
-        # Hidden radio for Streamlit-native state/rerun behavior
-        selected = st.radio(
-            "nav",
-            page_keys,
-            index=page_keys.index(current_page) if current_page in page_keys else 0,
-            label_visibility="collapsed",
-            key="nav_radio",
-        )
-
-        if selected and selected != current_page:
-            st.session_state.current_page = selected
-
-        # Visual nav items
-        nav_html = '<div class="sb-nav-list">'
-        for idx, item in enumerate(NAV_ITEMS):
-            active_cls = "active" if item["key"] == current_page else ""
-
-            js = (
-                "var r=document.querySelectorAll("
-                "'[data-testid=\"stSidebar\"] input[type=\"radio\"]');"
-                f"if(r[{idx}])r[{idx}].click();"
-            )
-
-            nav_html += (
-                f'<div class="sb-nav-item {active_cls}" onclick="{js}">'
-                f'<span class="material-icons-round">{item["icon"]}</span>'
-                f'<span class="sb-nav-label">{item["label"]}</span>'
-                "</div>"
-            )
-
-        nav_html += "</div>"
-        st.markdown(nav_html, unsafe_allow_html=True)
+        for item in NAV_ITEMS:
+            button_type = "primary" if item["key"] == current_page else "secondary"
+            if st.button(
+                f"{item['label']}",
+                type=button_type,
+                use_container_width=True,
+                key=f"nav_{item['key']}",
+            ):
+                navigate_to_page(item["key"])
 
         st.markdown('<div style="height:20px"></div>', unsafe_allow_html=True)
 
