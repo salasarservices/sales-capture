@@ -1,10 +1,17 @@
 """
-Sidebar component — solid RGB(22, 85, 171) with glassmorphism overlay.
-4 nav cards in pastel colors, UPPERCASE labels with image icons.
+Sidebar component — solid navy-blue background with glassmorphism overlay.
+4 nav cards in pastel colours, UPPERCASE labels with image icons.
+
+Styling approach:
+  • Streamlit-internal selectors ([data-testid="stSidebar"], .stRadio, .stButton)
+    require raw <style> injection — Tailwind cannot reach them.
+  • The card HTML itself uses Tailwind utility classes (flex, items-center, gap,
+    rounded-xl, shadow, tracking, transition, translate, border, etc.).
+  • Per-card background colour is dynamic (set inline) since it varies per card.
+  • Active-state border/shadow/lift is toggled by a conditional Tailwind class string.
 """
 
 import streamlit as st
-
 
 # Nav items: (page_key, display_label, icon_url, pastel_bg, pill_text)
 NAV_ITEMS = [
@@ -38,153 +45,89 @@ NAV_ITEMS = [
     ),
 ]
 
-# Pill badge colors paired with each card
 PILL_COLORS = {
     "Master Data (From April 25 to March 26)": {"bg": "#C4B5FD", "text": "#3B0764"},
 }
 
+# ── Raw CSS for Streamlit internals Tailwind cannot target ───────────────────
+_SIDEBAR_CSS = """
+<style>
+/* ── Hide auto page navigation ─────────────────────────────────────────────── */
+[data-testid="stSidebarNav"],
+[data-testid="stSidebarNavItems"],
+[data-testid="stSidebarNavSeparator"],
+section[data-testid="stSidebar"] nav { display: none !important; }
 
-def render_sidebar():
-    """Render the sidebar."""
+/* ── Sidebar shell: solid navy + glassmorphism overlay ──────────────────────── */
+[data-testid="stSidebar"] {
+    background: rgba(22, 85, 171, 0.96) !important;
+    backdrop-filter: blur(20px) saturate(1.4);
+    -webkit-backdrop-filter: blur(20px) saturate(1.4);
+    border-right: 1px solid rgba(255, 255, 255, 0.12) !important;
+    box-shadow: 4px 0 32px rgba(0, 0, 0, 0.28) !important;
+}
+[data-testid="stSidebar"] > div:first-child {
+    background: transparent !important;
+    padding-top: 0 !important;
+}
 
-    # Global CSS — applied outside sidebar context so it takes effect everywhere
-    st.markdown("""
-        <style>
-        /* ── Hide Streamlit's automatic page navigation ── */
-        [data-testid="stSidebarNav"],
-        [data-testid="stSidebarNavItems"],
-        [data-testid="stSidebarNavSeparator"],
-        section[data-testid="stSidebar"] nav {
-            display: none !important;
-        }
+/* ── Hide the hidden radio widget ───────────────────────────────────────────── */
+[data-testid="stSidebar"] .stRadio { display: none !important; }
 
-        /* ── Sidebar base: solid RGB(22,85,171) + glass overlay ── */
-        [data-testid="stSidebar"] {
-            background: rgba(22, 85, 171, 0.96) !important;
-            backdrop-filter: blur(20px) saturate(1.4);
-            -webkit-backdrop-filter: blur(20px) saturate(1.4);
-            border-right: 1px solid rgba(255, 255, 255, 0.12) !important;
-            box-shadow: 4px 0 32px rgba(0, 0, 0, 0.28) !important;
-        }
-        [data-testid="stSidebar"] > div:first-child {
-            background: transparent !important;
-            padding-top: 0 !important;
-        }
+/* ── Sign-out button ────────────────────────────────────────────────────────── */
+[data-testid="stSidebar"] .stButton > button {
+    background: rgba(255, 255, 255, 0.10) !important;
+    border: 1px solid rgba(255, 255, 255, 0.20) !important;
+    border-radius: 10px !important;
+    color: rgba(255, 255, 255, 0.85) !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    transition: background 0.2s ease !important;
+    margin-top: 6px !important;
+}
+[data-testid="stSidebar"] .stButton > button:hover {
+    background: rgba(255, 255, 255, 0.20) !important;
+    border-color: rgba(255, 255, 255, 0.35) !important;
+}
+</style>
+"""
 
-        /* ── Hide the Streamlit radio widget entirely ── */
-        [data-testid="stSidebar"] .stRadio {
-            display: none !important;
-        }
+# ── Tailwind class strings for card elements ─────────────────────────────────
+# Base card: flex row, align-center, gap, padding, rounded, shadow, font, transition
+_CARD_BASE = (
+    "flex items-center gap-[11px] px-4 py-[14px] rounded-xl cursor-default "
+    "text-[11px] font-bold text-[#1A1F36] tracking-[0.7px] "
+    "shadow-md border-[1.5px] border-transparent "
+    "transition-all duration-200 ease-in-out"
+)
+# Extra classes applied when card is the active page
+_CARD_ACTIVE = "border-white/55 shadow-xl -translate-y-0.5"
 
-        /* ── Logo ── */
-        .sb-logo {
-            text-align: center;
-            padding: 28px 20px 18px;
-        }
-        .sb-logo img {
-            height: 44px;
-            filter: brightness(0) invert(1);
-            opacity: 0.95;
-        }
 
-        /* ── Divider ── */
-        .sb-divider {
-            border: none;
-            border-top: 1px solid rgba(255, 255, 255, 0.15);
-            margin: 0 16px 20px;
-        }
+def render_sidebar() -> None:
+    """Render the sidebar with logo, nav cards, and sign-out button."""
 
-        /* ── Nav cards container ── */
-        .sb-nav {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            padding: 0 14px;
-        }
-
-        /* ── Individual card ── */
-        .sb-card {
-            padding: 14px 16px;
-            border-radius: 12px;
-            cursor: default;
-            font-size: 11px;
-            font-weight: 700;
-            color: #1A1F36;
-            letter-spacing: 0.7px;
-            display: flex;
-            align-items: center;
-            gap: 11px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.10);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            border: 1.5px solid transparent;
-        }
-        .sb-card.active {
-            border-color: rgba(255, 255, 255, 0.55);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
-            transform: translateY(-2px);
-        }
-
-        /* ── Icon image ── */
-        .sb-icon {
-            width: 22px;
-            height: 22px;
-            flex-shrink: 0;
-            object-fit: contain;
-        }
-
-        /* ── Label + pill wrapper ── */
-        .sb-label-row {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-            line-height: 1.3;
-        }
-
-        /* ── Pill badge ── */
-        .sb-pill {
-            display: inline-block;
-            padding: 2px 9px;
-            border-radius: 20px;
-            font-size: 10px;
-            font-weight: 600;
-            letter-spacing: 0.3px;
-            width: fit-content;
-        }
-
-        /* ── Sign out button ── */
-        [data-testid="stSidebar"] .stButton > button {
-            background: rgba(255, 255, 255, 0.10) !important;
-            border: 1px solid rgba(255, 255, 255, 0.20) !important;
-            border-radius: 10px !important;
-            color: rgba(255, 255, 255, 0.85) !important;
-            font-size: 13px !important;
-            font-weight: 500 !important;
-            transition: background 0.2s ease !important;
-            margin-top: 6px !important;
-        }
-        [data-testid="stSidebar"] .stButton > button:hover {
-            background: rgba(255, 255, 255, 0.20) !important;
-            border-color: rgba(255, 255, 255, 0.35) !important;
-        }
-        </style>
-    """, unsafe_allow_html=True)
+    # Inject raw CSS for Streamlit internals (outside sidebar context so it applies globally)
+    st.markdown(_SIDEBAR_CSS, unsafe_allow_html=True)
 
     with st.sidebar:
-        # Logo
-        st.markdown("""
-            <div class="sb-logo">
-                <img src="https://ik.imagekit.io/salasarservices/Salasar-Logo-new.png" alt="Salasar">
-            </div>
-            <hr class="sb-divider">
-        """, unsafe_allow_html=True)
+        # Logo + divider
+        st.markdown(
+            '<div class="text-center px-5 pt-7 pb-4">'
+            '<img src="https://ik.imagekit.io/salasarservices/Salasar-Logo-new.png" '
+            'alt="Salasar" style="height:44px;filter:brightness(0) invert(1);opacity:0.95;">'
+            '</div>'
+            '<hr style="border:none;border-top:1px solid rgba(255,255,255,0.15);margin:0 16px 20px;">',
+            unsafe_allow_html=True,
+        )
 
-        # State: default to first page
+        # Initialise page state
         if "current_page" not in st.session_state:
             st.session_state.current_page = "Business Conversion Ratio"
 
         current_page = st.session_state.get("current_page", "Business Conversion Ratio")
 
-        # Hidden radio for state (Streamlit needs this for reruns)
+        # Hidden radio — Streamlit needs this to trigger reruns on navigation
         page_keys = [key for key, *_ in NAV_ITEMS]
         selected = st.radio(
             "nav",
@@ -196,44 +139,48 @@ def render_sidebar():
         if selected:
             st.session_state.current_page = selected
 
-        # Build all card HTML in a single markdown call to avoid orphan </div> text
-        cards_html = '<div class="sb-nav">'
+        # Build all card HTML in a single call (avoids stray </div> artefacts)
+        cards_html = '<div class="flex flex-col gap-[10px] px-[14px]">'
         for key, label, icon_url, bg, pill in NAV_ITEMS:
-            active_cls = "active" if key == st.session_state.get("current_page") else ""
+            is_active = key == st.session_state.get("current_page")
+            active_cls = _CARD_ACTIVE if is_active else ""
+
             pill_html = ""
             if pill:
                 pc = PILL_COLORS.get(key, {"bg": "#DDD", "text": "#333"})
                 pill_html = (
-                    f'<span class="sb-pill" style="background:{pc["bg"]};color:{pc["text"]};">'
-                    f"{pill}</span>"
+                    f'<span class="inline-block py-[2px] px-[9px] rounded-full '
+                    f'text-[10px] font-semibold tracking-[0.3px] w-fit" '
+                    f'style="background:{pc["bg"]};color:{pc["text"]};">{pill}</span>'
                 )
-            cards_html += f"""
-                <div class="sb-card {active_cls}" style="background:{bg};">
-                    <img class="sb-icon" src="{icon_url}" alt="">
-                    <div class="sb-label-row">
-                        <span>{label}</span>
-                        {pill_html}
-                    </div>
-                </div>
-            """
+
+            cards_html += (
+                f'<div class="{_CARD_BASE} {active_cls}" style="background:{bg};">'
+                    f'<img class="w-[22px] h-[22px] flex-shrink-0 object-contain" src="{icon_url}" alt="">'
+                    f'<div class="flex flex-col gap-[5px] leading-snug">'
+                        f'<span>{label}</span>'
+                        f'{pill_html}'
+                    f'</div>'
+                f'</div>'
+            )
         cards_html += '</div>'
+
         st.html(cards_html)
 
-        # Spacer
+        # Spacer before sign-out
         st.markdown('<div style="height:16px"></div>', unsafe_allow_html=True)
 
-        # Sign out at bottom
         if st.button("Sign out", use_container_width=True):
             from utils.auth import logout
             logout()
 
 
-def navigate_to_page(page_name: str):
-    """Navigate to a specific page."""
+def navigate_to_page(page_name: str) -> None:
+    """Programmatically navigate to a page and rerun."""
     st.session_state.current_page = page_name
     st.rerun()
 
 
 def get_current_page() -> str:
-    """Get the current page name."""
+    """Return the currently active page key."""
     return st.session_state.get("current_page", "Business Conversion Ratio")

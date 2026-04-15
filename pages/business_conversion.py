@@ -48,7 +48,11 @@ def render_page():
     st.divider()
     
     # Table
-    st.markdown('<p class="section-heading">Monthly Conversion Details</p>', unsafe_allow_html=True)
+    st.markdown(
+        '<p class="text-[13px] font-semibold text-[#1A1F36] border-l-[3px] border-[#185FA5] '
+        'pl-[10px] my-3 block">Monthly Conversion Details</p>',
+        unsafe_allow_html=True,
+    )
     st.caption("Red = conversion < 50% | Amber = conversion < 70% | Total = full year aggregate")
     
     raw_conv = df["Conversion %"].copy()

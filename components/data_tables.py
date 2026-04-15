@@ -1,9 +1,20 @@
 """
-Table rendering helpers for the Salasar Sales Dashboard.
+Table rendering helpers — styled with Tailwind CSS utility classes.
 
-render_html_table()     — styled HTML table for summary pages (few columns)
-render_enquiry_table()  — fixed-width HTML table for the wide enquiry detail view
-export_csv_button()     — CSV download button
+render_html_table()    — summary tables (business conversion, sales capture, etc.)
+render_enquiry_table() — wide master-data table (19 columns, fixed proportional widths)
+export_csv_button()    — CSV download button
+
+Tailwind handles all static structural styling (border, rounded, bg, text, padding,
+sticky thead, hover).  Two small patterns that Tailwind can't express cleanly are
+delegated to named classes defined in utils/styles._STREAMLIT_OVERRIDES:
+
+  .tw-row-total td  — bold / slate bg / top-border for the TOTAL summary row
+  .tw-row-red td    — red tint when conversion rate < 50 %
+  .tw-row-amber td  — amber tint when conversion rate < 70 %
+  .tw-badge-yes     — green dot badge for Yes cells
+  .tw-badge-no      — red dot badge for No cells
+  .tw-scroll        — custom ::webkit-scrollbar styling
 """
 
 import streamlit as st
@@ -11,9 +22,7 @@ import pandas as pd
 import io
 import html as _html
 
-# ─────────────────────────────────────────────────────────────────────────────
-#  Short column aliases for the enquiry detail table
-# ─────────────────────────────────────────────────────────────────────────────
+# ── Short column aliases for the enquiry detail table ────────────────────────
 _ENQ_ALIASES = {
     "Enquiry No.":                                        "Enq #",
     "Date (When The Proposal Referred To The Company)":   "Date",
@@ -28,7 +37,7 @@ _ENQ_ALIASES = {
     "CRE(Expanded) / RM(New) Accountable":                "CRE / RM",
     "Tentative Brokerage (12%)":                          "Brokerage (₹)",
     "Quote Submission Date — Planned Date":               "Q. Planned",
-    "Quote Submission Date — Actual Date":                 "Q. Actual",
+    "Quote Submission Date — Actual Date":                "Q. Actual",
     "Quote Submitted":                                    "Quoted",
     "Actual Closure Date — Planned Date":                 "C. Planned",
     "Actual Closure Date — Actual Date":                  "C. Actual",
@@ -46,6 +55,17 @@ _ENQ_WIDTHS = [
 
 _YES_NO_COLS = {"Quoted", "Closed"}
 
+# ── Shared Tailwind class strings ────────────────────────────────────────────
+# Header cell: uppercase, small, bold, gray, no-wrap, bottom border
+_TH = (
+    "px-[14px] py-[10px] text-left text-[10.5px] font-bold uppercase "
+    "tracking-[0.06em] text-gray-500 whitespace-nowrap border-b-[1.5px] border-gray-200"
+)
+# Body cell: padded, gray-700 text, no-wrap
+_TD = "px-[14px] py-[9px] text-gray-700 whitespace-nowrap"
+# Body row: bottom border, hover bg (static rows — dynamic states via .tw-row-*)
+_TR = "border-b border-gray-100 last:border-b-0 hover:bg-gray-50"
+
 
 def _escape(val) -> str:
     return _html.escape(str(val)) if val is not None and str(val) != "nan" else ""
@@ -54,15 +74,13 @@ def _escape(val) -> str:
 def _yes_no_cell(val: str) -> str:
     v = str(val).strip()
     if v.lower() == "yes":
-        return '<span class="badge-yes">● Yes</span>'
+        return '<span class="tw-badge-yes">&#9679; Yes</span>'
     if v.lower() == "no":
-        return '<span class="badge-no">● No</span>'
+        return '<span class="tw-badge-no">&#9679; No</span>'
     return _escape(val)
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-#  Generic summary table
-# ─────────────────────────────────────────────────────────────────────────────
+# ── Generic summary table ────────────────────────────────────────────────────
 
 def render_html_table(
     df: pd.DataFrame,
@@ -71,19 +89,18 @@ def render_html_table(
     raw_conv: pd.Series = None,
 ) -> None:
     """
-    Render a styled HTML table with bold uppercase navy headers.
+    Render a styled HTML table with Tailwind utility classes.
 
     Parameters
     ----------
-    df          : display-formatted DataFrame
-    height      : max vertical height in px (table scrolls inside)
-    id_col      : column whose value == "TOTAL" gets the total-row style
-    raw_conv    : raw float Series for conversion-rate row colouring
-                  (red < 50 %, amber < 70 %)
+    df       : display-formatted DataFrame
+    height   : max vertical height in px (table scrolls inside)
+    id_col   : column whose value == "TOTAL" gets the total-row style
+    raw_conv : raw float Series for conversion-rate row colouring
+               (red < 50 %, amber < 70 %)
     """
-    # Header row
     header_cells = "".join(
-        f"<th title='{_escape(col)}'>{_escape(col)}</th>"
+        f"<th class='{_TH}' title='{_escape(col)}'>{_escape(col)}</th>"
         for col in df.columns
     )
 
@@ -91,32 +108,32 @@ def render_html_table(
     for idx in range(len(df)):
         row = df.iloc[idx]
 
-        # Row class
+        # Row state class (defined in _STREAMLIT_OVERRIDES for child td targeting)
         if id_col and str(row.get(id_col, "")) == "TOTAL":
-            row_cls = "hs-row-total"
+            state = "tw-row-total"
         elif raw_conv is not None:
             try:
                 val = float(raw_conv.iloc[idx])
-                row_cls = "hs-row-red" if val < 50 else (
-                    "hs-row-amber" if val < 70 else ""
-                )
+                state = "tw-row-red" if val < 50 else ("tw-row-amber" if val < 70 else "")
             except (TypeError, ValueError):
-                row_cls = ""
+                state = ""
         else:
-            row_cls = ""
+            state = ""
 
         cells = "".join(
-            f"<td title='{_escape(row[col])}'>{_escape(row[col])}</td>"
+            f"<td class='{_TD}' title='{_escape(row[col])}'>{_escape(row[col])}</td>"
             for col in df.columns
         )
-        rows_html.append(f'<tr class="{row_cls}">{cells}</tr>')
+        rows_html.append(f'<tr class="{_TR} {state}">{cells}</tr>')
 
     st.markdown(
         f"""
-        <div class="hs-table-wrap">
-            <div class="hs-table-scroll" style="max-height:{height}px;">
-                <table class="hs-table">
-                    <thead><tr>{header_cells}</tr></thead>
+        <div class="border border-gray-200 rounded-xl overflow-hidden bg-white">
+            <div class="tw-scroll overflow-auto" style="max-height:{height}px;">
+                <table class="w-full text-[12.5px] bg-white border-collapse">
+                    <thead class="sticky top-0 z-10">
+                        <tr class="bg-gray-50">{header_cells}</tr>
+                    </thead>
                     <tbody>{"".join(rows_html)}</tbody>
                 </table>
             </div>
@@ -126,54 +143,48 @@ def render_html_table(
     )
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-#  Wide enquiry detail table
-# ─────────────────────────────────────────────────────────────────────────────
+# ── Wide enquiry detail table ────────────────────────────────────────────────
 
 def render_enquiry_table(df: pd.DataFrame, height: int = 600) -> None:
     """
-    Render the Sales Funnel enquiry table with:
-    - Short column aliases (fit all 19 columns without horizontal scroll)
+    Render the master-data enquiry table with:
+    - Short column aliases (all 19 columns without horizontal scroll)
     - Fixed proportional column widths via <colgroup>
     - Yes/No badge colouring for Quoted and Closed columns
     """
-    # Rename to short aliases
     renamed = df.rename(columns=_ENQ_ALIASES)
-    cols = [c for c in _ENQ_ALIASES.values() if c in renamed.columns]
+    cols    = [c for c in _ENQ_ALIASES.values() if c in renamed.columns]
     renamed = renamed[cols]
 
-    # Build <colgroup>
-    widths = _ENQ_WIDTHS[: len(cols)]
-    col_els = "".join(
-        f'<col style="width:{w}%">' for w in widths
-    )
+    widths  = _ENQ_WIDTHS[: len(cols)]
+    col_els = "".join(f'<col style="width:{w}%">' for w in widths)
 
-    # Header
     header_cells = "".join(
-        f"<th title='{c}'>{c}</th>" for c in renamed.columns
+        f"<th class='{_TH}' title='{c}'>{c}</th>" for c in renamed.columns
     )
 
-    # Body
     rows_html = []
     for idx in range(len(renamed)):
-        row = renamed.iloc[idx]
+        row   = renamed.iloc[idx]
         cells = []
         for col in renamed.columns:
             raw = row[col]
             if col in _YES_NO_COLS:
-                cells.append(f"<td>{_yes_no_cell(raw)}</td>")
+                cells.append(f"<td class='px-[14px] py-[9px] whitespace-nowrap'>{_yes_no_cell(raw)}</td>")
             else:
                 v = _escape(raw)
-                cells.append(f"<td title='{v}'>{v}</td>")
-        rows_html.append(f"<tr>{''.join(cells)}</tr>")
+                cells.append(f"<td class='{_TD}' title='{v}'>{v}</td>")
+        rows_html.append(f"<tr class='{_TR}'>{''.join(cells)}</tr>")
 
     st.markdown(
         f"""
-        <div class="hs-table-wrap">
-            <div class="hs-table-scroll" style="max-height:{height}px; overflow-x:hidden;">
-                <table class="hs-table">
+        <div class="border border-gray-200 rounded-xl overflow-hidden bg-white">
+            <div class="tw-scroll overflow-auto" style="max-height:{height}px; overflow-x:hidden;">
+                <table class="w-full text-[12.5px] bg-white border-collapse">
                     <colgroup>{col_els}</colgroup>
-                    <thead><tr>{header_cells}</tr></thead>
+                    <thead class="sticky top-0 z-10">
+                        <tr class="bg-gray-50">{header_cells}</tr>
+                    </thead>
                     <tbody>{"".join(rows_html)}</tbody>
                 </table>
             </div>
@@ -183,13 +194,11 @@ def render_enquiry_table(df: pd.DataFrame, height: int = 600) -> None:
     )
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-#  Legacy helpers (kept for backward compatibility)
-# ─────────────────────────────────────────────────────────────────────────────
+# ── Legacy / fallback helpers ────────────────────────────────────────────────
 
 def render_table(df: pd.DataFrame, height: int = 450, key: str = "table"):
     """Fallback: native Streamlit dataframe."""
-    st.dataframe(df, width='stretch', height=height, hide_index=True, key=key)
+    st.dataframe(df, width="stretch", height=height, hide_index=True, key=key)
 
 
 def export_csv_button(
@@ -211,7 +220,7 @@ def export_csv_button(
 def highlight_conversion_row(
     df: pd.DataFrame, conv_col: str = "Conversion %"
 ) -> "pd.DataFrame.style":
-    """Pandas-style row colouring (used as fallback where native df is needed)."""
+    """Pandas-style row colouring (fallback where native df is preferred)."""
     def _style(row):
         if row.get("Month") == "TOTAL":
             return ["font-weight:bold; background-color:#F1F5F9"] * len(row)

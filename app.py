@@ -4,6 +4,7 @@ Entry point with page routing based on sidebar navigation.
 """
 
 import streamlit as st
+import st_tailwind as tw
 
 st.set_page_config(
     page_title="Salasar Analytics",
@@ -11,6 +12,12 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded",
 )
+
+# Inject Tailwind CSS Play CDN globally — must be called right after set_page_config.
+# All custom HTML components (KPI cards, tables, sidebar cards) use Tailwind utility
+# classes. A minimal _STREAMLIT_OVERRIDES block handles Streamlit-internal selectors
+# that Tailwind cannot reach ([data-testid="stSidebar"], .stPlotlyChart, etc.).
+tw.initialize_tailwind()
 
 from utils.styles import inject_global_css
 from utils.auth import login_form, is_admin
