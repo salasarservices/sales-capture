@@ -36,8 +36,8 @@ NAV_ITEMS = [
 
 
 _SIDEBAR_CSS = """
-<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
 <style>
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons+Round');
 /* ── Hide Streamlit's auto page-nav ── */
 [data-testid="stSidebarNav"],
 [data-testid="stSidebarNavItems"],
@@ -192,10 +192,10 @@ section[data-testid="stSidebar"] nav {
 def render_sidebar():
     """Render the dark admin-panel sidebar."""
 
-    # Inject CSS + Material Icons font (applied globally so font loads early)
-    st.markdown(_SIDEBAR_CSS, unsafe_allow_html=True)
-
     with st.sidebar:
+        # ── CSS + font (inside sidebar so Streamlit doesn't render it as text) ─
+        st.markdown(_SIDEBAR_CSS, unsafe_allow_html=True)
+
         # ── Logo ──────────────────────────────────────────────────────────────
         st.markdown("""
             <div class="sb-logo">
