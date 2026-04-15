@@ -37,15 +37,33 @@ section[data-testid="stSidebar"] nav {
 }
 
 /* Fixed sidebar */
+:root {
+    --app-sidebar-width: 300px;
+}
+
 section[data-testid="stSidebar"] {
     position: fixed !important;
     top: 0 !important;
     left: 0 !important;
+    width: var(--app-sidebar-width) !important;
+    min-width: var(--app-sidebar-width) !important;
+    max-width: var(--app-sidebar-width) !important;
     height: 100vh !important;
     z-index: 999 !important;
     background: #0f172a !important;
     border-right: 1px solid rgba(255, 255, 255, 0.07) !important;
     box-shadow: 4px 0 24px rgba(0, 0, 0, 0.35) !important;
+}
+
+/* Keep dashboard content clear of fixed sidebar */
+[data-testid="stAppViewContainer"] > section.main {
+    margin-left: var(--app-sidebar-width) !important;
+}
+
+@media (max-width: 1024px) {
+    [data-testid="stAppViewContainer"] > section.main {
+        margin-left: 0 !important;
+    }
 }
 
 /* Sidebar inner content scroll */
@@ -62,7 +80,9 @@ section[data-testid="stSidebar"] > div:first-child {
     padding: 28px 20px 22px;
 }
 .sb-logo img {
-    height: 42px;
+    width: 250px;
+    max-width: 100%;
+    height: auto;
     filter: brightness(0) invert(1);
     opacity: 0.92;
 }
@@ -80,7 +100,7 @@ section[data-testid="stSidebar"] > div:first-child {
     border: 1px solid transparent !important;
     border-radius: 8px !important;
     background: transparent !important;
-    color: #94a3b8 !important;
+    color: #ffffff !important;
     text-transform: uppercase !important;
     font-size: 13px !important;
     font-weight: 700 !important;
@@ -94,12 +114,13 @@ section[data-testid="stSidebar"] > div:first-child {
 
 [data-testid="stSidebar"] div[data-testid="stButton"]:nth-of-type(-n+4) > button:hover {
     background: rgba(255, 255, 255, 0.07) !important;
-    color: #e2e8f0 !important;
+    color: #ffffff !important;
 }
 
 [data-testid="stSidebar"] div[data-testid="stButton"]:nth-of-type(-n+4) > button[kind="primary"] {
     background: #1e40af !important;
     color: #ffffff !important;
+    font-weight: 700 !important;
 }
 
 [data-testid="stSidebar"] div[data-testid="stButton"]:nth-of-type(-n+4) > button[kind="primary"]:hover {
