@@ -30,6 +30,7 @@ _SIDEBAR_STYLES = """
 <style>
 :root {
     --app-sidebar-width: 21rem;
+    --app-sidebar-gap: 0.85rem;
 }
 
 /* Never show Streamlit's sidebar collapse controls */
@@ -63,14 +64,17 @@ section[data-testid="stSidebar"] {
 
 /* Keep dashboard content from sliding under fixed sidebar */
 [data-testid="stAppViewContainer"] > section.main {
-    margin-left: var(--app-sidebar-width) !important;
-    width: calc(100% - var(--app-sidebar-width)) !important;
+    margin-left: calc(var(--app-sidebar-width) + var(--app-sidebar-gap)) !important;
+    width: calc(100% - var(--app-sidebar-width) - var(--app-sidebar-gap)) !important;
+    max-width: calc(100% - var(--app-sidebar-width) - var(--app-sidebar-gap)) !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
 }
 
 /* Ensure Streamlit inner container also respects fixed sidebar width */
 [data-testid="stAppViewContainer"] > section.main .block-container {
     max-width: 100% !important;
-    padding-left: 1.25rem !important;
+    padding-left: 1rem !important;
     padding-right: 1.25rem !important;
 }
 
