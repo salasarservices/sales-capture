@@ -14,6 +14,11 @@ NAV_ITEMS = [
 
 def render_sidebar():
     """Render the sidebar using only native Streamlit widgets."""
+    # Hide Streamlit's auto-generated multipage navigation
+    st.markdown(
+        "<style>[data-testid='stSidebarNav']{display:none !important;}</style>",
+        unsafe_allow_html=True,
+    )
     with st.sidebar:
         st.image(
             "https://ik.imagekit.io/salasarservices/Salasar-Logo-new.png",
