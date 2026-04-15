@@ -28,6 +28,12 @@ NAV_ITEMS = [
 
 _SIDEBAR_STYLES = """
 <style>
+/* Never show Streamlit's sidebar collapse controls */
+[data-testid="stSidebarCollapsedControl"],
+button[kind="header"][aria-label*="sidebar" i] {
+    display: none !important;
+}
+
 /* Hide Streamlit auto page-nav */
 [data-testid="stSidebarNav"],
 [data-testid="stSidebarNavItems"],
@@ -38,7 +44,7 @@ section[data-testid="stSidebar"] nav {
 
 /* Fixed sidebar */
 :root {
-    --app-sidebar-width: 300px;
+    --app-sidebar-width: 21rem;
 }
 
 section[data-testid="stSidebar"] {
@@ -55,14 +61,21 @@ section[data-testid="stSidebar"] {
     box-shadow: 4px 0 24px rgba(0, 0, 0, 0.35) !important;
 }
 
-/* Keep dashboard content clear of fixed sidebar */
+/* Keep dashboard content from sliding under fixed sidebar */
 [data-testid="stAppViewContainer"] > section.main {
     margin-left: var(--app-sidebar-width) !important;
 }
 
-@media (max-width: 1024px) {
-    [data-testid="stAppViewContainer"] > section.main {
-        margin-left: 0 !important;
+/* Responsive behavior: keep fixed sidebar, only tighten width/offset on smaller screens */
+@media (max-width: 1200px) {
+    :root {
+        --app-sidebar-width: 18rem;
+    }
+}
+
+@media (max-width: 992px) {
+    :root {
+        --app-sidebar-width: 16rem;
     }
 }
 
