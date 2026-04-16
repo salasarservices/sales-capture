@@ -84,8 +84,8 @@ def render_page():
     
     # Display table
     from components.data_tables import render_enquiry_table
-    
-    st.dataframe(df, width='stretch', height=500, hide_index=True)
+
+    render_enquiry_table(df, height=500)
     
     # Pagination
     col1, col2, col3 = st.columns([1, 4, 1])
